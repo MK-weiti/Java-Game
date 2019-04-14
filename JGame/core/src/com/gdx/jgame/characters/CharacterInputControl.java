@@ -2,7 +2,6 @@ package com.gdx.jgame.characters;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.gdx.jgame.characters.Player;
 
 public class CharacterInputControl {
 	

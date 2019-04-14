@@ -52,6 +52,13 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         
+        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-ai:$aiVersion"
+        compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
+        compile "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
+        
     }
 }
 

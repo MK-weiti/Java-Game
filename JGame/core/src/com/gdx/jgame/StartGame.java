@@ -1,20 +1,34 @@
+/*
+ * cannot load badimage.jpg:
+ * run -> run configuration -> arguments -> other -> assets in core
+ * 
+ * warnings:
+ * properties -> java build path -> libraries -> edit jre to java-oracle11
+ * 
+ * compile:
+ * go to the root of JGame (where is gradlew) and in terminal run ./gradlew desktop:dist
+ * the result is in desctop/build/libs
+ * 
+ */
+
+
 package com.gdx.jgame;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+//import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.gdx.jgame.characters.*;
 
 public class StartGame extends ApplicationAdapter {
-	private OrthographicCamera camera;
+	//private OrthographicCamera camera;
 	private Player mainPlayer = new Player();
 	
 	@Override
 	public void create () {		
 		mainPlayer.createApperance("badlogic.jpg");
 		mainPlayer.setPosition(Gdx.graphics.getWidth()/2-mainPlayer.getWidth()/2, Gdx.graphics.getHeight()/2-mainPlayer.getHeight()/2);
-		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		//camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
 	@Override

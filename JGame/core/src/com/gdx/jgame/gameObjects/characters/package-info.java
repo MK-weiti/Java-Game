@@ -4,4 +4,4 @@
  * Include all characters in the game
  *
  */
-package com.gdx.jgame.characters;
+package com.gdx.jgame.gameObjects.characters;

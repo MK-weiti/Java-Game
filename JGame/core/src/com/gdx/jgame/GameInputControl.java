@@ -6,7 +6,7 @@ import com.badlogic.gdx.Input;
 public class GameInputControl {
 	
 	public void keyPressed() {
-		
+		// TODO
 	}
 	
 	public void keyJustPressed() {

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="50" height="25" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="108">
+ <tileset firstgid="1" name="tiles" tilewidth="16" tileheight="16" spacing="1" margin="1" tilecount="480" columns="20">
+  <image source="tiles.png" width="343" height="410"/>
+  <tile id="10">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="20">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="60">
+   <properties>
+    <property name="animation" value="flower"/>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="80">
+   <properties>
+    <property name="animation" value="flower"/>
+    <property name="blocked" value=""/>
+   </properties>
+   <objectgroup draworder="index">
+    <object id="3" x="8.25" y="1.63">
+     <polygon points="0,0 0.5,8.125 7.25,6"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="140">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="141">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="143">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="161">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="162">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="163">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="220">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="221">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="222">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="240">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="241">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="242">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="260">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="261">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="262">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="280">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="282">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer id="1" name="background" width="50" height="25">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA+2TwQqAIAxA7Rwd/S3B/sHP6Z/roJCSstVmUwY+vOi2t6lbjHGTcK2hUQ9ZqIcs1EMW6iELqR7Hzx7Q/Ng6R52HevCyRb7GWQt83JOHb7BXPFt3KClrfyJ5tM6ESvwAzNEDiIcELJGHBcTC5sbG457HG0dqah7YXlqT+0C8KP2x8yjr5Zobtic9/znn27t7cL/xHh4zcAK1RyHOiBMAAA==
+  </data>
+ </layer>
+ <layer id="2" name="foreground" width="50" height="25">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA+3NQQkAAAgAMcsawvZW8COIbAHuIgAAYCaf/Gqpe+UHANzUCr6l7YgTAAA=
+  </data>
+ </layer>
+ <objectgroup id="3" name="dynamicObjects">
+  <properties>
+   <property name="BodyType" value="dynamic"/>
+  </properties>
+  <object id="102" x="96" y="112" width="64" height="16"/>
+  <object id="103" x="288" y="192" width="48" height="48">
+   <ellipse/>
+  </object>
+ </objectgroup>
+ <objectgroup id="4" name="obstacles">
+  <properties>
+   <property name="BodyType" value="static"/>
+  </properties>
+  <object id="56" x="16" y="240" width="128" height="16">
+   <properties>
+    <property name="blocked" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="57" x="128" y="256" width="112" height="16">
+   <properties>
+    <property name="blocked" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="59" x="224" y="240" width="416" height="16">
+   <properties>
+    <property name="blocked" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="63" x="0" y="0" width="800" height="16">
+   <properties>
+    <property name="strongBlocked" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="66" x="0" y="16" width="16" height="368">
+   <properties>
+    <property name="strongBlocked" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="69" x="0" y="384" width="800" height="16">
+   <properties>
+    <property name="strongBlocked" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="72" x="784" y="16" width="16" height="367">
+   <properties>
+    <property name="strongBlocked" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="96" x="304" y="176" width="16" height="16">
+   <properties>
+    <property name="blocked" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="97" x="464" y="176" width="16" height="16">
+   <properties>
+    <property name="blocked" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="98" x="592" y="160" width="16" height="16">
+   <properties>
+    <property name="blocked" type="bool" value="true"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

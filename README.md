@@ -13,6 +13,13 @@ Instalation instruction:
 - double click on it (or open terminal and run via java)
 - if it is not working check in properties if file is executable
 
+Or
+
+- go to the JGame (where is gradlew file) 
+- in shell run ./gradlew desktop:dist
+- the result is in JGame -> desktop -> build -> libs -> (chose game version)
+- run file: java -jar (file name)
+
 
 Code instalation instruction:
 - download

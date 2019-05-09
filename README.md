@@ -4,8 +4,9 @@ By Mateusz Kordowski
 
 index 293127
 
-My current work will be in the upcoming branch "current work". For now it is in 'basics of the game'.
-In the master branch will be only executable jar file.
+My current work is in 'basics of the game' banch.
+In the master banch there is source code of working prototype (later fully functional source code of my game).
+Do not mind the executable jar file in master branch (beneath is how to compile and where to find it).
 
 Instalation instruction:
 

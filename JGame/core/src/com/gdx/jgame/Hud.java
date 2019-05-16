@@ -1,6 +1,5 @@
 package com.gdx.jgame;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -11,29 +10,32 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.gdx.jgame.gameObjects.characters.Player;
 import com.gdx.jgame.world.MapManager;
 
 public class Hud implements Disposable{
 	
-	public Stage stage;
+	private Stage m_stage;
 	private Viewport m_viewport;
+	private Player m_player;
 	
 	Label temporary;
 	
-	public Hud(SpriteBatch batch) {
+	public Hud(SpriteBatch batch, Player player) {
+		m_player = player;
 		Table table = new Table();
 		
 		m_viewport = new FitViewport(MapManager.V_WIDTH, MapManager.V_HEIGHT,  new OrthographicCamera());
-		stage = new Stage(m_viewport, batch);
+		m_stage = new Stage(m_viewport, batch);
 		
 		table.bottom();
 		table.setFillParent(true);
 		
-		temporary = new Label("Temporary caption", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+		temporary = new Label(Integer.toString((m_player.getHealth()/m_player.getMaxHealth()) * 100) + "%", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 		table.add().expandX();
 		table.add(temporary).expandX().padTop(10);
 		
-		stage.addActor(table);
+		m_stage.addActor(table);
 	}
 	
 	public void update(SpriteBatch batch) {
@@ -46,6 +48,12 @@ public class Hud implements Disposable{
 
 	@Override
 	public void dispose() {
-		stage.dispose();
+		m_stage.dispose();
 	}
+	
+	public Stage getStage() {
+		return m_stage;
+	}
+	
+	
 }

@@ -16,20 +16,20 @@
 
 package de.tomgrill.gdxtesting.examples;
 
-import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
+/*import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.gdx.jgame.gameObjects.characters.Player;
-import com.gdx.jgame.world.MapManager;
+import com.gdx.jgame.world.MapManager;*/
 
 import de.tomgrill.gdxtesting.GdxTestRunner;
 

@@ -8,12 +8,9 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.gdx.jgame.Camera;
 import com.gdx.jgame.world.MapManager;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 /*
@@ -22,52 +19,22 @@ import com.badlogic.gdx.physics.box2d.World;
  */
 
 public class PalpableObject {
-	public Sprite defaultSprite;
+	private Sprite defaultSprite;
 	
-	public World world;
-	public  Body body;	// get access to give forces to body
-	protected Fixture fixture;	// to change later the properties of fixture
+	private World world;
+	private Body body;	// get access to give forces to body
+	private Fixture m_fixture;
 	private float m_scale;
-	
-	public PalpableObject(Texture defaultTexture, World world, Vector2 pos, float scale, BodyType bodyType) {	
-		m_scale = scale;
-		this.world = world;
-		
-		createBody(defaultTexture, world, pos, m_scale, bodyType);
-	}
 
-	private void createBody(Texture defaultTexture, World world, Vector2 pos, float scale, BodyType bodyType) {
-		BodyDef bodyDef = new BodyDef();
-		bodyDef.position.set(pos.x / MapManager.PIXELS_PER_METER, 
-				pos.y / MapManager.PIXELS_PER_METER);
-		bodyDef.type = bodyType;
-		bodyDef.fixedRotation = false;
+	public PalpableObject(PalpableObjectPolygonDef objectDef) {
+		world = objectDef.world;
+		m_scale = objectDef.scale;
 		
-		FixtureDef fixtureDef = new FixtureDef();
-		PolygonShape shape = new PolygonShape();
+		body = world.createBody(objectDef.bodyDef);
+		m_fixture = body.createFixture(objectDef.fixtureDef); 
 		
-		Vector2[] points = new Vector2[4];
-		float tmpWidth = defaultTexture.getWidth() * scale / MapManager.PIXELS_PER_METER /2;
-		float tmpHeight = defaultTexture.getHeight() * scale / MapManager.PIXELS_PER_METER / 2;
-		
-		points[0] = new Vector2(- tmpWidth, - tmpHeight);
-		points[1] = new Vector2(tmpWidth, - tmpHeight);
-		points[2] = new Vector2(tmpWidth, tmpHeight);
-		points[3] = new Vector2(- tmpWidth, tmpHeight);
-		
-		shape.set(points);
-		fixtureDef.shape = shape;
-		fixtureDef.density = 1f;	// 16 x 16 * density
-		fixtureDef.friction = 0.2f;
-		
-		body = world.createBody(bodyDef);
-		fixture = body.createFixture(fixtureDef);
-		
-		shape.dispose();
-
-		setTexture(defaultTexture);
-	}
-	
+		setTexture(objectDef.texture);
+	}	
 
 	private void setTexture(Texture defaultTexture) {
 		defaultSprite = new Sprite(defaultTexture);		
@@ -88,20 +55,42 @@ public class PalpableObject {
 	
 	public void render(SpriteBatch batch) {
 		defaultSprite.setRotation(body.getAngle()*(float)(180/Math.PI));
-		defaultSprite.setPosition(fixture.getBody().getPosition().x - defaultSprite.getWidth()/2, 
-				fixture.getBody().getPosition().y - defaultSprite.getHeight() / 2);
+		defaultSprite.setPosition(m_fixture.getBody().getPosition().x - defaultSprite.getWidth()/2, 
+				m_fixture.getBody().getPosition().y - defaultSprite.getHeight() / 2);
 		defaultSprite.draw(batch);
 	}
 	
-	public void setScale(float scale) {
-		m_scale = scale;
-		
-		Sprite newSprite = new Sprite(defaultSprite.getTexture());		
-		
-		createBody(newSprite.getTexture(), world, body.getPosition(), m_scale, body.getType());
+	public void rotate(float angle) {
+		body.setTransform(body.getWorldCenter(), angle);
 	}
 	
-	private void rotate() {
-		// TODO
+	public Vector2 getPositionOnScreen(Camera camera) {
+		//to be more transparent
+		if(camera.follower != this) {
+			throw new IllegalArgumentException("Camera is do not follow this object");
+		}
+		return camera.getPositionOnScreen();
+	}
+	
+	public float angleRadOnScreen(Camera camera, Vector2 position) {
+		Vector2 tmp = new Vector2(position);
+		
+		tmp.x = tmp.x - getPositionOnScreen(camera).x;
+		tmp.y = tmp.y - getPositionOnScreen(camera).y;
+		//System.out.println(position + " " + tmp);
+		
+		return tmp.angleRad() - ((float) Math.PI/2);
+	}
+
+	public World getWorld() {
+		return world;
+	}
+	
+	public Body getBody() {
+		return body;
+	}
+	
+	public Sprite getDefaultSprite() {
+		return defaultSprite;
 	}
 }

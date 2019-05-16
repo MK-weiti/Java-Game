@@ -7,8 +7,8 @@ public class InputControl {
 	public static GameInputControl game = new GameInputControl();
 	public static PlayerInputControl character = new PlayerInputControl();
 	
-	public static void update(PlainCharacter gameCharacter) {
+	public static void update(Camera camera, PlainCharacter gameCharacter) {
 		game.keyMap();
-		character.keyMap(gameCharacter);
+		character.keyMap(camera, gameCharacter);
 	}
 }

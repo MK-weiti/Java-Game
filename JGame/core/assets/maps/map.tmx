@@ -117,7 +117,7 @@
  </tileset>
  <layer id="1" name="background" width="50" height="25">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAA+2TwQqAIAxA7Rwd/S3B/sHP6Z/roJCSstVmUwY+vOi2t6lbjHGTcK2hUQ9ZqIcs1EMW6iELqR7Hzx7Q/Ng6R52HevCyRb7GWQt83JOHb7BXPFt3KClrfyJ5tM6ESvwAzNEDiIcELJGHBcTC5sbG457HG0dqah7YXlqT+0C8KP2x8yjr5Zobtic9/znn27t7cL/xHh4zcAK1RyHOiBMAAA==
+   H4sIAAAAAAAAA+2TwQ6AIAhA6dw6+g39jZv9g5/TP3fRrVw6KDByHN68KPAA/QTgB2GFf2MeujAPXZiHLsxDF1o99o89sPmpdf51HuYhy5J4G2cuCOnMHqHBVvFsveGkrP2O7NG6EyvxIzJHDzAeGnBMHg4Ri5qbGk96Hk8cual5UHvp4OqD8eL0p86jrFdqbtSe9Pznkrt39pDe8R4eI3AAej5pAYgTAAA=
   </data>
  </layer>
  <layer id="2" name="foreground" width="50" height="25">
@@ -129,10 +129,6 @@
   <properties>
    <property name="BodyType" value="dynamic"/>
   </properties>
-  <object id="102" x="96" y="112" width="64" height="16"/>
-  <object id="103" x="288" y="192" width="48" height="48">
-   <ellipse/>
-  </object>
  </objectgroup>
  <objectgroup id="4" name="obstacles">
   <properties>

@@ -1,20 +1,14 @@
 package com.gdx.jgame;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.gdx.jgame.gameObjects.characters.PlainCharacter;
+import com.gdx.jgame.gameObjects.characters.PlayerInputControl;
 
 public class GameInputControl {
+	private static UIInGameInputControl m_game = new UIInGameInputControl();
+	private static PlayerInputControl m_character = new PlayerInputControl();
 	
-	public void keyPressed() {
-		// TODO
-	}
-	
-	public void keyJustPressed() {
-		if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) Gdx.app.exit();
-	}
-	
-	public void keyMap() {
-		keyJustPressed();
-		keyPressed();		
+	public static void update(JGame jGame, PlainCharacter gameCharacter) {
+		m_game.keyMap(jGame);
+		m_character.keyMap(jGame.getCamera(), gameCharacter);
 	}
 }

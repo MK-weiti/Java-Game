@@ -7,7 +7,6 @@ import com.badlogic.gdx.maps.objects.*;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Ellipse;
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -15,12 +14,11 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.gdx.jgame.managers.MapManager;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.gdx.jgame.world.MapManager;
 
 public class LayerHitboxCreator {
 	
@@ -28,6 +26,7 @@ public class LayerHitboxCreator {
 	private MapLayer m_layer;
 	private BodyType bodyType;
 	
+	@SuppressWarnings("unused")
 	public LayerHitboxCreator(MapLayer layer, World world){
 		if(layer == null) throw new IllegalArgumentException("No layer found");
 		
@@ -63,6 +62,7 @@ public class LayerHitboxCreator {
 		
 		// for some reason it interprets circle as ellipse
 		for(CircleMapObject circleObject : m_objectsInLayer.getByType(CircleMapObject.class)){
+			@SuppressWarnings("unused")
 			Circle circle = circleObject.getCircle();
 			
 			/*CircleShape circleShape;
@@ -87,6 +87,7 @@ public class LayerHitboxCreator {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void createPolyline(World world, PolylineMapObject polylineObject) {
 		ChainShape chainShape = createPolyline(polylineObject);
 		
@@ -102,6 +103,7 @@ public class LayerHitboxCreator {
 
 	// TODO
 	// at now it creates only circle
+	@SuppressWarnings("unused")
 	private void createEllipse(World world, EllipseMapObject ellipseObject) {
 		Ellipse ellipse = ellipseObject.getEllipse();
 		
@@ -126,6 +128,7 @@ public class LayerHitboxCreator {
 		circleShape.dispose();
 	}
 
+	@SuppressWarnings("unused")
 	private void createPolygon(World world, PolygonMapObject polygonObject) {
 		Polygon polygon = polygonObject.getPolygon();
 		PolygonShape shape = new PolygonShape();
@@ -206,6 +209,7 @@ public class LayerHitboxCreator {
 			fixtureDef.restitution = 0.5f;
 		}
 		Body body = world.createBody(bodyDef);
+		@SuppressWarnings("unused")
 		Fixture fixture = body.createFixture(fixtureDef);
 		//world.createBody(bodyDef).createFixture(fixtureDef);
 		shape.dispose();

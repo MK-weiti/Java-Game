@@ -1,29 +1,35 @@
-My first game project in Java.
+# Java game
 
-By Mateusz Kordowski
+## By Mateusz Kordowski
 
-index 293127
+## index 293127
 
-My current work is in 'basics of the game' banch.
-In the master banch there is source code of working prototype (later fully functional source code of my game).
-Do not mind the executable jar file in master branch (beneath is how to compile and where to find it).
+**Instalation instruction:**
 
-Instalation instruction:
+1. download file from master branch.
+2. unpack
+3. double click on it (or open terminal and run via java)
+4. if it is not working check in properties if file is executable
 
-- download file from master branch.
-- unpack
-- double click on it (or open terminal and run via java)
-- if it is not working check in properties if file is executable
+### Or
 
-Or
+1. go to the JGame (where is gradlew file)
+2. in shell run ./gradlew desktop:dist
+3. the result is in JGame -> desktop -> build -> libs -> (chose game version)
+4. run file: java -jar (file name)
 
-- go to the JGame (where is gradlew file) 
-- in shell run ./gradlew desktop:dist
-- the result is in JGame -> desktop -> build -> libs -> (chose game version)
-- run file: java -jar (file name)
+**Code instalation instruction:**
 
+1. download
+2. unpack
+3. in your IDE import as a gradle project (use gradle version between 4.7 and 4.10.2).
 
-Code instalation instruction:
-- download
-- unpack
-- in your IDE import as a gradle project (use gradle version between 4.7 and 4.10.2).
+**In game instruction:**
+
+ - To toggle to the menu press Esc. 
+ - To enable the debug mode go to ~/.prefs/com.gdx.jgame.Configuration 
+ - When in a debug mode type command in console example: 
+	`screate-enemy texture=honeybee.png scale=0.05 position=500 250 groupName=test_group`
+	`debug-lines jbox=true`
+	`debug-lines jbox=false hud=true menu=true`
+	(for now no other commands are suported)

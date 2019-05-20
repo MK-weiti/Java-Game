@@ -1,6 +1,5 @@
 package com.gdx.jgame;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -41,6 +40,7 @@ public class Camera extends OrthographicCamera{
 	}
 	
 	public void update(SpriteBatch batch, PalpableObject object) {	
+		virtualScreen.apply();
 		batch.setProjectionMatrix(this.combined);
 		position.set(follower.getBody().getPosition().x - m_relative.x, 
 				follower.getBody().getPosition().y + m_relative.y, 0);
@@ -55,17 +55,22 @@ public class Camera extends OrthographicCamera{
 	}
 	
 	public Vector2 getPositionOnScreen() {
+		/*
+		 * Node
+		 * There is visible offset when vlirtual screen proportions do not
+		 * match with real screen proportion.
+		 * The offset is perceptible as imprecise aiming.
+		 */
 		Vector3 v3 = new Vector3(follower.getBody().getPosition().x,
 				follower.getBody().getPosition().y, 0);
-		//System.out.println(v3);
+		
 		v3 = this.project(v3);
-		
-		
-		/*Vector2 pos = new Vector2(Gdx.graphics.getWidth()/2 + m_relative.x * (Gdx.graphics.getWidth()/MapManager.V_WIDTH),
-				Gdx.graphics.getHeight()/2 - m_relative.y * MapManager.PIXELS_PER_METER);*/
-		
 		Vector2 pos = new Vector2(v3.x, v3.y);
 		return pos;
+	}
+	
+	public int gurrerWidth() {
+		return virtualScreen.getRightGutterWidth();
 	}
 	
 }

@@ -9,12 +9,12 @@ public class GameInputControl {
 		// TODO
 	}
 	
-	public void keyJustPressed() {
-		if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) Gdx.app.exit();
+	public void keyJustPressed(JGame jGame) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) jGame.setMenu();
 	}
 	
-	public void keyMap() {
-		keyJustPressed();
+	public void keyMap(JGame jGame) {
+		keyJustPressed(jGame);
 		keyPressed();		
 	}
 }

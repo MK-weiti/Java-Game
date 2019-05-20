@@ -37,6 +37,7 @@ import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 public class GdxTestRunner extends BlockJUnit4ClassRunner implements ApplicationListener {
 
 	private Map<FrameworkMethod, RunNotifier> invokeInRender = new HashMap<FrameworkMethod, RunNotifier>();
+	@SuppressWarnings("unused")
 	private SpriteBatch batch;
 
 	public GdxTestRunner(Class<?> klass) throws InitializationError {

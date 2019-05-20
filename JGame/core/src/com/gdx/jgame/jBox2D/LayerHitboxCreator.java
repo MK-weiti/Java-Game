@@ -26,6 +26,7 @@ public class LayerHitboxCreator {
 	private MapLayer m_layer;
 	private BodyType bodyType;
 	
+	@SuppressWarnings("unused")
 	public LayerHitboxCreator(MapLayer layer, World world){
 		if(layer == null) throw new IllegalArgumentException("No layer found");
 		
@@ -61,6 +62,7 @@ public class LayerHitboxCreator {
 		
 		// for some reason it interprets circle as ellipse
 		for(CircleMapObject circleObject : m_objectsInLayer.getByType(CircleMapObject.class)){
+			@SuppressWarnings("unused")
 			Circle circle = circleObject.getCircle();
 			
 			/*CircleShape circleShape;
@@ -85,6 +87,7 @@ public class LayerHitboxCreator {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void createPolyline(World world, PolylineMapObject polylineObject) {
 		ChainShape chainShape = createPolyline(polylineObject);
 		
@@ -100,6 +103,7 @@ public class LayerHitboxCreator {
 
 	// TODO
 	// at now it creates only circle
+	@SuppressWarnings("unused")
 	private void createEllipse(World world, EllipseMapObject ellipseObject) {
 		Ellipse ellipse = ellipseObject.getEllipse();
 		
@@ -124,6 +128,7 @@ public class LayerHitboxCreator {
 		circleShape.dispose();
 	}
 
+	@SuppressWarnings("unused")
 	private void createPolygon(World world, PolygonMapObject polygonObject) {
 		Polygon polygon = polygonObject.getPolygon();
 		PolygonShape shape = new PolygonShape();
@@ -204,6 +209,7 @@ public class LayerHitboxCreator {
 			fixtureDef.restitution = 0.5f;
 		}
 		Body body = world.createBody(bodyDef);
+		@SuppressWarnings("unused")
 		Fixture fixture = body.createFixture(fixtureDef);
 		//world.createBody(bodyDef).createFixture(fixtureDef);
 		shape.dispose();

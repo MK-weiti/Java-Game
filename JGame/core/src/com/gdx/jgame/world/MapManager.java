@@ -5,9 +5,9 @@ import java.util.TreeMap;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapLayers;
-import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -16,9 +16,11 @@ import com.badlogic.gdx.utils.Disposable;
 public class MapManager implements Disposable{
 	
 	// virtual screen size
-	public static final int V_WIDTH = 800;
-	public static final int V_HEIGHT = 600;
-	public static float PIXELS_PER_METER = 100;
+	public static final float PIXELS_PER_VIRTUAL_P = 1.5f;
+	public static final int V_WIDTH = (int) (Gdx.graphics.getWidth() / PIXELS_PER_VIRTUAL_P);
+	public static final int V_HEIGHT = (int) (Gdx.graphics.getHeight() / PIXELS_PER_VIRTUAL_P);
+	public static final float SCREEN_RATIO = V_WIDTH / V_HEIGHT;
+	public static float PIXELS_PER_METER = 100f;
 	
 	private TreeMap<String, TiledMap> m_map;
 	private OrthogonalTiledMapRenderer m_renderer;

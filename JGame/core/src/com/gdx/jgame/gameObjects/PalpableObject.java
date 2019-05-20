@@ -9,8 +9,10 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.gdx.jgame.Camera;
+import com.gdx.jgame.ObjectsID;
 import com.gdx.jgame.world.MapManager;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 /*
@@ -18,7 +20,11 @@ import com.badlogic.gdx.physics.box2d.World;
  * Create as body with fixture.
  */
 
-public class PalpableObject {
+public class PalpableObject implements ObjectsID{
+	
+	private static long m_numberOfObjects = 0;
+	public final long ID;
+	
 	private Sprite defaultSprite;
 	
 	private World world;
@@ -27,13 +33,19 @@ public class PalpableObject {
 	private float m_scale;
 
 	public PalpableObject(PalpableObjectPolygonDef objectDef) {
+		ID = m_numberOfObjects;
+		++m_numberOfObjects;
 		world = objectDef.world;
-		m_scale = objectDef.scale;
-		
+		m_scale = objectDef.textureScale;
 		body = world.createBody(objectDef.bodyDef);
+		
+		PolygonShape shape = new PolygonShape();
+		shape.set(objectDef.fixtureData.shapeVertices);
+		objectDef.fixtureDef.shape = shape;
 		m_fixture = body.createFixture(objectDef.fixtureDef); 
 		
 		setTexture(objectDef.texture);
+		shape.dispose();
 	}	
 
 	private void setTexture(Texture defaultTexture) {
@@ -54,7 +66,7 @@ public class PalpableObject {
 	}
 	
 	public void render(SpriteBatch batch) {
-		defaultSprite.setRotation(body.getAngle()*(float)(180/Math.PI));
+		defaultSprite.setRotation(body.getAngle()*(float)((double)180/Math.PI));
 		defaultSprite.setPosition(m_fixture.getBody().getPosition().x - defaultSprite.getWidth()/2, 
 				m_fixture.getBody().getPosition().y - defaultSprite.getHeight() / 2);
 		defaultSprite.draw(batch);
@@ -62,6 +74,10 @@ public class PalpableObject {
 	
 	public void rotate(float angle) {
 		body.setTransform(body.getWorldCenter(), angle);
+	}
+	
+	public Vector2 getPosition() {
+		return body.getPosition();
 	}
 	
 	public Vector2 getPositionOnScreen(Camera camera) {
@@ -77,7 +93,6 @@ public class PalpableObject {
 		
 		tmp.x = tmp.x - getPositionOnScreen(camera).x;
 		tmp.y = tmp.y - getPositionOnScreen(camera).y;
-		//System.out.println(position + " " + tmp);
 		
 		return tmp.angleRad() - ((float) Math.PI/2);
 	}
@@ -92,5 +107,10 @@ public class PalpableObject {
 	
 	public Sprite getDefaultSprite() {
 		return defaultSprite;
+	}
+
+	@Override
+	public long numberOfObjects() {
+		return m_numberOfObjects;
 	}
 }

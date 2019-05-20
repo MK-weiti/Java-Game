@@ -1,4 +1,4 @@
-package com.gdx.jgame.world;
+package com.gdx.jgame.managers;
 
 import java.util.Map;
 import java.util.TreeMap;

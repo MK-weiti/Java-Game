@@ -5,8 +5,8 @@ import java.io.Serializable;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.gdx.jgame.ObjectsID;
-import com.gdx.jgame.TextureManager;
 import com.gdx.jgame.gameObjects.PalpableObjectPolygonDef;
+import com.gdx.jgame.managers.TextureManager;
 
 public class CharacterPolygonDef extends PalpableObjectPolygonDef implements Serializable, ObjectsID{	
 	/**

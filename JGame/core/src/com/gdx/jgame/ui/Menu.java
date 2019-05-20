@@ -1,4 +1,4 @@
-package com.gdx.jgame;
+package com.gdx.jgame.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -7,7 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.gdx.jgame.ScreenManager.SCREEN_STATE;
+import com.gdx.jgame.managers.RecordManager;
+import com.gdx.jgame.managers.ScreenManager;
 
 public abstract class Menu implements Screen{
 	Stage m_stage;

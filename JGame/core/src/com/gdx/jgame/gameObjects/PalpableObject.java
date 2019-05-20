@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.gdx.jgame.Camera;
 import com.gdx.jgame.ObjectsID;
-import com.gdx.jgame.world.MapManager;
+import com.gdx.jgame.managers.MapManager;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;

@@ -1,9 +1,14 @@
-package com.gdx.jgame.gameObjects.characters;
+package com.gdx.jgame.managers;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.gdx.jgame.gameObjects.characters.CharacterPolygonDef;
+import com.gdx.jgame.gameObjects.characters.CharacterSet;
+import com.gdx.jgame.gameObjects.characters.Enemy;
+import com.gdx.jgame.gameObjects.characters.PlainCharacter;
+import com.gdx.jgame.gameObjects.characters.Player;
 
 public class CharactersManager{
 	private TreeMap<String, TreeMap<Integer, CharacterSet>> m_enemyGroups;

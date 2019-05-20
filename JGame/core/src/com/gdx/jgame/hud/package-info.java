@@ -5,4 +5,4 @@
  * @author Mateusz Kordowski
  *
  */
-package com.gdx.jgame.world;
+package com.gdx.jgame.hud;

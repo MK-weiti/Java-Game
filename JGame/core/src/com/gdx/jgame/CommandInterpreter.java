@@ -7,6 +7,7 @@ public class CommandInterpreter {
 	private int m_actPos;
 	private int beginIndex;
 	private Vector<Character> m_constraints;
+	private static final String strue = "true", sfalse = "false";
 	
 	public CommandInterpreter() {
 		m_constraints = new Vector<Character>(' ');
@@ -98,4 +99,14 @@ public class CommandInterpreter {
 	public String getCommand() {
 		return new String(m_command);
 	}
+
+	public String True() {
+		return strue;
+	}
+
+	public String False() {
+		return sfalse;
+	}
+	
+	
 }

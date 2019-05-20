@@ -1,4 +1,4 @@
-package com.gdx.jgame;
+package com.gdx.jgame.managers;
 
 import java.util.*;
 

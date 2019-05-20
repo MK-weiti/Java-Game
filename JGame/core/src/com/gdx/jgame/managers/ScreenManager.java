@@ -1,4 +1,4 @@
-package com.gdx.jgame;
+package com.gdx.jgame.managers;
 
 import java.util.HashMap;
 
@@ -6,6 +6,8 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
+import com.gdx.jgame.JGame;
+import com.gdx.jgame.ui.PauseMenu;
 
 public class ScreenManager extends Game{
 	private HashMap<SCREEN_STATE, Screen> m_gameScreens;
@@ -28,7 +30,6 @@ public class ScreenManager extends Game{
 		m_recordManager = new RecordManager();
 		m_gameScreens = new HashMap<SCREEN_STATE, Screen>();
 		m_gameScreens.put(SCREEN_STATE.PAUSE_MENU, new PauseMenu(m_recordManager, this, m_showLayout));
-		// and other
 		
 		setScreen(SCREEN_STATE.PAUSE_MENU);
 	}
@@ -50,7 +51,7 @@ public class ScreenManager extends Game{
 		prefs.flush();
 	}
 	
-	void createNewGame() {
+	public void createNewGame() {
 		JGame tmp;
 		tmp = (JGame) m_gameScreens.remove(SCREEN_STATE.PLAY);
 		if(tmp != null) tmp.dispose();

@@ -3,8 +3,6 @@ package com.gdx.jgame;
 import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
-import org.apache.commons.lang3.*;
-
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -22,7 +20,7 @@ public class DebugCommands extends Thread{
 	public DebugCommands(JGame game) {
 		super();
 		m_jgame = game;
-		m_sem = game.m_sem;
+		m_sem = game.getRenderSemaphore();
 		m_interpr = new CommandInterpreter();
 	}
 	
@@ -52,12 +50,11 @@ public class DebugCommands extends Thread{
 		String firstCommand = m_interpr.getNext();
 		if(firstCommand == null) return;
 		
-		if(isStringCreateEnemy(firstCommand)) {
-			m_sem.acquireUninterruptibly();
-			if(stringCreateEnemy()) {
-				System.out.println("Operation failed.");
-			}
-			m_sem.release();
+		if(isCreateEnemy(firstCommand)) {
+			executeCreateEnemy();
+		}
+		else if(isSetDebugLines(firstCommand)) {
+			executeSetDebugLines();
 		}
 		else {
 			System.out.println("Unknown command.");
@@ -65,9 +62,24 @@ public class DebugCommands extends Thread{
 		
 			
 	}
+
+	private void executeSetDebugLines() {
+		m_sem.acquireUninterruptibly();
+		if(setDebugLines()) {
+			System.out.println("Set debug lines failed.");
+		}
+		m_sem.release();
+	}
+
+	private void executeCreateEnemy() {
+		m_sem.acquireUninterruptibly();
+		if(createEnemy()) {
+			System.out.println("Create enemy failed.");
+		}
+		m_sem.release();
+	}
 	
-	
-	private boolean isStringCreateEnemy(String firstCommand) {
+	private boolean isCreateEnemy(String firstCommand) {
 		String commandName = "create-enemy";
 		
 		if(firstCommand.equals(commandName)) {
@@ -76,7 +88,80 @@ public class DebugCommands extends Thread{
 		return false;
 	}
 	
-	private boolean stringCreateEnemy() {
+	private boolean isSetDebugLines(String firstCommand) {
+		String commandName = "debug-lines";
+		
+		if(firstCommand.equals(commandName)) {
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean setDebugLines() {
+		// commands example
+		// debug-lines jbox=true 
+		// debug-lines jbox=false hud=true menu=true
+		
+		String tmp;
+		String lines = "hud", jbox = "jbox", menu = "menu";
+		boolean changeLines = false, changeJbox = false, changeMenu = false;
+		boolean setLines = false, setJbox = false, setMenu = false;
+		
+		while(!m_interpr.isEnd()) {
+			tmp = m_interpr.getNext();
+			
+			if(tmp.contentEquals(lines)) { 
+				if(m_interpr.getNextChar() != '=') return true;
+				
+				tmp = m_interpr.getNext();
+				if(tmp.contentEquals(m_interpr.True())) {
+					changeLines = true;
+					setLines = true;
+				}
+				else if(tmp.contentEquals(m_interpr.False())) {
+					changeLines = true;
+					setLines = false;
+				}
+				else return true;
+			}
+			else if(tmp.contentEquals(jbox)) {
+				if(m_interpr.getNextChar() != '=') return true;
+				
+				tmp = m_interpr.getNext();
+				if(tmp.contentEquals(m_interpr.True())) {
+					changeJbox = true;
+					setJbox = true;
+				}
+				else if(tmp.contentEquals(m_interpr.False())) {
+					changeJbox = true;
+					setJbox = false;
+				}
+				else return true;
+			}
+			else if(tmp.contentEquals(menu)) {
+				if(m_interpr.getNextChar() != '=') return true;
+				
+				tmp = m_interpr.getNext();
+				if(tmp.contentEquals(m_interpr.True())) {
+					changeMenu = true;
+					setMenu = true;
+				}
+				else if(tmp.contentEquals(m_interpr.False())) {
+					changeMenu = true;
+					setMenu = false;
+				}
+				else return true;
+			}
+			else return true;
+		}
+		
+		if(changeLines) m_jgame.getHud().setLayoutLines(setLines);
+		if(changeJbox) m_jgame.getJBox().setShowLayout(setJbox);
+		if(changeMenu) m_jgame.getPauseMenu().setLayoutLines(setMenu);
+		return false;
+	}
+	
+	private boolean createEnemy() {
 		
 		// texture id, scale, other (for example active=true position(500,200) friction=0.2)
 		// create-enemy texture=honeybee.png scale=0.05 position=500 250 groupName=test_group
@@ -123,9 +208,9 @@ public class DebugCommands extends Thread{
 		
 		if(required != 4) return true;
 		
-		Texture texture = m_jgame.m_charactersTextures.get(textureRes);
+		Texture texture = m_jgame.getCharactersTextures().get(textureRes);
 		
-		CharacterPolygonDef charDef = new CharacterPolygonDef(m_jgame.m_jBox.world, m_jgame.m_charactersTextures, 
+		CharacterPolygonDef charDef = new CharacterPolygonDef(m_jgame.getJBox().world, m_jgame.getCharactersTextures(), 
 				textureRes, scale, groupRes, Methods.setVerticesToTexture(texture, scale), 
 				CharacterPolygonDef.CharType.Enemy);
 		
@@ -137,7 +222,7 @@ public class DebugCommands extends Thread{
 		charDef.textureScale = scale;
 		charDef.setPosition(pos.x, pos.y);
 		
-		m_jgame.m_characters.addEnemies(charDef);
+		m_jgame.getCharacters().addEnemies(charDef);
 		
 		return false;
 	}

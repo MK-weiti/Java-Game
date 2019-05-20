@@ -1,4 +1,4 @@
-package com.gdx.jgame;
+package com.gdx.jgame.managers;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,6 +11,8 @@ import java.io.ObjectOutputStream;
 import javax.management.RuntimeErrorException;
 
 import com.badlogic.gdx.Gdx;
+import com.gdx.jgame.GameState;
+import com.gdx.jgame.JGame;
 
 public class RecordManager {
 	private final String pathToSaves = "saves/";

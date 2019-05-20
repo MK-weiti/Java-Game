@@ -2,8 +2,7 @@ package com.gdx.jgame.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.gdx.jgame.JGame;
-import com.gdx.jgame.ScreenManager;
+import com.gdx.jgame.managers.ScreenManager;
 
 
 public class DesktopLauncher {
@@ -16,7 +15,6 @@ public class DesktopLauncher {
 		config.foregroundFPS = GameProperties.FOREGROUND_FPS;
 		config.backgroundFPS = GameProperties.BACKGROUND_FPS;		
 		
-		//new LwjglApplication(new JGame(), config);
 		new LwjglApplication(new ScreenManager(), config);
 	}
 }

@@ -1,4 +1,4 @@
-package com.gdx.jgame;
+package com.gdx.jgame.hud;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gdx.jgame.gameObjects.characters.Player;
-import com.gdx.jgame.world.MapManager;
+import com.gdx.jgame.managers.MapManager;
 
 public class Hud implements Disposable{
 	
@@ -55,9 +55,9 @@ public class Hud implements Disposable{
 		
 		m_stage.addActor(table);
 		
-		if(m_debugMode && m_layoutLines) {
+		/*if(m_debugMode && m_layoutLines) {
 			m_stage.setDebugAll(true);
-		}
+		}*/
 	}
 	
 	public void update(SpriteBatch batch) {
@@ -65,6 +65,7 @@ public class Hud implements Disposable{
 		
 		drawLabels();
 		if(m_debugMode && m_layoutLines) {
+			m_stage.setDebugAll(true);
 			drawDebugLabels();
 		}
 		

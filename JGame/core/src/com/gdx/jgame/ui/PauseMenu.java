@@ -1,4 +1,4 @@
-package com.gdx.jgame;
+package com.gdx.jgame.ui;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,7 +8,10 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.gdx.jgame.ScreenManager.SCREEN_STATE;
+import com.gdx.jgame.JGame;
+import com.gdx.jgame.managers.RecordManager;
+import com.gdx.jgame.managers.ScreenManager;
+import com.gdx.jgame.managers.ScreenManager.SCREEN_STATE;
 
 public class PauseMenu extends Menu {
 	private TextButton m_buttonNewGame, m_buttonExit, m_buttonResume, m_buttonSave, m_buttonLoad;
@@ -199,4 +202,14 @@ public class PauseMenu extends Menu {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public boolean isLayoutLines() {
+		return m_layoutLines;
+	}
+
+	public void setLayoutLines(boolean m_layoutLines) {
+		this.m_layoutLines = m_layoutLines;
+	}
+	
+	
 }

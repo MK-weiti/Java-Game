@@ -1,7 +1,8 @@
-package com.gdx.jgame;
+package com.gdx.jgame.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.gdx.jgame.JGame;
 
 public class PauseMenuInputControl {
 	

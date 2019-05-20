@@ -16,7 +16,6 @@
 
 package com.gdx.jgame;
 
-import java.util.Properties;
 import java.util.concurrent.Semaphore;
 
 import com.badlogic.gdx.Gdx;
@@ -26,33 +25,45 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.gdx.jgame.ScreenManager.SCREEN_STATE;
 import com.gdx.jgame.gameObjects.Methods;
 import com.gdx.jgame.gameObjects.PalpableObjectPolygonDef;
 import com.gdx.jgame.gameObjects.characters.*;
+import com.gdx.jgame.hud.Hud;
 import com.gdx.jgame.jBox2D.JBoxManager;
-import com.gdx.jgame.world.MapManager;
+import com.gdx.jgame.managers.CharactersManager;
+import com.gdx.jgame.managers.MapManager;
+import com.gdx.jgame.managers.RecordManager;
+import com.gdx.jgame.managers.ScreenManager;
+import com.gdx.jgame.managers.TextureManager;
+import com.gdx.jgame.managers.ScreenManager.SCREEN_STATE;
+import com.gdx.jgame.ui.PauseMenu;
 
 public final class JGame implements Screen {
 	public enum GAME_STATE{
 		PAUSE,
 		RUN;
 	}
-	ScreenManager m_screenManager;
 	
-	Semaphore m_sem;
-	DebugCommands m_debugBuffer;
+	// managers
+	private ScreenManager m_screenManager;	
+	private CharactersManager m_characters;
+	private TextureManager m_charactersTextures;
+	private RecordManager m_recordManager;
+	private MapManager m_map;
 	
-	JBoxManager m_jBox;
-	SpriteBatch m_batch;
-	Camera m_mainCamera;
-	Hud m_hud;
-	CharactersManager m_characters;
-	MapManager m_map;
-	TextureManager m_charactersTextures;
-	GameState m_gameState;
-	PauseMenu m_pauseMenu;
-	RecordManager m_recordManager;
+	// in game classes
+	private Camera m_mainCamera;
+	private SpriteBatch m_batch;
+	
+	// these have debug mode
+	private Hud m_hud;
+	private PauseMenu m_pauseMenu;
+	private JBoxManager m_jBox;
+	
+	// these are used in debug mode
+	private Semaphore m_sem;
+	private DebugCommands m_debugBuffer;
+	
 	
 	GAME_STATE gameState = GAME_STATE.PAUSE;
 	private boolean gameCreated = false;
@@ -62,8 +73,6 @@ public final class JGame implements Screen {
 	public boolean isGameCreated() {
 		return gameCreated;
 	}
-
-	Properties plik;
 	
 	public JGame(ScreenManager screenManager, RecordManager recordManager, PauseMenu pauseMenu) {
 		m_debugMode = screenManager.isDebugMode();
@@ -74,7 +83,6 @@ public final class JGame implements Screen {
 		create();
 	}
 	
-	//@Override
 	public void create () {		
 		createAllReferences();
 		
@@ -85,44 +93,37 @@ public final class JGame implements Screen {
 		if(m_debugMode) m_debugBuffer.start();
 	}	
 	
-	//@Override
 	public void render () {
 		if(m_debugMode) m_sem.acquireUninterruptibly();
 		
 		renderGame();
-		/*if(state == State.Run) renderGame();
-		else if(state == State.Pause) renderPauseMenu();*/
 		
 		if(m_debugMode) m_sem.release();
 	}
 	
 	@Override
 	public void dispose () {
-		//m_pauseMenu.hide();
 		m_jBox.dispose();
 		m_batch.dispose();
 		m_charactersTextures.dispose();
 		m_hud.dispose();
 		m_map.dispose();
-		//m_pauseMenu.dispose();
 	}
 	
 	@Override
 	public void resize(int width, int height) {
-		//m_pauseMenu.resize(width, height);
 		m_mainCamera.resize(width, height);
 		m_hud.resize(width, height);
-		//m_pauseMenu.resize(width, height);
 	}	
 	
 	@Override
 	public void pause() {
-		//m_pauseMenu.pause();
+		// TODO Auto-generated method stub
 	}
 	
 	@Override
 	public void resume() {
-		//m_pauseMenu.resume();
+		// TODO Auto-generated method stub
 	}
 	
 	public Camera getCamera() {
@@ -134,7 +135,7 @@ public final class JGame implements Screen {
 	}
 
 	private void renderGame() {
-		InputControl.update(this, m_characters.getPlayer());
+		GameInputControl.update(this, m_characters.getPlayer());
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -158,8 +159,6 @@ public final class JGame implements Screen {
 		m_characters = new CharactersManager();
 		m_mainCamera = new Camera();
 		m_batch = new SpriteBatch();
-		m_gameState = new GameState(this);
-		//m_recordManager = new RecordManager();
 		
 		if(m_debugMode) {
 			m_sem = new Semaphore(1);
@@ -182,8 +181,6 @@ public final class JGame implements Screen {
 		
 		m_hud = new Hud(m_batch, m_characters.getPlayer(), m_debugMode, m_showLayout);
 		m_mainCamera.follower = m_characters.getPlayer();
-		
-		//m_jBox.world.setContactListener(listener);
 	}
 	
 	private void createEnemy() {
@@ -248,7 +245,6 @@ public final class JGame implements Screen {
 	@Override
 	public void show() {
 		gameState = GAME_STATE.RUN;
-		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -259,7 +255,6 @@ public final class JGame implements Screen {
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
 		gameState = GAME_STATE.PAUSE;
 	}
 
@@ -274,6 +269,52 @@ public final class JGame implements Screen {
 	public void setShowLayout(boolean m_showLayout) {
 		this.m_showLayout = m_showLayout;
 	}
+
+	SpriteBatch getBatch() {
+		return m_batch;
+	}
+
+	Semaphore getRenderSemaphore() {
+		return m_sem;
+	}
+
+	Camera getWorldCamera() {
+		return m_mainCamera;
+	}
+
+	CharactersManager getCharacters() {
+		return m_characters;
+	}
+
+	TextureManager getCharactersTextures() {
+		return m_charactersTextures;
+	}
+
+	MapManager getMaps() {
+		return m_map;
+	}
+
+	Hud getHud() {
+		return m_hud;
+	}
+	
+	void setHud(Hud m_hud) {
+		this.m_hud = m_hud;
+	}	
+
+	PauseMenu getPauseMenu() {
+		return m_pauseMenu;
+	}
+
+	JBoxManager getJBox() {
+		return m_jBox;
+	}
+
+	void setJBox(JBoxManager m_jBox) {
+		this.m_jBox = m_jBox;
+	}	
 	
 	
 }
+
+

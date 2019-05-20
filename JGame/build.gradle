@@ -20,7 +20,7 @@ allprojects {
     apply plugin: "idea"
 
 // 1.0
-    version = '0.0.1-SNAPSHOT'
+    version = '0.1.0-SNAPSHOT'
     ext {
         appName = "JGame"
         gdxVersion = '1.9.9'

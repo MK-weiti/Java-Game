@@ -5,7 +5,6 @@ import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
-import com.gdx.jgame.JGame;
 
 // IMPORTANT
 // all libraries in jBox2d are loaded when World object is created
@@ -30,7 +29,7 @@ public class JBoxManager implements Disposable{
 		world = new World(gravitationForce, true);
 		m_debugMode = debugMode;
 		m_showLayout = showLayout;
-		if(m_debugMode && m_showLayout) {
+		if(m_debugMode) {
 			debugRenderer = new Box2DDebugRenderer();
 		}
 		
@@ -47,7 +46,7 @@ public class JBoxManager implements Disposable{
 	
 	@Override
 	public void dispose() {
-		if(m_debugMode && m_showLayout) {
+		if(m_debugMode) {
 			debugRenderer.dispose();
 		}
 		world.dispose();
@@ -57,7 +56,7 @@ public class JBoxManager implements Disposable{
 		return m_showLayout;
 	}
 
-	public void setM_showLayout(boolean m_showLayout) {
+	public void setShowLayout(boolean m_showLayout) {
 		this.m_showLayout = m_showLayout;
 	}
 }

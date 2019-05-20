@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gdx.jgame.gameObjects.PalpableObject;
-import com.gdx.jgame.world.MapManager;
+import com.gdx.jgame.managers.MapManager;
 
 public class Camera extends OrthographicCamera{
 	

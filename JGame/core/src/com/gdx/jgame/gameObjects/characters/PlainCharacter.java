@@ -6,10 +6,20 @@ public abstract class PlainCharacter extends MovingObjectAdapter{
 	private int m_maxHealth;
 	private int m_health;
 	
+	private CHAR_TYPE m_type;
+	private String m_groupName;
+	
+	public enum CHAR_TYPE {
+		PLAYER,
+		ENEMY;
+	}
+	
 	public PlainCharacter(CharacterPolygonDef characterPolygonDef) {
 		super(characterPolygonDef, characterPolygonDef.maxVelocity, characterPolygonDef.acceleration);
 		m_maxHealth = characterPolygonDef.maxHealth;
-		this.m_health = characterPolygonDef.m_health;
+		m_health = characterPolygonDef.m_health;
+		m_groupName = characterPolygonDef.charGroupName;
+		m_type = characterPolygonDef.charType;
 	}
 
 	public int getMaxHealth() {
@@ -56,5 +66,18 @@ public abstract class PlainCharacter extends MovingObjectAdapter{
 		else {
 			m_health += heal;
 		}
+	}
+
+	public CHAR_TYPE getCharType() {
+		return m_type;
+	}
+
+	void setCharType(CHAR_TYPE type) {
+		this.m_type = type;
+	}
+
+	public String getGroupName() {
+		return m_groupName;
 	}	
+	
 }

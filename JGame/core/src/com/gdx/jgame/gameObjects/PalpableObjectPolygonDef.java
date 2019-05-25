@@ -16,9 +16,10 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 8695790437291106846L;
+	private static final long serialVersionUID = -7170239912473329317L;
+	
 	private static long m_numberOfObjects = 0;
-	public final long ID = m_numberOfObjects;;
+	public final long ID = m_numberOfObjects;
 	
 	BodyData bodyData;
 	FixturePolData fixturePolData;
@@ -47,13 +48,24 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID{
 		bodyDef.fixedRotation = true;
 		
 		// only to initialize body`s full physics
-		fixtureDef.density = 1f;	// 16 x 16 * density
+		fixtureDef.density = 1f;	// 16 * 16 * density
 		fixtureDef.friction = 0.5f;
 		
 		fixturePolData.shapeVertices = vertices;
+	}
+	
+	public PalpableObjectPolygonDef(PalpableObject palpableObject) {
+		++m_numberOfObjects;
 		
-		// default
-		textureScale = 1f;
+		bodyDef = new BodyDef();
+		fixturePolData = new FixturePolData(palpableObject.getBody().getFixtureList().first());
+		fixtureDef = new FixtureDef();
+		bodyData = new BodyData(palpableObject.getBody());
+		
+		this.world = palpableObject.getWorld();
+		this.texture = palpableObject.getDefaultSprite().getTexture();
+		texturePath = palpableObject.getTexturePath();
+		textureScale = palpableObject.getScale();
 	}
 
 	public PalpableObjectPolygonDef(PalpableObjectPolygonDef definition) {
@@ -62,10 +74,6 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID{
 		fixturePolData = new FixturePolData(definition.fixturePolData);
 		bodyDef = new BodyDef();
 		fixtureDef = new FixtureDef();
-		restoreFixture();
-		restoreBody();
-		bodyDef.position.set(definition.bodyDef.position);
-		
 		
 		texturePath = new String(definition.texturePath);
 		textureScale = definition.textureScale;
@@ -92,6 +100,11 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID{
 		bodyData.restore(bodyDef);
 	}
 	
+	public void restore() {
+		restoreFixture();
+		restoreBody();
+	}
+	
 	public long numberOfObjects() {
 		return m_numberOfObjects;
 	}
@@ -101,8 +114,7 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID{
 		this.world = world;
 		fixtureDef = new FixtureDef();
 		bodyDef = new BodyDef();
-		restoreFixture();
-		restoreBody();
+		restore();
 	}
 
 	@Override

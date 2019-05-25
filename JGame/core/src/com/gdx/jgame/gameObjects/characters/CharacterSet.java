@@ -29,10 +29,7 @@ public class CharacterSet implements Serializable, ObjectsID{
 	}
 	
 	public void setRealTimeParam() {
-		characterDef.bodyDef.position.set(character.getPosition());
-		characterDef.bodyDef.linearVelocity.set(character.getBody().getLinearVelocity());
-		characterDef.bodyDef.angle = character.getBody().getAngle();
-		characterDef.synchronize();
+		characterDef = new CharacterPolygonDef(character);
 	}
 
 	@Override

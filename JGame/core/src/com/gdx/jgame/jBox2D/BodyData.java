@@ -3,6 +3,7 @@ package com.gdx.jgame.jBox2D;
 import java.io.Serializable;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
@@ -27,6 +28,22 @@ public class BodyData implements Serializable{
 	public float gravityScale = 1;
 	
 	public BodyData() {} // default
+	
+	public BodyData(Body body) {
+		this.type = body.getType();
+		this.position.set(body.getPosition());
+		this.angle = body.getAngle();
+		this.linearVelocity.set(body.getLinearVelocity());
+		this.angularVelocity = body.getAngularVelocity();
+		this.linearDamping = body.getLinearDamping();
+		this.angularDamping = body.getAngularDamping();
+		this.allowSleep = body.isSleepingAllowed();
+		this.awake = body.isAwake();
+		this.fixedRotation = body.isFixedRotation();
+		this.bullet = body.isBullet();
+		this.active = body.isActive();
+		this.gravityScale = body.getGravityScale();
+	}
 
 	public BodyData(BodyDef bodyDef) {
 		this.type = bodyDef.type;

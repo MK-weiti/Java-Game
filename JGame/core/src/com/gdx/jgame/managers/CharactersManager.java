@@ -24,11 +24,11 @@ public class CharactersManager{
 		}
 	}
 	
-	public void addPlayer(CharacterPolygonDef playerDef) {
+	public void addPlayer(CharacterPolygonDef playerDef, TextureManager txBulletManager) {
 		if(playerSet != null) {
 			throw new IllegalArgumentException("Player already exist");
 		}
-		playerSet = new CharacterSet(playerDef, new Player(playerDef));
+		playerSet = new CharacterSet(playerDef, new Player(playerDef, txBulletManager));
 	}
 	
 	public void deletePlayer() {

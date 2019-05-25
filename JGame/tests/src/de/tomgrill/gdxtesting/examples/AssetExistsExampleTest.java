@@ -39,7 +39,7 @@ public class AssetExistsExampleTest {
 	
 	static Player test;
 	static Texture tx;
-	static MapManager m_map;
+	//static MapManager m_map;
 	
 
 	@BeforeClass
@@ -54,7 +54,7 @@ public class AssetExistsExampleTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		tx.dispose();
-		m_map.dispose();
+		//m_map.dispose();
 	}
 
 	@Before

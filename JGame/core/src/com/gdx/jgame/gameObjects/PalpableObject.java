@@ -31,11 +31,13 @@ public class PalpableObject implements ObjectsID{
 	private Body body;	// get access to give forces to body
 	private Fixture m_fixture;
 	private float m_scale;
+	private String m_texturePath;
 
 	public PalpableObject(PalpableObjectPolygonDef objectDef) {
 		++m_numberOfObjects;
 		world = objectDef.world;
 		m_scale = objectDef.textureScale;
+		m_texturePath = objectDef.texturePath;
 		body = world.createBody(objectDef.bodyDef);
 		
 		PolygonShape shape = new PolygonShape();
@@ -106,6 +108,14 @@ public class PalpableObject implements ObjectsID{
 	
 	public Sprite getDefaultSprite() {
 		return defaultSprite;
+	}
+
+	public float getScale() {
+		return m_scale;
+	}
+	
+	public String getTexturePath() {
+		return m_texturePath;
 	}
 
 	@Override

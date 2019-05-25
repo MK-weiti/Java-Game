@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 public class FixturePolData implements Serializable{
 	
@@ -23,6 +25,24 @@ public class FixturePolData implements Serializable{
 	public short groupIndex = 0;
 	
 	public Vector2[] shapeVertices;
+	
+	public FixturePolData(Fixture fixture) {
+		friction = fixture.getFriction();
+		restitution = fixture.getRestitution();
+		density = fixture.getDensity();
+		isSensor = fixture.isSensor();
+		categoryBits = fixture.getFilterData().categoryBits;
+		maskBits = fixture.getFilterData().maskBits;
+		groupIndex = fixture.getFilterData().groupIndex;
+		
+		PolygonShape tmpShape = (PolygonShape) fixture.getShape();
+		Vector2[] vert = new Vector2[tmpShape.getVertexCount()];
+		for (int i = 0; i < tmpShape.getVertexCount(); ++i) {
+			vert[i] = new Vector2();
+			tmpShape.getVertex(i, vert[i]);
+		}
+		shapeVertices = vert;
+	}
 	
 	public FixturePolData(FixtureDef fixtureDef) {
 		friction = fixtureDef.friction;

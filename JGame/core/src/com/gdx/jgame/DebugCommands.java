@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.gdx.jgame.gameObjects.Methods;
 import com.gdx.jgame.gameObjects.characters.CharacterPolygonDef;
+import com.gdx.jgame.gameObjects.characters.PlainCharacter;
 
 public class DebugCommands extends Thread{
 	private JGame m_jgame;
@@ -212,7 +213,7 @@ public class DebugCommands extends Thread{
 		
 		CharacterPolygonDef charDef = new CharacterPolygonDef(m_jgame.getJBox().world, m_jgame.getCharactersTextures(), 
 				textureRes, scale, groupRes, Methods.setVerticesToTexture(texture, scale), 
-				CharacterPolygonDef.CharType.Enemy);
+				PlainCharacter.CHAR_TYPE.ENEMY);
 		
 		charDef.bodyDef.type = BodyType.DynamicBody;
 		charDef.bodyDef.active = true;

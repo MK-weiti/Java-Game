@@ -5,9 +5,9 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Vector2;
 import com.gdx.jgame.gameObjects.characters.CharacterPolygonDef;
-import com.gdx.jgame.gameObjects.characters.CharacterPolygonDef.CharType;
 import com.gdx.jgame.hud.Hud;
 import com.gdx.jgame.gameObjects.characters.CharacterSet;
+import com.gdx.jgame.gameObjects.characters.PlainCharacter;
 import com.gdx.jgame.gameObjects.characters.SaveCharacter;
 import com.gdx.jgame.jBox2D.JBoxManager;
 
@@ -61,10 +61,10 @@ public class GameState implements Serializable{
 			CharacterPolygonDef charDef = character.getCharacterPolygonDef();
 			character.restoreCharacter(jGame.getCharactersTextures(), jGame.getJBox().world);
 			
-			if(charDef.charType == CharType.Player) {
-				m_game.getCharacters().addPlayer(character.getCharacterPolygonDef());
+			if(charDef.charType == PlainCharacter.CHAR_TYPE.PLAYER) {
+				m_game.getCharacters().addPlayer(character.getCharacterPolygonDef(), m_game.getBulletsTextures());
 			} 
-			else if(charDef.charType == CharType.Enemy) {
+			else if(charDef.charType == PlainCharacter.CHAR_TYPE.ENEMY) {
 				m_game.getCharacters().addEnemies(charDef);
 			}
 		}

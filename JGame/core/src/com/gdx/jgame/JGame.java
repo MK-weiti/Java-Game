@@ -54,6 +54,7 @@ public final class JGame implements Screen {
 	private ScreenManager m_screenManager;	
 	private CharactersManager m_characters;
 	private TextureManager m_charactersTextures;
+	private TextureManager m_bulletsTextures;
 	private SavesManager m_recordManager;
 	private MapManager m_map;
 	
@@ -126,6 +127,7 @@ public final class JGame implements Screen {
 		m_jBox.dispose();
 		m_batch.dispose();
 		m_charactersTextures.dispose();
+		m_bulletsTextures.dispose();
 		m_hud.dispose();
 		//m_map.dispose();
 	}
@@ -175,6 +177,7 @@ public final class JGame implements Screen {
 	private void createAllReferences() {
 		m_charactersTextures = new TextureManager("characters/player.png", "badlogic.jpg",
 				"characters/honeybee.png", "characters/honeybee2.png");
+		m_bulletsTextures = new TextureManager("bullets/normalBullet.png");
 		//m_map = new MapManager("maps/map.tmx");	
 		m_characters = new CharactersManager();
 		m_mainCamera = new Camera();
@@ -209,7 +212,7 @@ public final class JGame implements Screen {
 		float scale = 0.05f;
 		CharacterPolygonDef objectDef = new CharacterPolygonDef(m_jBox.world,
 				m_charactersTextures, "honeybee.png", scale, groupName, Methods.setVerticesToTexture(texture, scale), 
-				CharacterPolygonDef.CharType.Enemy);
+				PlainCharacter.CHAR_TYPE.ENEMY);
 		
 		playerObjectDef(scale, objectDef, 400, 200);
 		objectDef.maxVelocity = 1f;
@@ -219,7 +222,7 @@ public final class JGame implements Screen {
 		
 		CharacterPolygonDef objectDef2 = new CharacterPolygonDef(m_jBox.world,
 				m_charactersTextures, "honeybee.png", scale, groupName, Methods.setVerticesToTexture(texture, scale), 
-				CharacterPolygonDef.CharType.Enemy);
+				PlainCharacter.CHAR_TYPE.ENEMY);
 		
 		playerObjectDef(scale, objectDef2, 500, 250);
 		m_characters.addEnemies(objectDef2);
@@ -238,13 +241,13 @@ public final class JGame implements Screen {
 		float scale = 1f;
 		
 		CharacterPolygonDef objectDef = new CharacterPolygonDef(m_jBox.world,
-				m_charactersTextures, "player.png", scale, null, Methods.setVerticesToTexture(texture, scale),  CharacterPolygonDef.CharType.Player);
+				m_charactersTextures, "player.png", scale, null, Methods.setVerticesToTexture(texture, scale),  PlainCharacter.CHAR_TYPE.PLAYER);
 		
 		playerObjectDef(scale, objectDef, 128, 192);
 		objectDef.maxVelocity = 1f;
 		objectDef.acceleration = 0.5f;
 		objectDef.bodyDef.fixedRotation = true;
-		m_characters.addPlayer(objectDef);
+		m_characters.addPlayer(objectDef, m_bulletsTextures);
 	}
 
 	private void playerObjectDef(float textureScale, PalpableObjectPolygonDef objectDef, float posX, float posY) {
@@ -336,6 +339,10 @@ public final class JGame implements Screen {
 
 	public void setGameLevelState(GAME_LEVEL_STATE gameLevelState) {
 		this.gameLevelState = gameLevelState;
+	}
+
+	public TextureManager getBulletsTextures() {
+		return m_bulletsTextures;
 	}
 	
 	

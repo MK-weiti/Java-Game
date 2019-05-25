@@ -10,6 +10,13 @@ public class PlayerInputControl {
 	public void mouseInput(Camera camera, PlainCharacter character) {
 		character.rotate(character.angleRadOnScreen(camera, new Vector2(Gdx.input.getX(), 
 				Gdx.graphics.getHeight() - Gdx.input.getY())));
+		
+		if(character instanceof Player) {
+			Player player = (Player) character;
+			if(Gdx.input.isKeyPressed(Input.Buttons.LEFT)) {
+				player.spawnNormalBullet();
+			}
+		}
 	}
 	
 	public void keyPressed(PlainCharacter character) {

@@ -24,6 +24,15 @@ public abstract class MovingObjectAdapter extends PalpableObject{
 		ratioMaxVelocity = new HashMap<Integer, Float>();
 	}
 	
+	public MovingObjectAdapter(MovingObjectDef definition) {
+		super(definition);
+		this.maxVelocity = definition.maxVelocity;
+		this.acceleration = definition.acceleration;
+		
+		ratioAcceleration = new HashMap<Integer, Float>(definition.getRatioAcceleration());
+		ratioMaxVelocity = new HashMap<Integer, Float>(definition.getRatioMaxVelocity());
+	}
+	
 	private void applyImpulseWithin(float deltaX, float deltaY) {
 		getBody().applyLinearImpulse(new Vector2(deltaX, deltaY), getBody().getWorldCenter(), true);
 	}
@@ -119,5 +128,21 @@ public abstract class MovingObjectAdapter extends PalpableObject{
 
 	public float getImpulse() {
 		return Gdx.graphics.getDeltaTime()*getAcceleration();
+	}
+	
+	public float getRawAcceleration() {
+		return acceleration;
+	}
+	
+	public float getRawMaxVelocity() {
+		return maxVelocity;
+	}
+	
+	HashMap<Integer, Float> getAccelerationRatios(){
+		return ratioAcceleration;
+	}
+	
+	HashMap<Integer, Float> getMaxVelocityRatios(){
+		return ratioMaxVelocity;
 	}
 }

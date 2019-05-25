@@ -7,10 +7,7 @@ public abstract class BulletAdapter extends MovingObjectAdapter{
 	public BulletAdapter(PalpableObjectPolygonDef objectDef, float maxVelocity, 
 			float acceleration) {
 		super(objectDef, maxVelocity, acceleration);
-	}
-	
-	public void location() {
-		// TODO
+		getBody().setBullet(true);
 	}
 	
 }

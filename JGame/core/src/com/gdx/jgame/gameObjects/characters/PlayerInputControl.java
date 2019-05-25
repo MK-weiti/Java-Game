@@ -16,33 +16,33 @@ public class PlayerInputControl {
 		float impulse = character.getImpulse();
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {	
-			if(-character.maxVelocity < character.getBody().getLinearVelocity().x) {
-				if(character.getBody().getLinearVelocity().x - impulse < -character.maxVelocity)
-					impulse = character.getBody().getLinearVelocity().x + character.maxVelocity;
+			if(-character.getMaxVelocity() < character.getBody().getLinearVelocity().x) {
+				if(character.getBody().getLinearVelocity().x - impulse < -character.getMaxVelocity())
+					impulse = character.getBody().getLinearVelocity().x + character.getMaxVelocity();
 				character.applyImpulse(-impulse, 0);
 			}
 		}
 		impulse = character.getImpulse();
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-			if(character.maxVelocity > character.getBody().getLinearVelocity().x) {
-				if(character.getBody().getLinearVelocity().x + impulse > character.maxVelocity)
-					impulse = character.maxVelocity - character.getBody().getLinearVelocity().x;
+			if(character.getMaxVelocity() > character.getBody().getLinearVelocity().x) {
+				if(character.getBody().getLinearVelocity().x + impulse > character.getMaxVelocity())
+					impulse = character.getMaxVelocity() - character.getBody().getLinearVelocity().x;
 				character.applyImpulse(impulse, 0);
 			}
 		}
 		impulse = character.getImpulse();
 		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {			
-			if(-character.maxVelocity < character.getBody().getLinearVelocity().y) {
-				if(character.getBody().getLinearVelocity().y - impulse < -character.maxVelocity)
-					impulse = character.getBody().getLinearVelocity().y + character.maxVelocity;
+			if(-character.getMaxVelocity() < character.getBody().getLinearVelocity().y) {
+				if(character.getBody().getLinearVelocity().y - impulse < -character.getMaxVelocity())
+					impulse = character.getBody().getLinearVelocity().y + character.getMaxVelocity();
 				character.applyImpulse(0, -impulse);
 			}
 		}
 		impulse = character.getImpulse();
 		if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			if(character.maxVelocity > character.getBody().getLinearVelocity().y) {
-				if(character.getBody().getLinearVelocity().y + impulse > character.maxVelocity)
-					impulse = character.maxVelocity - character.getBody().getLinearVelocity().y;
+			if(character.getMaxVelocity() > character.getBody().getLinearVelocity().y) {
+				if(character.getBody().getLinearVelocity().y + impulse > character.getMaxVelocity())
+					impulse = character.getMaxVelocity() - character.getBody().getLinearVelocity().y;
 				character.applyImpulse(0, impulse);
 			}
 		}

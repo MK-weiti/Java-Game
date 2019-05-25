@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.gdx.jgame.managers.RecordManager;
+import com.gdx.jgame.managers.SavesManager;
 import com.gdx.jgame.managers.ScreenManager;
 
 public abstract class Menu implements Screen{
@@ -15,10 +15,10 @@ public abstract class Menu implements Screen{
 	Skin m_skin;
 	Viewport m_viewport;
 	public ScreenManager m_screenManager;
-	RecordManager m_recordManager;
+	SavesManager m_recordManager;
 	
-	public Menu(RecordManager recordManager, ScreenManager screenManager, String pathToSkin) {
-		m_recordManager = recordManager;
+	public Menu(SavesManager savesManager, ScreenManager screenManager, String pathToSkin) {
+		m_recordManager = savesManager;
 		m_screenManager = screenManager;
 		m_viewport = new FitViewport(1920f, 1080f);
 		m_stage = new Stage(m_viewport);

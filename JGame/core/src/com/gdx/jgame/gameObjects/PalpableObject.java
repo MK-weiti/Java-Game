@@ -23,7 +23,7 @@ import com.badlogic.gdx.physics.box2d.World;
 public class PalpableObject implements ObjectsID{
 	
 	private static long m_numberOfObjects = 0;
-	public final long ID;
+	public final long ID = m_numberOfObjects;
 	
 	private Sprite defaultSprite;
 	
@@ -33,14 +33,13 @@ public class PalpableObject implements ObjectsID{
 	private float m_scale;
 
 	public PalpableObject(PalpableObjectPolygonDef objectDef) {
-		ID = m_numberOfObjects;
 		++m_numberOfObjects;
 		world = objectDef.world;
 		m_scale = objectDef.textureScale;
 		body = world.createBody(objectDef.bodyDef);
 		
 		PolygonShape shape = new PolygonShape();
-		shape.set(objectDef.fixtureData.shapeVertices);
+		shape.set(objectDef.fixturePolData.shapeVertices);
 		objectDef.fixtureDef.shape = shape;
 		m_fixture = body.createFixture(objectDef.fixtureDef); 
 		

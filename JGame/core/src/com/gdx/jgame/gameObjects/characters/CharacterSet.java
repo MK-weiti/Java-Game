@@ -13,13 +13,12 @@ public class CharacterSet implements Serializable, ObjectsID{
 	private static final long serialVersionUID = 946959300540020496L;
 	
 	private static long m_numberOfObjects = 0;
-	public final long ID;
+	public final long ID = m_numberOfObjects;
 	
 	public CharacterPolygonDef characterDef;	// data for saving 
 	public transient PlainCharacter character;	// as actual object
 	
 	public CharacterSet(CharacterPolygonDef characterDef, PlainCharacter character) {
-		ID = m_numberOfObjects;
 		++m_numberOfObjects;
 		this.characterDef = characterDef;
 		this.character = character;

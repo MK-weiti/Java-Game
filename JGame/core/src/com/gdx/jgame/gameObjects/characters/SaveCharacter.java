@@ -12,12 +12,11 @@ public class SaveCharacter implements Serializable{
 	private static final long serialVersionUID = 2721809369968036105L;
 	
 	private static long m_numberOfObjects = 0;
-	public final long ID;
+	public final long ID = m_numberOfObjects;
 	
 	private CharacterSet characterSet;
 	
 	public SaveCharacter(CharacterSet characterSet) {
-		ID = m_numberOfObjects;
 		++m_numberOfObjects;
 		this.characterSet = characterSet;
 		synchronize();

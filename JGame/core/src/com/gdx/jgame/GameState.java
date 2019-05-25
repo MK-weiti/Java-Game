@@ -54,8 +54,8 @@ public class GameState implements Serializable{
 		m_game.getWorldCamera().zoom = cameraZoom;
 		m_game.getWorldCamera().setShift(cameraShift);
 		
-		m_game.getMaps().setMap(mapName);
-		m_game.setJBox(new JBoxManager(m_game.getMaps().getLayers(), m_game.getWorldCamera(), m_game.isDebugMode(), m_game.isShowLayout()));
+		//m_game.getMaps().setMap(mapName);
+		m_game.setJBox(new JBoxManager(m_game, m_game.getMaps().getLayers(), m_game.getWorldCamera(), m_game.isDebugMode(), m_game.isShowLayout()));
 		
 		for (SaveCharacter character : characters) {
 			CharacterPolygonDef charDef = character.getCharacterPolygonDef();
@@ -71,5 +71,9 @@ public class GameState implements Serializable{
 		
 		m_game.setHud(new Hud(m_game.getBatch(), m_game.getCharacters().getPlayer(), m_game.isDebugMode(), m_game.isShowLayout()));
 		m_game.getWorldCamera().follower = m_game.getCharacters().getPlayer();
+	}
+	
+	public String getMapName() {
+		return mapName;
 	}
 }

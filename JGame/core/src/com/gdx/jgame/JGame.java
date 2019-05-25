@@ -32,7 +32,7 @@ import com.gdx.jgame.hud.Hud;
 import com.gdx.jgame.jBox2D.JBoxManager;
 import com.gdx.jgame.managers.CharactersManager;
 import com.gdx.jgame.managers.MapManager;
-import com.gdx.jgame.managers.RecordManager;
+import com.gdx.jgame.managers.SavesManager;
 import com.gdx.jgame.managers.ScreenManager;
 import com.gdx.jgame.managers.TextureManager;
 import com.gdx.jgame.managers.ScreenManager.SCREEN_STATE;
@@ -44,11 +44,17 @@ public final class JGame implements Screen {
 		RUN;
 	}
 	
+	public enum GAME_LEVEL_STATE{
+		UNKNOW,
+		WIN,
+		LOSE;
+	}
+	
 	// managers
 	private ScreenManager m_screenManager;	
 	private CharactersManager m_characters;
 	private TextureManager m_charactersTextures;
-	private RecordManager m_recordManager;
+	private SavesManager m_recordManager;
 	private MapManager m_map;
 	
 	// in game classes
@@ -61,25 +67,28 @@ public final class JGame implements Screen {
 	private JBoxManager m_jBox;
 	
 	// these are used in debug mode
-	private Semaphore m_sem;
+	private Semaphore m_stopRender;
 	private DebugCommands m_debugBuffer;
 	
 	
 	GAME_STATE gameState = GAME_STATE.PAUSE;
+	private GAME_LEVEL_STATE gameLevelState = GAME_LEVEL_STATE.UNKNOW;
 	private boolean gameCreated = false;
 	private final boolean m_debugMode;
 	private boolean m_showLayout;
+	//private String m_mapName;
 	
 	public boolean isGameCreated() {
 		return gameCreated;
 	}
 	
-	public JGame(ScreenManager screenManager, RecordManager recordManager, PauseMenu pauseMenu) {
+	public JGame(ScreenManager screenManager, SavesManager savesManager, PauseMenu pauseMenu, MapManager map) {
 		m_debugMode = screenManager.isDebugMode();
-		m_recordManager = recordManager;
+		m_recordManager = savesManager;
 		m_screenManager = screenManager;
 		m_pauseMenu = pauseMenu;
 		m_pauseMenu.connectWithGame(this);
+		m_map = map;
 		create();
 	}
 	
@@ -94,11 +103,22 @@ public final class JGame implements Screen {
 	}	
 	
 	public void render () {
-		if(m_debugMode) m_sem.acquireUninterruptibly();
+		if(m_debugMode) m_stopRender.acquireUninterruptibly();
 		
 		renderGame();
 		
-		if(m_debugMode) m_sem.release();
+		if(gameLevelState == GAME_LEVEL_STATE.WIN) {
+			m_screenManager.setM_gameState(GAME_LEVEL_STATE.WIN);
+			//this.setMenu();
+			m_screenManager.nextMap();
+		}
+		else if(gameLevelState == GAME_LEVEL_STATE.LOSE) {
+			m_screenManager.setM_gameState(GAME_LEVEL_STATE.LOSE);
+			System.out.println("You lose the game!");
+			this.setMenu();
+		}
+		
+		if(m_debugMode) m_stopRender.release();
 	}
 	
 	@Override
@@ -107,7 +127,7 @@ public final class JGame implements Screen {
 		m_batch.dispose();
 		m_charactersTextures.dispose();
 		m_hud.dispose();
-		m_map.dispose();
+		//m_map.dispose();
 	}
 	
 	@Override
@@ -155,13 +175,13 @@ public final class JGame implements Screen {
 	private void createAllReferences() {
 		m_charactersTextures = new TextureManager("characters/player.png", "badlogic.jpg",
 				"characters/honeybee.png", "characters/honeybee2.png");
-		m_map = new MapManager("maps/map.tmx");	
+		//m_map = new MapManager("maps/map.tmx");	
 		m_characters = new CharactersManager();
 		m_mainCamera = new Camera();
 		m_batch = new SpriteBatch();
 		
 		if(m_debugMode) {
-			m_sem = new Semaphore(1);
+			m_stopRender = new Semaphore(1);
 			m_debugBuffer = new DebugCommands(this);
 		}
 	}
@@ -173,8 +193,8 @@ public final class JGame implements Screen {
 		m_mainCamera.setShift(new Vector2(0, 0));
 		
 		
-		m_map.setMap("map.tmx");
-		m_jBox = new JBoxManager(m_map.getLayers(), m_mainCamera, m_debugMode, m_showLayout);
+		//m_map.setMap(m_mapName);
+		m_jBox = new JBoxManager(this, m_map.getLayers(), m_mainCamera, m_debugMode, m_showLayout);
 		
 		createPlayer();
 		createEnemy();
@@ -183,12 +203,7 @@ public final class JGame implements Screen {
 		m_mainCamera.follower = m_characters.getPlayer();
 	}
 	
-	private void createEnemy() {
-		/*
-		 * if you copy the charDef without changing anything
-		 * then it wont draw sprite
-		 */
-		
+	private void createEnemy() {		
 		String groupName = "test_group";
 		Texture texture = m_charactersTextures.get("honeybee.png");
 		float scale = 0.05f;
@@ -207,6 +222,7 @@ public final class JGame implements Screen {
 				CharacterPolygonDef.CharType.Enemy);
 		
 		playerObjectDef(scale, objectDef2, 500, 250);
+		m_characters.addEnemies(objectDef2);
 		m_characters.addEnemies(objectDef2);
 		
 		CharacterPolygonDef objectDef3 = new CharacterPolygonDef(objectDef);
@@ -275,7 +291,7 @@ public final class JGame implements Screen {
 	}
 
 	Semaphore getRenderSemaphore() {
-		return m_sem;
+		return m_stopRender;
 	}
 
 	Camera getWorldCamera() {
@@ -312,7 +328,17 @@ public final class JGame implements Screen {
 
 	void setJBox(JBoxManager m_jBox) {
 		this.m_jBox = m_jBox;
-	}	
+	}
+
+	public GAME_LEVEL_STATE getGameLevelState() {
+		return gameLevelState;
+	}
+
+	public void setGameLevelState(GAME_LEVEL_STATE gameLevelState) {
+		this.gameLevelState = gameLevelState;
+	}
+	
+	
 	
 	
 }

@@ -5,12 +5,12 @@ import com.gdx.jgame.ObjectsID;
 public class Enemy extends PlainCharacter implements ObjectsID{
 	
 	private static long m_numberOfObjects = 0;
-	public final long ID;
+	public final long ID = m_numberOfObjects;
 
 	public Enemy(CharacterPolygonDef characterPolygonDef) {
 		super(characterPolygonDef);
-		ID = m_numberOfObjects;
 		++m_numberOfObjects;
+		this.getBody().setUserData(this);
 	}	
 	
 	public long numberOfObjects() {

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 
-public class FixtureData implements Serializable{
+public class FixturePolData implements Serializable{
 	
 	/**
 	 * 
@@ -24,7 +24,7 @@ public class FixtureData implements Serializable{
 	
 	public Vector2[] shapeVertices;
 	
-	public FixtureData(FixtureDef fixtureDef) {
+	public FixturePolData(FixtureDef fixtureDef) {
 		friction = fixtureDef.friction;
 		restitution = fixtureDef.restitution;
 		density = fixtureDef.density;
@@ -34,22 +34,22 @@ public class FixtureData implements Serializable{
 		groupIndex = fixtureDef.filter.groupIndex;
 	}
 	
-	public FixtureData(FixtureData fixtureData) {
-		friction = fixtureData.friction;
-		restitution = fixtureData.restitution;
-		density = fixtureData.density;
-		isSensor = fixtureData.isSensor;
-		categoryBits = fixtureData.categoryBits;
-		maskBits = fixtureData.maskBits;
-		groupIndex = fixtureData.groupIndex;
+	public FixturePolData(FixturePolData fixturePolData) {
+		friction = fixturePolData.friction;
+		restitution = fixturePolData.restitution;
+		density = fixturePolData.density;
+		isSensor = fixturePolData.isSensor;
+		categoryBits = fixturePolData.categoryBits;
+		maskBits = fixturePolData.maskBits;
+		groupIndex = fixturePolData.groupIndex;
 		
-		shapeVertices = new Vector2[fixtureData.shapeVertices.length];
-		for (int i = 0; i < fixtureData.shapeVertices.length; ++i) {
-			shapeVertices[i] = new Vector2(fixtureData.shapeVertices[i]);
+		shapeVertices = new Vector2[fixturePolData.shapeVertices.length];
+		for (int i = 0; i < fixturePolData.shapeVertices.length; ++i) {
+			shapeVertices[i] = new Vector2(fixturePolData.shapeVertices[i]);
 		}
 	}
 
-	public FixtureData() {} // default
+	public FixturePolData() {} // default
 	
 	public void synchronize(FixtureDef fixtureDef) {
 		friction = fixtureDef.friction;
@@ -101,7 +101,7 @@ public class FixtureData implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		FixtureData other = (FixtureData) obj;
+		FixturePolData other = (FixturePolData) obj;
 		if (categoryBits != other.categoryBits)
 			return false;
 		if (Float.floatToIntBits(density) != Float.floatToIntBits(other.density))

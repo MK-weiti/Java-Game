@@ -8,7 +8,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.gdx.jgame.ObjectsID;
 import com.gdx.jgame.jBox2D.BodyData;
-import com.gdx.jgame.jBox2D.FixtureData;
+import com.gdx.jgame.jBox2D.FixturePolData;
 import com.gdx.jgame.managers.MapManager;
 import com.gdx.jgame.managers.TextureManager;
 
@@ -18,10 +18,10 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID{
 	 */
 	private static final long serialVersionUID = 8695790437291106846L;
 	private static long m_numberOfObjects = 0;
-	public final long ID;
+	public final long ID = m_numberOfObjects;;
 	
 	BodyData bodyData;
-	FixtureData fixtureData;
+	FixturePolData fixturePolData;
 	
 	public String texturePath;
 	public float textureScale;
@@ -32,10 +32,9 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID{
 	public transient BodyDef bodyDef;
 	
 	public PalpableObjectPolygonDef(World world, Texture texture, String texPath, float texScale, Vector2[] vertices) {
-		ID = m_numberOfObjects;
 		++m_numberOfObjects;
 		bodyDef = new BodyDef();
-		fixtureData = new FixtureData();
+		fixturePolData = new FixturePolData();
 		fixtureDef = new FixtureDef();
 		bodyData = new BodyData();
 		
@@ -51,17 +50,16 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID{
 		fixtureDef.density = 1f;	// 16 x 16 * density
 		fixtureDef.friction = 0.5f;
 		
-		fixtureData.shapeVertices = vertices;
+		fixturePolData.shapeVertices = vertices;
 		
 		// default
 		textureScale = 1f;
 	}
 
 	public PalpableObjectPolygonDef(PalpableObjectPolygonDef definition) {
-		ID = m_numberOfObjects;
 		++m_numberOfObjects;
 		bodyData = new BodyData(definition.bodyData);
-		fixtureData = new FixtureData(definition.fixtureData);
+		fixturePolData = new FixturePolData(definition.fixturePolData);
 		bodyDef = new BodyDef();
 		fixtureDef = new FixtureDef();
 		restoreFixture();
@@ -83,11 +81,11 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID{
 	
 	public void synchronize() {
 		bodyData.synchronize(bodyDef);
-		fixtureData.synchronize(fixtureDef);
+		fixturePolData.synchronize(fixtureDef);
 	}
 	
 	private void restoreFixture() {
-		fixtureData.restore(fixtureDef);
+		fixturePolData.restore(fixtureDef);
 	}
 	
 	public void restoreBody() {
@@ -113,7 +111,7 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID{
 		int result = 1;
 		result = prime * result + (int) (ID ^ (ID >>> 32));
 		result = prime * result + ((bodyData == null) ? 0 : bodyData.hashCode());
-		result = prime * result + ((fixtureData == null) ? 0 : fixtureData.hashCode());
+		result = prime * result + ((fixturePolData == null) ? 0 : fixturePolData.hashCode());
 		result = prime * result + ((texturePath == null) ? 0 : texturePath.hashCode());
 		result = prime * result + Float.floatToIntBits(textureScale);
 		return result;
@@ -135,10 +133,10 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID{
 				return false;
 		} else if (!bodyData.equals(other.bodyData))
 			return false;
-		if (fixtureData == null) {
-			if (other.fixtureData != null)
+		if (fixturePolData == null) {
+			if (other.fixturePolData != null)
 				return false;
-		} else if (!fixtureData.equals(other.fixtureData))
+		} else if (!fixturePolData.equals(other.fixturePolData))
 			return false;
 		if (texturePath == null) {
 			if (other.texturePath != null)

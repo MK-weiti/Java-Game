@@ -15,7 +15,7 @@ public class CharacterPolygonDef extends PalpableObjectPolygonDef implements Ser
 	private static final long serialVersionUID = -2433937948903941797L;
 	
 	private static long m_numberOfObjects = 0;
-	public final long ID;
+	public final long ID = m_numberOfObjects;
 	
 	public float maxVelocity = 1f;
 	public float acceleration = 0f;
@@ -32,7 +32,6 @@ public class CharacterPolygonDef extends PalpableObjectPolygonDef implements Ser
 	public CharacterPolygonDef(World world, TextureManager texManager, String texPath, 
 			float texScale, String characterGroupName, Vector2[] b2vertices, CharType charType) {	
 		super(world, texManager.get(texPath), texPath, texScale, b2vertices);
-		ID = m_numberOfObjects;
 		++m_numberOfObjects;
 		this.charType = charType;
 		charGroupName = characterGroupName;
@@ -40,7 +39,6 @@ public class CharacterPolygonDef extends PalpableObjectPolygonDef implements Ser
 
 	public CharacterPolygonDef(CharacterPolygonDef definition) {
 		super((PalpableObjectPolygonDef)definition);
-		ID = m_numberOfObjects;
 		++m_numberOfObjects;
 		maxVelocity = definition.maxVelocity;
 		acceleration = definition.acceleration;

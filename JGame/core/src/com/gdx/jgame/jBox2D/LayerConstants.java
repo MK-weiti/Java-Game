@@ -15,8 +15,23 @@ public final class LayerConstants {
 		public static final String kinematicBody = "kinematic";
 	}
 	
-	public final class CustomProperties{
-		public static final String strongBlocked = "strongBlocked";
-		public static final String blocked = "blocked";
+	public final class ObstaclesProperties{
+		public static final String maskBits = "MaskBits";
+		public final class MaskBits{
+			public static final String strongBlocked = "strongBlocked";
+			public static final String blocked = "blocked";
+		}
+		
+		
+	}
+	
+	public final class Logic{
+		public static final String changeGameState = "ChangeGameState";
+		public final class ChangeGameState{
+			public static final String winGame = "win";
+			public static final String loseGame = "lose";
+		}
+		
+		
 	}
 }

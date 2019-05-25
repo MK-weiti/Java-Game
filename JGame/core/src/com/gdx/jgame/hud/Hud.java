@@ -25,6 +25,7 @@ public class Hud implements Disposable{
 	
 	Label health;
 	Label fps, deltaTime;
+	Label gameMapState;
 	
 	public Hud(SpriteBatch batch, Player player, boolean debugMode, boolean showLayoutLines) {	
 		m_layoutLines = showLayoutLines;

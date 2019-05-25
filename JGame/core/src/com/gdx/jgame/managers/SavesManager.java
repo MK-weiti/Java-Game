@@ -14,11 +14,11 @@ import com.badlogic.gdx.Gdx;
 import com.gdx.jgame.GameState;
 import com.gdx.jgame.JGame;
 
-public class RecordManager {
+public class SavesManager {
 	private final String pathToSaves = "saves/";
 	private GameState m_tmpGameState = null;
 	
-	public RecordManager() {
+	public SavesManager() {
 		setSaveDir();
 	}
 	
@@ -33,7 +33,6 @@ public class RecordManager {
 					e.printStackTrace();
 				}
 		}
-		//FileHandle fileHandle = Gdx.files.local(pathToSaves);
 	}
 	
 	public void save(JGame game, String name) {
@@ -95,5 +94,10 @@ public class RecordManager {
 	public boolean isDataLoaded() {
 		if(m_tmpGameState == null) return false;
 		return true;
+	}
+	
+	public String mapName() {
+		if(m_tmpGameState == null) return null;
+		return m_tmpGameState.getMapName();
 	}
 }

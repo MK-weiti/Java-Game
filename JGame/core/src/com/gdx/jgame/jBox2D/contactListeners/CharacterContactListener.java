@@ -1,4 +1,4 @@
-package com.gdx.jgame.gameObjects.characters;
+package com.gdx.jgame.jBox2D.contactListeners;
 
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;

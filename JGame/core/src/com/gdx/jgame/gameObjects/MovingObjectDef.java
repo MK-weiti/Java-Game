@@ -6,16 +6,12 @@ import java.util.HashMap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.gdx.jgame.ObjectsID;
 
-public class MovingObjectDef extends PalpableObjectPolygonDef implements Serializable, ObjectsID{
+public class MovingObjectDef extends PalpableObjectPolygonDef implements Serializable{	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 3935191101376379829L;
-	
-	private static long m_numberOfObjects = 0;
-	public final long ID = m_numberOfObjects;
+	private static final long serialVersionUID = -5278441540157154961L;
 	
 	public float maxVelocity = 1f;
 	public float acceleration = 0f;
@@ -26,7 +22,6 @@ public class MovingObjectDef extends PalpableObjectPolygonDef implements Seriali
 	
 	public MovingObjectDef(World world, Texture texture, String texPath, float texScale, Vector2[] vertices) {
 		super(world, texture, texPath, texScale, vertices);
-		++m_numberOfObjects;
 		
 		ratioAcceleration = new HashMap<Integer, Float>();
 		ratioMaxVelocity = new HashMap<Integer, Float>();
@@ -34,7 +29,6 @@ public class MovingObjectDef extends PalpableObjectPolygonDef implements Seriali
 	
 	public MovingObjectDef(MovingObjectDef definition) {
 		super(definition);
-		++m_numberOfObjects;
 		
 		this.maxVelocity = definition.maxVelocity;
 		this.acceleration = definition.acceleration;
@@ -44,7 +38,6 @@ public class MovingObjectDef extends PalpableObjectPolygonDef implements Seriali
 	
 	public MovingObjectDef(MovingObjectAdapter movingObject) {
 		super(movingObject);
-		++m_numberOfObjects;
 		
 		this.maxVelocity = movingObject.getRawMaxVelocity();
 		this.acceleration = movingObject.getRawAcceleration();
@@ -74,10 +67,6 @@ public class MovingObjectDef extends PalpableObjectPolygonDef implements Seriali
 
 	public HashMap<Integer, Float> getRatioMaxVelocity() {
 		return ratioMaxVelocity;
-	}
-	
-	public long numberOfObjects() {
-		return m_numberOfObjects;
 	}
 
 	@Override

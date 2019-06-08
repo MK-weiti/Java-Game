@@ -53,12 +53,7 @@ public class Hud implements Disposable{
 			table.add(deltaTime).expandX().padTop(10);
 		}
 		
-		
 		m_stage.addActor(table);
-		
-		/*if(m_debugMode && m_layoutLines) {
-			m_stage.setDebugAll(true);
-		}*/
 	}
 	
 	public void update(SpriteBatch batch) {
@@ -75,7 +70,8 @@ public class Hud implements Disposable{
 	}
 
 	void drawLabels() {
-		health.setText("Health: " + (m_player.getHealth()/m_player.getMaxHealth() * 100 + "%"));
+		float currentHealth = m_player.getHealthFloat()/m_player.getMaxHealthFloat() * 100;
+		health.setText("Health: " + String.format("%.0f", currentHealth) + "%");
 	}
 	
 	private float raw = 0f;

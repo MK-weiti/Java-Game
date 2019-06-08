@@ -28,8 +28,6 @@ import org.junit.runner.RunWith;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.gdx.jgame.gameObjects.characters.Player;
-import com.gdx.jgame.managers.MapManager;
-
 import de.tomgrill.gdxtesting.GdxTestRunner;
 
 @RunWith(GdxTestRunner.class)

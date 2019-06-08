@@ -28,8 +28,11 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.gdx.jgame.gameObjects.Methods;
 import com.gdx.jgame.gameObjects.PalpableObjectPolygonDef;
 import com.gdx.jgame.gameObjects.characters.*;
+import com.gdx.jgame.gameObjects.characters.def.CharacterPolygonDef;
+import com.gdx.jgame.gameObjects.characters.def.PlayerDef;
+import com.gdx.jgame.gameObjects.missiles.MissilesManager;
 import com.gdx.jgame.hud.Hud;
-import com.gdx.jgame.jBox2D.JBoxManager;
+import com.gdx.jgame.jBox2D.JBoxObjects;
 import com.gdx.jgame.managers.CharactersManager;
 import com.gdx.jgame.managers.MapManager;
 import com.gdx.jgame.managers.SavesManager;
@@ -57,6 +60,7 @@ public final class JGame implements Screen {
 	private TextureManager m_bulletsTextures;
 	private SavesManager m_recordManager;
 	private MapManager m_map;
+	private MissilesManager m_missleManager;
 	
 	// in game classes
 	private Camera m_mainCamera;
@@ -65,7 +69,7 @@ public final class JGame implements Screen {
 	// these have debug mode
 	private Hud m_hud;
 	private PauseMenu m_pauseMenu;
-	private JBoxManager m_jBox;
+	private JBoxObjects m_jBox;
 	
 	// these are used in debug mode
 	private Semaphore m_stopRender;
@@ -85,6 +89,7 @@ public final class JGame implements Screen {
 	
 	public JGame(ScreenManager screenManager, SavesManager savesManager, PauseMenu pauseMenu, MapManager map) {
 		m_debugMode = screenManager.isDebugMode();
+		m_showLayout = screenManager.isShowLayout();
 		m_recordManager = savesManager;
 		m_screenManager = screenManager;
 		m_pauseMenu = pauseMenu;
@@ -96,7 +101,7 @@ public final class JGame implements Screen {
 	public void create () {		
 		createAllReferences();
 		
-		if(!m_recordManager.isDataLoaded()) createNew();
+		if(!m_recordManager.isDataLoaded()) createNewGame();
 		else m_recordManager.loadData(this);
 		
 		gameCreated = true;
@@ -110,7 +115,6 @@ public final class JGame implements Screen {
 		
 		if(gameLevelState == GAME_LEVEL_STATE.WIN) {
 			m_screenManager.setM_gameState(GAME_LEVEL_STATE.WIN);
-			//this.setMenu();
 			m_screenManager.nextMap();
 		}
 		else if(gameLevelState == GAME_LEVEL_STATE.LOSE) {
@@ -129,7 +133,6 @@ public final class JGame implements Screen {
 		m_charactersTextures.dispose();
 		m_bulletsTextures.dispose();
 		m_hud.dispose();
-		//m_map.dispose();
 	}
 	
 	@Override
@@ -157,6 +160,7 @@ public final class JGame implements Screen {
 	}
 
 	private void renderGame() {
+		m_jBox.removeBodies();
 		GameInputControl.update(this, m_characters.getPlayer());
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -167,9 +171,10 @@ public final class JGame implements Screen {
 		m_jBox.render(m_mainCamera);
 		m_hud.update(m_batch);
 		
-		m_mainCamera.update(m_batch, m_characters.getPlayer());	
+		m_mainCamera.update(m_batch);	
 		
 		m_batch.begin();
+			m_missleManager.render(m_batch);
 			m_characters.renderAll(m_batch);
 		m_batch.end();		
 	}
@@ -177,10 +182,10 @@ public final class JGame implements Screen {
 	private void createAllReferences() {
 		m_charactersTextures = new TextureManager("characters/player.png", "badlogic.jpg",
 				"characters/honeybee.png", "characters/honeybee2.png");
-		m_bulletsTextures = new TextureManager("bullets/normalBullet.png");
-		//m_map = new MapManager("maps/map.tmx");	
-		m_characters = new CharactersManager();
-		m_mainCamera = new Camera();
+		m_bulletsTextures = new TextureManager("bullets/normalBullet.png");	
+		m_missleManager = new MissilesManager();
+		m_characters = new CharactersManager(m_missleManager);
+		m_mainCamera = new Camera(m_characters);
 		m_batch = new SpriteBatch();
 		
 		if(m_debugMode) {
@@ -189,28 +194,26 @@ public final class JGame implements Screen {
 		}
 	}
 
-	private void createNew() {
+	private void createNewGame() {
 		m_characters.addGroup("test_group");		
 		
 		m_mainCamera.zoom = 0.7f;
 		m_mainCamera.setShift(new Vector2(0, 0));
 		
-		
-		//m_map.setMap(m_mapName);
-		m_jBox = new JBoxManager(this, m_map.getLayers(), m_mainCamera, m_debugMode, m_showLayout);
+		m_jBox = new JBoxObjects(this, m_map.getLayers(), m_mainCamera, m_debugMode, m_showLayout);
 		
 		createPlayer();
 		createEnemy();
 		
 		m_hud = new Hud(m_batch, m_characters.getPlayer(), m_debugMode, m_showLayout);
-		m_mainCamera.follower = m_characters.getPlayer();
+		m_characters.setCameraFollower(m_characters.getPlayer());
 	}
 	
 	private void createEnemy() {		
 		String groupName = "test_group";
 		Texture texture = m_charactersTextures.get("honeybee.png");
 		float scale = 0.05f;
-		CharacterPolygonDef objectDef = new CharacterPolygonDef(m_jBox.world,
+		CharacterPolygonDef objectDef = new CharacterPolygonDef(m_jBox.getWorld(),
 				m_charactersTextures, "honeybee.png", scale, groupName, Methods.setVerticesToTexture(texture, scale), 
 				PlainCharacter.CHAR_TYPE.ENEMY);
 		
@@ -220,7 +223,7 @@ public final class JGame implements Screen {
 		
 		m_characters.addEnemies(objectDef);
 		
-		CharacterPolygonDef objectDef2 = new CharacterPolygonDef(m_jBox.world,
+		CharacterPolygonDef objectDef2 = new CharacterPolygonDef(m_jBox.getWorld(),
 				m_charactersTextures, "honeybee.png", scale, groupName, Methods.setVerticesToTexture(texture, scale), 
 				PlainCharacter.CHAR_TYPE.ENEMY);
 		
@@ -232,7 +235,7 @@ public final class JGame implements Screen {
 		
 		
 		playerObjectDef(scale, objectDef3, 400, 250);
-		m_characters.addEnemies(objectDef3);
+		m_characters.addEnemies(objectDef3).first();
 		
 	}
 
@@ -240,13 +243,14 @@ public final class JGame implements Screen {
 		Texture texture = m_charactersTextures.get("player.png");
 		float scale = 1f;
 		
-		CharacterPolygonDef objectDef = new CharacterPolygonDef(m_jBox.world,
+		PlayerDef objectDef = new PlayerDef(m_jBox.getWorld(),
 				m_charactersTextures, "player.png", scale, null, Methods.setVerticesToTexture(texture, scale),  PlainCharacter.CHAR_TYPE.PLAYER);
 		
 		playerObjectDef(scale, objectDef, 128, 192);
 		objectDef.maxVelocity = 1f;
 		objectDef.acceleration = 0.5f;
 		objectDef.bodyDef.fixedRotation = true;
+		
 		m_characters.addPlayer(objectDef, m_bulletsTextures);
 	}
 
@@ -305,7 +309,7 @@ public final class JGame implements Screen {
 		return m_characters;
 	}
 
-	TextureManager getCharactersTextures() {
+	public TextureManager getCharactersTextures() {
 		return m_charactersTextures;
 	}
 
@@ -325,11 +329,11 @@ public final class JGame implements Screen {
 		return m_pauseMenu;
 	}
 
-	JBoxManager getJBox() {
+	JBoxObjects getJBox() {
 		return m_jBox;
 	}
 
-	void setJBox(JBoxManager m_jBox) {
+	void setJBox(JBoxObjects m_jBox) {
 		this.m_jBox = m_jBox;
 	}
 
@@ -343,10 +347,23 @@ public final class JGame implements Screen {
 
 	public TextureManager getBulletsTextures() {
 		return m_bulletsTextures;
+	}	
+	
+	public MissilesManager getMisslesManager() {
+		return m_missleManager;
 	}
-	
-	
-	
+
+	public CharactersManager getCharactersManager() {
+		return m_characters;
+	}
+
+	public MissilesManager getM_missleManager() {
+		return m_missleManager;
+	}
+
+	public JBoxObjects getjBox() {
+		return m_jBox;
+	}	
 	
 }
 

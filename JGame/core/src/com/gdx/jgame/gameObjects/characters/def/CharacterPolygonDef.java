@@ -1,22 +1,19 @@
-package com.gdx.jgame.gameObjects.characters;
+package com.gdx.jgame.gameObjects.characters.def;
 
 import java.io.Serializable;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.gdx.jgame.ObjectsID;
 import com.gdx.jgame.gameObjects.MovingObjectDef;
+import com.gdx.jgame.gameObjects.characters.PlainCharacter;
 import com.gdx.jgame.gameObjects.characters.PlainCharacter.CHAR_TYPE;
 import com.gdx.jgame.managers.TextureManager;
 
-public class CharacterPolygonDef extends MovingObjectDef implements Serializable, ObjectsID{	
+public class CharacterPolygonDef extends MovingObjectDef implements Serializable{	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 7143623620415780351L;
-	
-	private static long m_numberOfObjects = 0;
-	public final long ID = m_numberOfObjects;
+	private static final long serialVersionUID = -3557435280659148355L;
 	
 	public int maxHealth = 5;
 	public int m_health = maxHealth;
@@ -26,14 +23,12 @@ public class CharacterPolygonDef extends MovingObjectDef implements Serializable
 	public CharacterPolygonDef(World world, TextureManager texManager, String texPath, 
 			float texScale, String characterGroupName, Vector2[] b2vertices, CHAR_TYPE charType) {	
 		super(world, texManager.get(texPath), texPath, texScale, b2vertices);
-		++m_numberOfObjects;
 		this.charType = charType;
 		charGroupName = characterGroupName;
 	}
 
 	public CharacterPolygonDef(PlainCharacter plainCharacter) {
 		super(plainCharacter);
-		++m_numberOfObjects;
 		
 		maxHealth = plainCharacter.getMaxHealth();
 		m_health = plainCharacter.getHealth();
@@ -51,13 +46,6 @@ public class CharacterPolygonDef extends MovingObjectDef implements Serializable
 		charGroupName = definition.charGroupName;
 	}
 	
-	public void restoreCharacter(TextureManager txMan, World world) {
-		super.restoreObject(txMan, world);
-	}
-	
-	public long numberOfObjects() {
-		return m_numberOfObjects;
-	}
 
 	@Override
 	public int hashCode() {

@@ -125,6 +125,10 @@ public class ScreenManager extends Game{
 	public void setM_gameState(GAME_LEVEL_STATE m_gameState) {
 		this.m_gameState = m_gameState;
 	}
+
+	public boolean isShowLayout() {
+		return m_showLayout;
+	}
 	
 	
 	

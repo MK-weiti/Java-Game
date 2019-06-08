@@ -17,4 +17,8 @@ public class Methods {
 		
 		return points;
 	}
+	
+	public static void write(String str) {
+		System.out.println(str);
+	}
 }

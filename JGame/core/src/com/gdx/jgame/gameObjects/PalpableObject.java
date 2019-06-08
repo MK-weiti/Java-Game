@@ -20,7 +20,7 @@ import com.badlogic.gdx.physics.box2d.World;
  * Create as body with fixture.
  */
 
-public class PalpableObject implements ObjectsID{
+public abstract class PalpableObject implements ObjectsID, Comparable<PalpableObject>{
 	
 	private static long m_numberOfObjects = 0;
 	public final long ID = m_numberOfObjects;
@@ -29,9 +29,12 @@ public class PalpableObject implements ObjectsID{
 	
 	private World world;
 	private Body body;	// get access to give forces to body
-	private Fixture m_fixture;
+	protected Fixture firstFixture;
 	private float m_scale;
 	private String m_texturePath;
+	private Vector2 lastPosition;
+	private boolean isBodyDestroyed = false;
+	protected boolean isDestructible = true;
 
 	public PalpableObject(PalpableObjectPolygonDef objectDef) {
 		++m_numberOfObjects;
@@ -39,11 +42,12 @@ public class PalpableObject implements ObjectsID{
 		m_scale = objectDef.textureScale;
 		m_texturePath = objectDef.texturePath;
 		body = world.createBody(objectDef.bodyDef);
+		lastPosition = new Vector2(objectDef.bodyDef.position);
 		
 		PolygonShape shape = new PolygonShape();
 		shape.set(objectDef.fixturePolData.shapeVertices);
 		objectDef.fixtureDef.shape = shape;
-		m_fixture = body.createFixture(objectDef.fixtureDef); 
+		firstFixture = body.createFixture(objectDef.fixtureDef); 
 		
 		setTexture(objectDef.texture);
 		shape.dispose();
@@ -67,10 +71,16 @@ public class PalpableObject implements ObjectsID{
 	}
 	
 	public void render(SpriteBatch batch) {
-		defaultSprite.setRotation(body.getAngle()*(float)((double)180/Math.PI));
-		defaultSprite.setPosition(m_fixture.getBody().getPosition().x - defaultSprite.getWidth()/2, 
-				m_fixture.getBody().getPosition().y - defaultSprite.getHeight() / 2);
-		defaultSprite.draw(batch);
+		if(!isBodyDestroyed) {
+			defaultSprite.setRotation(body.getAngle()*(float)((double)180/Math.PI));
+			defaultSprite.setPosition(body.getPosition().x - defaultSprite.getWidth()/2, 
+					body.getPosition().y - defaultSprite.getHeight() / 2);
+			defaultSprite.draw(batch);
+		}
+		else {
+			defaultSprite.draw(batch);
+		}
+		
 	}
 	
 	public void rotate(float angle) {
@@ -83,19 +93,27 @@ public class PalpableObject implements ObjectsID{
 	
 	public Vector2 getPositionOnScreen(Camera camera) {
 		//to be more transparent
-		if(camera.follower != this) {
-			throw new IllegalArgumentException("Camera is do not follow this object");
+		if(camera.getFollower() != this) {
+			throw new IllegalArgumentException("Camera do not follow this object");
 		}
 		return camera.getPositionOnScreen();
 	}
 	
-	public float angleRadOnScreen(Camera camera, Vector2 position) {
+	public float rawAngleRadOnScreen(Camera camera, Vector2 position) {
+		return getVectorToMouse(camera, position).angleRad();
+	}
+	
+	public float angleRadOnScreen(Camera camera, Vector2 position) {		
+		return getVectorToMouse(camera, position).angleRad() - ((float) Math.PI/2);
+	}
+	
+	public Vector2 getVectorToMouse(Camera camera, Vector2 position) {
 		Vector2 tmp = new Vector2(position);
 		
 		tmp.x = tmp.x - getPositionOnScreen(camera).x;
 		tmp.y = tmp.y - getPositionOnScreen(camera).y;
 		
-		return tmp.angleRad() - ((float) Math.PI/2);
+		return tmp;
 	}
 
 	public World getWorld() {
@@ -117,9 +135,69 @@ public class PalpableObject implements ObjectsID{
 	public String getTexturePath() {
 		return m_texturePath;
 	}
+	
+	protected void destoryBody() {
+		if(!isBodyDestroyed) {
+			lastPosition.set(body.getPosition());
+			isBodyDestroyed = true;
+			world.destroyBody(body);
+		}
+	}
+	
+	public Vector2 getLastPosition() {
+		if(isBodyDestroyed) {
+			return new Vector2(lastPosition);
+		}
+		else {
+			lastPosition.set(body.getPosition());
+			return new Vector2(lastPosition);
+		}
+	}
+
+	public boolean isBodyDestroyed() {
+		return isBodyDestroyed;
+	}
+
+	protected boolean isDestructible() {
+		return isDestructible;
+	}
 
 	@Override
 	public long numberOfObjects() {
 		return m_numberOfObjects;
 	}
+
+	// only for optimization of Map
+	@Override
+	public int compareTo(PalpableObject object) {
+		if(this.ID == object.ID) return 0;
+		else if(this.ID < object.ID) return -1;
+		else return 1;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (ID ^ (ID >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PalpableObject other = (PalpableObject) obj;
+		if (ID != other.ID)
+			return false;
+		return true;
+	}
+
+	
+	
+	
 }

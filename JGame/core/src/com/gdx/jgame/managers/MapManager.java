@@ -22,7 +22,7 @@ public class MapManager{
 	public static float PIXELS_PER_METER = 100f;
 	
 	private TreeMap<String, TiledMap> m_map;
-	private OrthogonalTiledMapRenderer m_renderer;
+	private OrthogonalTiledMapRenderer m_renderer = null;
 	private TiledMap m_actualMap = null;
 	private String m_actualMapName;	
 	
@@ -79,7 +79,8 @@ public class MapManager{
 	}
 	
 	void dispose() {
-		m_renderer.dispose();
+		if(m_renderer != null) m_renderer.dispose();
+		
 		for (Map.Entry<String, TiledMap> entry : m_map.entrySet()) {
 			entry.getValue().dispose();
 		}

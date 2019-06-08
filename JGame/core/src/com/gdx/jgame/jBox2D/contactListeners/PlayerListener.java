@@ -6,15 +6,20 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.gdx.jgame.JGame;
 import com.gdx.jgame.gameObjects.characters.Player;
+import com.gdx.jgame.gameObjects.missiles.MissileAdapter;
+import com.gdx.jgame.gameObjects.missiles.NormalBullet;
+import com.gdx.jgame.jBox2D.BodiesToDestroy;
 import com.gdx.jgame.jBox2D.mapObjects.*;
 
-public class PlayerContactListener implements ContactListener{
+public class PlayerListener implements ContactListener{
 	private JGame m_jgame;
 	private int m_fieldBoostId;
 	private int m_fieldMaxVelocityId;
+	private BodiesToDestroy m_destroy;
 	
-	public PlayerContactListener(JGame jgame) {
+	public PlayerListener(JGame jgame, BodiesToDestroy destroy) {
 		m_jgame = jgame;
+		m_destroy = destroy;
 	}
 	
 	@Override
@@ -33,26 +38,30 @@ public class PlayerContactListener implements ContactListener{
 			player = (Player) dataB;
 		}
 		
-		if(object != null) {
-			m_fieldBoostId = player.generateAccelerationId();
-			m_fieldMaxVelocityId = player.generateMaxVelocityId();
+		if(object == null || player == null) return;
+		
+		m_fieldBoostId = player.generateAccelerationId();
+		m_fieldMaxVelocityId = player.generateMaxVelocityId();
+		
+		if(object instanceof Field) {
 			
-			if(object instanceof Field) {
-				
-				if(object instanceof FieldGameState) {
-					if(((FieldGameState) object).win){
-						m_jgame.setGameLevelState(JGame.GAME_LEVEL_STATE.WIN);
-					}
-					else
-					if(((FieldGameState) object).lose){
-						m_jgame.setGameLevelState(JGame.GAME_LEVEL_STATE.LOSE);
-					}
+			if(object instanceof FieldGameState) {
+				if(((FieldGameState) object).win){
+					m_jgame.setGameLevelState(JGame.GAME_LEVEL_STATE.WIN);
 				}
-				if(object instanceof FieldVelocityChange) {
-					player.addRatioAcceleration(m_fieldBoostId, ((FieldVelocityChange) object).speedChange);
-					player.addRatioMaxVelocity(m_fieldMaxVelocityId, ((FieldVelocityChange) object).maxSpeedChange);
+				else
+				if(((FieldGameState) object).lose){
+					m_jgame.setGameLevelState(JGame.GAME_LEVEL_STATE.LOSE);
 				}
 			}
+			if(object instanceof FieldVelocityChange) {
+				player.addRatioAcceleration(m_fieldBoostId, ((FieldVelocityChange) object).speedChange);
+				player.addRatioMaxVelocity(m_fieldMaxVelocityId, ((FieldVelocityChange) object).maxSpeedChange);
+			}
+		}
+		else {
+			player.updateObject(object);
+			if(player.isRemovable()) m_destroy.add(player.getBody());
 		}
 		
 	}

@@ -2,31 +2,32 @@ package com.gdx.jgame;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import com.badlogic.gdx.math.Vector2;
-import com.gdx.jgame.gameObjects.characters.CharacterPolygonDef;
 import com.gdx.jgame.hud.Hud;
-import com.gdx.jgame.gameObjects.characters.CharacterSet;
 import com.gdx.jgame.gameObjects.characters.PlainCharacter;
-import com.gdx.jgame.gameObjects.characters.SaveCharacter;
-import com.gdx.jgame.jBox2D.JBoxManager;
+import com.gdx.jgame.gameObjects.characters.SaveCharacters;
+import com.gdx.jgame.gameObjects.characters.def.CharacterPolygonDef;
+import com.gdx.jgame.gameObjects.missiles.SaveMisiles;
+import com.gdx.jgame.jBox2D.JBoxObjects;
 
 public class GameState implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -7114218668434763987L;
+	private static final long serialVersionUID = 3912629976721885987L;
 	
 	private transient JGame m_game;
-	private ArrayList<SaveCharacter> characters;
-	private ArrayList<String> charGroupsNames;
+	private SaveCharacters characters;
+	private SaveMisiles missiles;
 	private String mapName;
 	private float cameraZoom;
 	private Vector2 cameraShift;
 	
 	public GameState(JGame jGame) {
-		characters = new ArrayList<SaveCharacter>();
-		charGroupsNames = new ArrayList<String>();
+		characters = new SaveCharacters(jGame.getCharactersManager());
+		missiles = new SaveMisiles(jGame.getMisslesManager());
 		m_game = jGame;
 	}
 	
@@ -35,42 +36,24 @@ public class GameState implements Serializable{
 		cameraZoom = m_game.getWorldCamera().zoom;
 		cameraShift = new Vector2(m_game.getWorldCamera().getShift());
 		
-		for (String name: m_game.getCharacters().getGroupsNamesList()) {
-			charGroupsNames.add(name);
-			for (CharacterSet set : m_game.getCharacters().getGroupSets(name)) {
-				characters.add(new SaveCharacter(set));
-			}
-		}
-		characters.add(new SaveCharacter(m_game.getCharacters().getPlayerSet()));	
+		missiles.save();
+		characters.save();
 	}
 	
 	public void load(JGame jGame) {
-		
+		TreeMap<Integer, Object> restoreOwner = new TreeMap<Integer, Object>();
 		m_game = jGame;
-		for (String name : charGroupsNames) {
-			m_game.getCharacters().addGroup(name);	
-		}
 		
 		m_game.getWorldCamera().zoom = cameraZoom;
 		m_game.getWorldCamera().setShift(cameraShift);
 		
-		//m_game.getMaps().setMap(mapName);
-		m_game.setJBox(new JBoxManager(m_game, m_game.getMaps().getLayers(), m_game.getWorldCamera(), m_game.isDebugMode(), m_game.isShowLayout()));
+		m_game.setJBox(new JBoxObjects(m_game, m_game.getMaps().getLayers(), m_game.getWorldCamera(), m_game.isDebugMode(), m_game.isShowLayout()));
 		
-		for (SaveCharacter character : characters) {
-			CharacterPolygonDef charDef = character.getCharacterPolygonDef();
-			character.restoreCharacter(jGame.getCharactersTextures(), jGame.getJBox().world);
-			
-			if(charDef.charType == PlainCharacter.CHAR_TYPE.PLAYER) {
-				m_game.getCharacters().addPlayer(character.getCharacterPolygonDef(), m_game.getBulletsTextures());
-			} 
-			else if(charDef.charType == PlainCharacter.CHAR_TYPE.ENEMY) {
-				m_game.getCharacters().addEnemies(charDef);
-			}
-		}
+		characters.load(jGame, restoreOwner);
 		
 		m_game.setHud(new Hud(m_game.getBatch(), m_game.getCharacters().getPlayer(), m_game.isDebugMode(), m_game.isShowLayout()));
-		m_game.getWorldCamera().follower = m_game.getCharacters().getPlayer();
+		m_game.getCharacters().setCameraFollower(m_game.getCharacters().getPlayer());
+		missiles.load(m_game, restoreOwner);
 	}
 	
 	public String getMapName() {

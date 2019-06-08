@@ -6,45 +6,45 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
 import com.gdx.jgame.JGame;
-import com.gdx.jgame.jBox2D.contactListeners.PlayerContactListener;
+import com.gdx.jgame.jBox2D.contactListeners.ContactListenerSet;
 
 // IMPORTANT
 // all libraries in jBox2d are loaded when World object is created
 
-public class JBoxManager implements Disposable{
+public class JBoxObjects implements Disposable{
 	private float timeStep = 1/60f;
 	private int velocityIterations = 6;
 	private int positionIterations = 2;
 	private JGame m_jGame;
-	private static final Vector2 gravitationForce = new Vector2(0, 0);
+	private static final Vector2 gravitationForce = new Vector2(0f, 0f);
 	private final boolean m_debugMode;
 	private boolean m_showLayout;
-	private PlayerContactListener m_playerListener;
+	private ContactListenerSet m_ListenerSet;
+	private BodiesToDestroy m_destroyBodies;
 	
-	public World world;
-	public Box2DDebugRenderer debugRenderer;
+	private World world;
+	private Box2DDebugRenderer debugRenderer;
 	
-	Body body;
-	Fixture fixture;
-	
-	public JBoxManager(JGame jGame, MapLayers layers, OrthographicCamera camera, boolean debugMode, boolean showLayout) {
+	public JBoxObjects(JGame jGame, MapLayers layers, OrthographicCamera camera, boolean debugMode, boolean showLayout) {
 		// IMPORTANT
 		// all libraries in jBox2d are loaded when World object is created
 		m_jGame = jGame;
 		world = new World(gravitationForce, true);
+		m_destroyBodies = new BodiesToDestroy(m_jGame);
 		m_debugMode = debugMode;
 		m_showLayout = showLayout;
+		
 		if(m_debugMode) {
 			debugRenderer = new Box2DDebugRenderer();
 		}
+		
 		if(layers.get(LayersNames.obstacles) != null)
 			new LayerHitboxCreator(layers.get(LayersNames.obstacles), world);
-		
 		if(layers.get(LayersNames.logic) != null)
-		new LayerHitboxCreator(layers.get(LayersNames.logic), world);
+			new LayerHitboxCreator(layers.get(LayersNames.logic), world);
 		
-		m_playerListener = new PlayerContactListener(m_jGame);
-		world.setContactListener(m_playerListener);
+		m_ListenerSet = new ContactListenerSet(m_jGame, m_destroyBodies);
+		world.setContactListener(m_ListenerSet);
 	}
 	
 	public void render(OrthographicCamera camera) {
@@ -62,11 +62,19 @@ public class JBoxManager implements Disposable{
 		world.dispose();
 	}
 
-	public boolean isM_showLayout() {
+	public boolean isShowLayout() {
 		return m_showLayout;
 	}
 
 	public void setShowLayout(boolean m_showLayout) {
 		this.m_showLayout = m_showLayout;
+	}
+	
+	public World getWorld() {
+		return world;
+	}
+
+	public void removeBodies() {
+		m_destroyBodies.removeAll();
 	}
 }

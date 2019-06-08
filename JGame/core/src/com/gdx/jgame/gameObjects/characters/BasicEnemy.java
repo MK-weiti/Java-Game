@@ -1,12 +1,14 @@
 package com.gdx.jgame.gameObjects.characters;
 
-import com.gdx.jgame.gameObjects.characters.def.CharacterPolygonDef;
 import com.gdx.jgame.gameObjects.missiles.Missile;
+import com.gdx.jgame.logic.Armory;
 
 public class BasicEnemy extends PlainCharacter{
+	
+	Armory m_armory;
 
-	public BasicEnemy(CharacterPolygonDef characterPolygonDef) {
-		super(characterPolygonDef);
+	public BasicEnemy(BasicEnemyDef enemyDef) {
+		super(enemyDef);
 	}	
 
 	@Override

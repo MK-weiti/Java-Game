@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 import com.gdx.jgame.JGame;
-import com.gdx.jgame.gameObjects.characters.def.BasicEnemyDef;
 import com.gdx.jgame.managers.CharactersManager;
 
 public class SaveCharacters implements Serializable{
@@ -38,7 +37,9 @@ public class SaveCharacters implements Serializable{
 	// put in Map
 	public void load(JGame jGame, TreeMap<Integer, Object> restoreOwner) {
 		m_manager = jGame.getCharactersManager();
-		playerDef.restore(jGame.getCharactersTextures(), jGame.getjBox().getWorld());
+		
+		playerDef.restore(jGame.getjBox().getWorld(), restoreOwner, jGame.getBulletsTextures(), 
+				jGame.getCharactersTextures(), jGame.getMisslesManager());
 		restoreOwner.put(playerDef.getObjectInGameID(), m_manager.addPlayer(playerDef, jGame.getBulletsTextures()));
 		
 		for(String name : m_groupNames) {
@@ -46,7 +47,8 @@ public class SaveCharacters implements Serializable{
 		}
 		
 		for(BasicEnemyDef character : basicEnemy) {
-			character.restore(jGame.getCharactersTextures(), jGame.getjBox().getWorld());
+			character.restore(jGame.getjBox().getWorld(), restoreOwner, jGame.getBulletsTextures(), 
+					jGame.getCharactersTextures(), jGame.getMisslesManager());
 			restoreOwner.put(character.getObjectInGameID(), m_manager.addEnemies(character).first());
 		}
 		// and additional loops for other types

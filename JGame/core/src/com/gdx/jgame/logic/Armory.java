@@ -30,7 +30,7 @@ public class Armory implements Serializable{
 	public int maxAmmoNormalBullet = 1;
 	public int maxAmmoBouncingBullet = 1;
 	
-	public int currentAmmoNormalBullet = 0;
+	public int currentAmmoNormalBullet = 1;
 	public int currentAmmoBouncingBullet = 0;
 	
 	private transient TextureManager m_bulletsTextures;
@@ -41,12 +41,32 @@ public class Armory implements Serializable{
 	public Armory(TextureManager bulletsTextures, MissilesManager missileManager) {
 		m_bulletsTextures = bulletsTextures;
 		m_missileManager = missileManager;
+	}
+	
+	public Armory(Armory copy) {
+		initialImpulseNormalBullet = copy.initialImpulseNormalBullet;
+		initialImpulseBouncingBullet = copy.initialImpulseBouncingBullet;
 		
+		if(copy.normalBulletDef != null && copy.normalBulletDef.getOwner() != null) 
+			normalBulletDef = new NormalBulletDef(copy.normalBulletDef);
+		if(copy.bouncingBulletDef != null && copy.bouncingBulletDef.getOwner() != null) 
+			bouncingBulletDef = new BouncingBulletDef(copy.bouncingBulletDef);
+		
+		maxAmmoNormalBullet = copy.maxAmmoNormalBullet;
+		maxAmmoBouncingBullet = copy.maxAmmoBouncingBullet;
+		currentAmmoNormalBullet = copy.currentAmmoNormalBullet;
+		currentAmmoBouncingBullet = copy.currentAmmoBouncingBullet;
+		m_bulletsTextures = copy.m_bulletsTextures;
+		m_missileManager = copy.m_missileManager;
+		m_owner = copy.m_owner;
+		m_ownerID = copy.m_ownerID;
 	}
 	
 	public void setOwner(PlainCharacter owner) {
 		m_owner = owner;
 		m_ownerID = owner.ID;
+		if(normalBulletDef != null) normalBulletDef.setOwner(owner);
+		if(bouncingBulletDef != null) bouncingBulletDef.setOwner(owner);		
 	}
 	
 	public void spawnBullet(Camera camera, Vector2 space, Missile.MissileType type) {
@@ -56,13 +76,13 @@ public class Armory implements Serializable{
 		if(type.equals(Missile.MissileType.NormalBullet) && normalBulletDef != null && 
 				currentAmmoNormalBullet > 0) {
 			imp = m_owner.initialImpulseAndPosition(camera, space, normalBulletDef, initialImpulseNormalBullet);
-			bullet = new NormalBullet(normalBulletDef);
+			bullet = new NormalBullet(normalBulletDef, m_owner);
 			--currentAmmoNormalBullet;
 		}
 		else if(type.equals(Missile.MissileType.BouncingBullet) && bouncingBulletDef != null &&
 				currentAmmoBouncingBullet > 0) {
 			imp = m_owner.initialImpulseAndPosition(camera, space, bouncingBulletDef, initialImpulseBouncingBullet);
-			bullet = new BouncingBullet(bouncingBulletDef);
+			bullet = new BouncingBullet(bouncingBulletDef, m_owner);
 			--currentAmmoBouncingBullet;
 		}
 		if(bullet == null) return;
@@ -85,7 +105,6 @@ public class Armory implements Serializable{
 			normalBulletDef.fixtureDef.shape = shape;
 			normalBulletDef.texture = m_bulletsTextures.get(textureName);
 			normalBulletDef.setVertices(vertices);
-			//normalBulletDef.synchronize();
 		}
 		else if(type.equals(Missile.MissileType.BouncingBullet)) {
 			if(bouncingBulletDef == null) {
@@ -97,7 +116,6 @@ public class Armory implements Serializable{
 			bouncingBulletDef.fixtureDef.shape = shape;
 			bouncingBulletDef.texture = m_bulletsTextures.get(textureName);
 			bouncingBulletDef.setVertices(vertices);
-			//bouncingBulletDef.synchronize();
 		}
 		
 		shape.dispose();

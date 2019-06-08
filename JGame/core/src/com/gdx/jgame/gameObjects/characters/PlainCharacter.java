@@ -4,12 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.gdx.jgame.Camera;
 import com.gdx.jgame.gameObjects.MovingObject;
-import com.gdx.jgame.gameObjects.characters.def.CharacterPolygonDef;
 import com.gdx.jgame.gameObjects.missiles.def.MissileDef;
+import com.gdx.jgame.logic.Armory;
+import com.gdx.jgame.logic.ArmoryMethods;
 
-public abstract class PlainCharacter extends MovingObject implements CharacterMethods{
+public abstract class PlainCharacter extends MovingObject implements CharacterMethods, ArmoryMethods{
 	private int m_maxHealth;
 	private int m_health;
+	
+	Armory m_armory;
 	
 	private String m_groupName = null;
 	
@@ -18,6 +21,9 @@ public abstract class PlainCharacter extends MovingObject implements CharacterMe
 		m_maxHealth = characterPolygonDef.maxHealth;
 		m_health = characterPolygonDef.m_health;
 		m_groupName = characterPolygonDef.charGroupName;
+		
+		characterPolygonDef.armory.setOwner(this);
+		m_armory = new Armory(characterPolygonDef.armory);
 	}
 	
 	public Vector2 initialImpulseAndPosition(Camera camera, Vector2 space, MissileDef missile, float initialImpulse) {
@@ -95,5 +101,65 @@ public abstract class PlainCharacter extends MovingObject implements CharacterMe
 	public String getGroupName() {
 		return m_groupName;
 	}	
+	
+	@Override
+	public float getInitialImpulseNormalBullet() {
+		return m_armory.initialImpulseNormalBullet;
+	}
+	
+	@Override
+	public void setInitialImpulseNormalBullet(float initialImpulseNormalBullet) {
+		m_armory.initialImpulseNormalBullet = initialImpulseNormalBullet;
+	}
+
+	@Override
+	public float getInitialImpulseBouncingBullet() {
+		return m_armory.initialImpulseBouncingBullet;
+	}
+
+	@Override
+	public void setInitialImpulseBouncingBullet(float initialImpulseBouncingBullet) {
+		m_armory.initialImpulseBouncingBullet = initialImpulseBouncingBullet;
+	}
+	
+	@Override
+	public int getMaxAmmoNormalBullet() {
+		return m_armory.maxAmmoNormalBullet;
+	}
+
+	@Override
+	public void setMaxAmmoNormalBullet(int maxAmmoNormalBullet) {
+		m_armory.maxAmmoNormalBullet = maxAmmoNormalBullet;
+	}
+
+	@Override
+	public int getMaxAmmoBouncingBullet() {
+		return m_armory.maxAmmoBouncingBullet;
+	}
+
+	@Override
+	public void setMaxAmmoBouncingBullet(int maxAmmoBouncingBullet) {
+		m_armory.maxAmmoBouncingBullet = maxAmmoBouncingBullet;
+	}
+
+	@Override
+	public int getCurrentAmmoNormalBullet() {
+		return m_armory.currentAmmoNormalBullet;
+	}
+
+	@Override
+	public void setCurrentAmmoNormalBullet(int currentAmmoNormalBullet) {
+		m_armory.currentAmmoNormalBullet = currentAmmoNormalBullet;
+	}
+
+	@Override
+	public int getCurrentAmmoBouncingBullet() {
+		return m_armory.currentAmmoBouncingBullet;
+	}
+
+	@Override
+	public void setCurrentAmmoBouncingBullet(int currentAmmoBouncingBullet) {
+		m_armory.currentAmmoBouncingBullet = currentAmmoBouncingBullet;
+	}
 	
 }

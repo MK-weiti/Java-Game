@@ -13,8 +13,8 @@ public class NormalBulletDef extends MissileDef implements Serializable{
 	 */
 	private static final long serialVersionUID = 4566689807523351020L;
 
-	public NormalBulletDef(World world, TextureManager txManager, String texPath, float texScale, Vector2[] vertices, Object owner) {
-		super(world, txManager, texPath, texScale, vertices, owner);
+	public NormalBulletDef(World world, TextureManager txManager, String texPath, float texScale, Vector2[] vertices) {
+		super(world, txManager, texPath, texScale, vertices);
 	}
 	
 	public NormalBulletDef(NormalBulletDef definition) {

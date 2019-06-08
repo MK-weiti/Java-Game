@@ -6,10 +6,11 @@ import java.util.TreeSet;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gdx.jgame.gameObjects.characters.BasicEnemy;
+import com.gdx.jgame.gameObjects.characters.BasicEnemyDef;
+import com.gdx.jgame.gameObjects.characters.CharacterPolygonDef;
 import com.gdx.jgame.gameObjects.characters.PlainCharacter;
 import com.gdx.jgame.gameObjects.characters.Player;
 import com.gdx.jgame.gameObjects.characters.PlayerDef;
-import com.gdx.jgame.gameObjects.characters.def.CharacterPolygonDef;
 import com.gdx.jgame.gameObjects.missiles.MissilesManager;
 
 public class CharactersManager{
@@ -45,7 +46,7 @@ public class CharactersManager{
 			String group = enemyDef.charGroupName;
 			tree = m_enemyGroups.get(group);
 			groupException(tree, group);
-			BasicEnemy tmp = new BasicEnemy(enemyDef);
+			BasicEnemy tmp = new BasicEnemy((BasicEnemyDef) enemyDef);
 			if(tree.put(tmp.ID, tmp) != null) 
 				throw new IllegalArgumentException("The enemy is already in manager.");
 			retVal.add(tmp.ID);

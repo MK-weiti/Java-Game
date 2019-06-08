@@ -6,10 +6,9 @@ public class BouncingBullet extends Missile{
 	
 	private int m_numberOfBounces;
 
-	public BouncingBullet(BouncingBulletDef bullet) {
-		super(bullet, bullet.getOwner());
+	public BouncingBullet(BouncingBulletDef bullet, Object owner) {
+		super(bullet, owner);
 		m_numberOfBounces = bullet.numberOfBounces;
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

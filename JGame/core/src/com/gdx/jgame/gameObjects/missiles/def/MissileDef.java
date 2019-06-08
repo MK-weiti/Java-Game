@@ -21,16 +21,14 @@ public abstract class MissileDef extends MovingObjectDef implements Serializable
 	public int damage = 0;
 	
 	
-	public MissileDef(World world, TextureManager txManager, String texPath, float texScale, Vector2[] vertices, Object owner) {
+	public MissileDef(World world, TextureManager txManager, String texPath, float texScale, Vector2[] vertices) {
 		super(world, txManager.get(texPath), texPath, texScale, vertices);
-		setOwner(owner);
 	}
 	
 	public MissileDef(MissileDef definition) {
 		super(definition);
 		setOwner(definition.owner);
 		damage = definition.damage;
-		objectOwnerID = definition.getObjectInGameID();
 	}
 	
 	public MissileDef(Missile missile) {

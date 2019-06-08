@@ -16,8 +16,8 @@ public class BouncingBulletDef extends MissileDef implements Serializable{
 	public int numberOfBounces = 1;
 	
 	public BouncingBulletDef(World world, TextureManager txManager, String texPath,
-			float texScale, Vector2[] vertices, Object owner) {
-		super(world, txManager, texPath, texScale, vertices, owner);
+			float texScale, Vector2[] vertices) {
+		super(world, txManager, texPath, texScale, vertices);
 	}
 	
 	public BouncingBulletDef(BouncingBulletDef definition) {

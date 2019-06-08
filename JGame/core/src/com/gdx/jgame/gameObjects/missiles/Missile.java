@@ -18,8 +18,9 @@ public abstract class Missile extends MovingObject implements MisslesMethods{
 		super(bullet);
 		getBody().setBullet(true);
 		if(owner == null) throw new IllegalArgumentException("NormalBullet have not any owner");
-		m_owner = bullet.getOwner();
+		m_owner = owner;
 		m_damage = bullet.damage;
+		bullet.setOwner(owner);
 	}
 	
 	public Object getOwner() {

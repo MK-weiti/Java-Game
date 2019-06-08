@@ -50,12 +50,12 @@ public class SaveMisiles implements Serializable{
 		
 		for(NormalBulletDef def : normalBulletDef) {
 			def.restore(jGame.getBulletsTextures(), jGame.getjBox().getWorld(), ownerSet.get(def.getObjectOwnerID()));
-			m_missileManager.add(new NormalBullet(def));			
+			m_missileManager.add(new NormalBullet(def, def.getOwner()));			
 		}
 		
 		for(BouncingBulletDef def : bouncingBulletDef) {
 			def.restore(jGame.getBulletsTextures(), jGame.getjBox().getWorld(), ownerSet.get(def.getObjectOwnerID()));
-			m_missileManager.add(new BouncingBullet(def));			
+			m_missileManager.add(new BouncingBullet(def, def.getOwner()));			
 		}
 	}
 	

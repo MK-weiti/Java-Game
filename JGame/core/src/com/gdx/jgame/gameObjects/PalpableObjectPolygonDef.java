@@ -12,7 +12,7 @@ import com.gdx.jgame.jBox2D.FixturePolData;
 import com.gdx.jgame.managers.MapManager;
 import com.gdx.jgame.managers.TextureManager;
 
-public class PalpableObjectPolygonDef implements Serializable, ObjectsID<PalpableObjectPolygonDef>, Comparable<PalpableObjectPolygonDef>{
+public abstract class PalpableObjectPolygonDef implements Serializable, ObjectsID<PalpableObjectPolygonDef>, Comparable<PalpableObjectPolygonDef>{
 	/**
 	 * 
 	 */
@@ -76,6 +76,7 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID<Palpabl
 
 	public PalpableObjectPolygonDef(PalpableObjectPolygonDef definition) {
 		++m_numberOfObjects;
+		
 		bodyData = new BodyData(definition.bodyData);
 		fixturePolData = new FixturePolData(definition.fixturePolData);
 		bodyDef = new BodyDef();
@@ -87,6 +88,9 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID<Palpabl
 		
 		texture = definition.texture;
 		world = definition.world;
+		
+		bodyData.synchronize(definition.bodyDef);
+		fixturePolData.synchronize(definition.fixtureDef);
 		
 		restoreFixBody();
 	}

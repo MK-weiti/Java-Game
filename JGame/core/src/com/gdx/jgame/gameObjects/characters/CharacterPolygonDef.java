@@ -1,11 +1,13 @@
-package com.gdx.jgame.gameObjects.characters.def;
+package com.gdx.jgame.gameObjects.characters;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.gdx.jgame.gameObjects.MovingObjectDef;
-import com.gdx.jgame.gameObjects.characters.PlainCharacter;
+import com.gdx.jgame.gameObjects.missiles.MissilesManager;
+import com.gdx.jgame.logic.Armory;
 import com.gdx.jgame.managers.TextureManager;
 
 public class CharacterPolygonDef extends MovingObjectDef implements Serializable{	
@@ -18,10 +20,14 @@ public class CharacterPolygonDef extends MovingObjectDef implements Serializable
 	public int m_health = maxHealth;
 	public String charGroupName = null;
 	
-	public CharacterPolygonDef(World world, TextureManager texManager, String texPath, 
+	public Armory armory = null;
+	
+	public CharacterPolygonDef(World world, TextureManager charTexManager, TextureManager missileTexManager, 
+			MissilesManager missileManager, String texPath, 
 			float texScale, String characterGroupName, Vector2[] b2vertices) {	
-		super(world, texManager.get(texPath), texPath, texScale, b2vertices);
+		super(world, charTexManager.get(texPath), texPath, texScale, b2vertices);
 		charGroupName = characterGroupName;
+		armory = new Armory(missileTexManager, missileManager);
 	}
 
 	public CharacterPolygonDef(PlainCharacter plainCharacter) {
@@ -32,6 +38,7 @@ public class CharacterPolygonDef extends MovingObjectDef implements Serializable
 		if(plainCharacter.getGroupName() != null) { // Player do not have a group
 			charGroupName = new String(plainCharacter.getGroupName());
 		}
+		armory = plainCharacter.m_armory;
 	}
 	
 	public CharacterPolygonDef(CharacterPolygonDef definition) {
@@ -39,6 +46,19 @@ public class CharacterPolygonDef extends MovingObjectDef implements Serializable
 		maxHealth = definition.maxHealth;
 		m_health = definition.m_health;
 		charGroupName = new String(definition.charGroupName);
+		
+		armory = definition.armory;
+	}
+	
+	public void restore(World world, Map <Integer, Object> restoreOwner, 
+			TextureManager bulletsTextures, TextureManager txCharMan, MissilesManager missileManager) {
+		armory.load(restoreOwner, bulletsTextures, missileManager);
+		
+		super.restore(txCharMan, world);
+		if(armory.bouncingBulletDef != null)
+			armory.bouncingBulletDef.restore(bulletsTextures, world);
+		if(armory.normalBulletDef != null)
+			armory.normalBulletDef.restore(bulletsTextures, world);
 	}
 	
 
@@ -46,6 +66,7 @@ public class CharacterPolygonDef extends MovingObjectDef implements Serializable
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
+		result = prime * result + ((armory == null) ? 0 : armory.hashCode());
 		result = prime * result + ((charGroupName == null) ? 0 : charGroupName.hashCode());
 		result = prime * result + m_health;
 		result = prime * result + maxHealth;
@@ -61,6 +82,11 @@ public class CharacterPolygonDef extends MovingObjectDef implements Serializable
 		if (getClass() != obj.getClass())
 			return false;
 		CharacterPolygonDef other = (CharacterPolygonDef) obj;
+		if (armory == null) {
+			if (other.armory != null)
+				return false;
+		} else if (!armory.equals(other.armory))
+			return false;
 		if (charGroupName == null) {
 			if (other.charGroupName != null)
 				return false;

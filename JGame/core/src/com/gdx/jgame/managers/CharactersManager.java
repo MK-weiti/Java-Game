@@ -45,8 +45,8 @@ public class CharactersManager{
 			tree = m_enemyGroups.get(group);
 			groupException(tree, group);
 			BasicEnemy tmp = new BasicEnemy(enemyDef);
-			tree.put(tmp.hashCode(), tmp);
-			retVal.add(tmp.hashCode());
+			tree.put(tmp.ID, tmp);
+			retVal.add(tmp.ID);
 		}
 		return retVal;
 	}
@@ -119,7 +119,7 @@ public class CharactersManager{
 			else {
 				PlainCharacter tmp;
 				for(TreeMap<Integer, PlainCharacter> tree : m_enemyGroups.values()) {
-					tmp = tree.remove(character.hashCode());
+					tmp = tree.remove(character.ID);
 					if(tmp != null && tmp.equals(m_player)) m_cameraFollower = null;
 				}
 			}

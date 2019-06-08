@@ -36,7 +36,7 @@ public class MovingObjectDef extends PalpableObjectPolygonDef implements Seriali
 		ratioMaxVelocity = new HashMap<Integer, Float>(definition.getRatioMaxVelocity());
 	}
 	
-	public MovingObjectDef(MovingObjectAdapter movingObject) {
+	public MovingObjectDef(MovingObject movingObject) {
 		super(movingObject);
 		
 		this.maxVelocity = movingObject.getRawMaxVelocity();

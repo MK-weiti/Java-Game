@@ -3,28 +3,28 @@ package com.gdx.jgame.gameObjects.characters;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.gdx.jgame.Camera;
-import com.gdx.jgame.gameObjects.MovingObjectAdapter;
+import com.gdx.jgame.gameObjects.MovingObject;
 import com.gdx.jgame.gameObjects.characters.def.CharacterPolygonDef;
 import com.gdx.jgame.gameObjects.missiles.def.MissileDef;
 
-public abstract class PlainCharacter extends MovingObjectAdapter implements CharacterMethods{
+public abstract class PlainCharacter extends MovingObject implements CharacterMethods{
 	private int m_maxHealth;
 	private int m_health;
 	
-	private CHAR_TYPE m_type;
+	//private CHAR_TYPE m_type;
 	private String m_groupName;
 	
-	public enum CHAR_TYPE {
+	/*public enum CHAR_TYPE {
 		PLAYER,
 		ENEMY;
-	}
+	}*/
 	
 	public PlainCharacter(CharacterPolygonDef characterPolygonDef) {
 		super(characterPolygonDef, characterPolygonDef.maxVelocity, characterPolygonDef.acceleration);
 		m_maxHealth = characterPolygonDef.maxHealth;
 		m_health = characterPolygonDef.m_health;
 		m_groupName = characterPolygonDef.charGroupName;
-		m_type = characterPolygonDef.charType;
+		//m_type = characterPolygonDef.charType;
 	}
 	
 	protected Vector2 initialImpulseAndPosition(Camera camera, Vector2 space, MissileDef missile, float initialImpulse) {
@@ -99,13 +99,13 @@ public abstract class PlainCharacter extends MovingObjectAdapter implements Char
 		}
 	}
 
-	public CHAR_TYPE getCharType() {
+	/*public CHAR_TYPE getCharType() {
 		return m_type;
 	}
 
 	void setCharType(CHAR_TYPE type) {
 		this.m_type = type;
-	}
+	}*/
 
 	public String getGroupName() {
 		return m_groupName;

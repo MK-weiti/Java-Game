@@ -17,13 +17,13 @@ public class CharacterPolygonDef extends MovingObjectDef implements Serializable
 	
 	public int maxHealth = 5;
 	public int m_health = maxHealth;
-	public CHAR_TYPE charType;
+	//public CHAR_TYPE charType;
 	public String charGroupName = null;
 	
 	public CharacterPolygonDef(World world, TextureManager texManager, String texPath, 
 			float texScale, String characterGroupName, Vector2[] b2vertices, CHAR_TYPE charType) {	
 		super(world, texManager.get(texPath), texPath, texScale, b2vertices);
-		this.charType = charType;
+		//this.charType = charType;
 		charGroupName = characterGroupName;
 	}
 
@@ -32,7 +32,7 @@ public class CharacterPolygonDef extends MovingObjectDef implements Serializable
 		
 		maxHealth = plainCharacter.getMaxHealth();
 		m_health = plainCharacter.getHealth();
-		charType = plainCharacter.getCharType();
+		//charType = plainCharacter.getCharType();
 		if(plainCharacter.getGroupName() != null) { // Player do not have a group
 			charGroupName = new String(plainCharacter.getGroupName());
 		}

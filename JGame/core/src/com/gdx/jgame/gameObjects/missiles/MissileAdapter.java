@@ -3,7 +3,7 @@ package com.gdx.jgame.gameObjects.missiles;
 import com.gdx.jgame.gameObjects.*;
 import com.gdx.jgame.gameObjects.missiles.def.MissileDef;
 
-public abstract class MissileAdapter extends MovingObjectAdapter implements MisslesMethods{
+public abstract class MissileAdapter extends MovingObject implements MisslesMethods{
 	
 	public enum MissileType {
 		NormalBullet,

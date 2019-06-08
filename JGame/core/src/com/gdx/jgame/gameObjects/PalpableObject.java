@@ -20,10 +20,10 @@ import com.badlogic.gdx.physics.box2d.World;
  * Create as body with fixture.
  */
 
-public abstract class PalpableObject implements ObjectsID, Comparable<PalpableObject>{
+public abstract class PalpableObject implements ObjectsID<PalpableObject>, Comparable<PalpableObject>{
 	
-	private static long m_numberOfObjects = 0;
-	public final long ID = m_numberOfObjects;
+	private static int m_numberOfObjects = 0;
+	public final int ID = m_numberOfObjects;
 	
 	private Sprite defaultSprite;
 	
@@ -163,7 +163,7 @@ public abstract class PalpableObject implements ObjectsID, Comparable<PalpableOb
 	}
 
 	@Override
-	public long numberOfObjects() {
+	public int numberOfObjects() {
 		return m_numberOfObjects;
 	}
 
@@ -176,28 +176,9 @@ public abstract class PalpableObject implements ObjectsID, Comparable<PalpableOb
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (int) (ID ^ (ID >>> 32));
-		return result;
+	public boolean equalsID(PalpableObject object) {
+		if(ID == object.ID) return true;
+		return false;
 	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PalpableObject other = (PalpableObject) obj;
-		if (ID != other.ID)
-			return false;
-		return true;
-	}
-
-	
-	
 	
 }

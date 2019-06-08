@@ -6,7 +6,7 @@ import java.util.Random;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
-public abstract class MovingObjectAdapter extends PalpableObject{
+public abstract class MovingObject extends PalpableObject{
 	
 	private float maxVelocity;
 	private float acceleration;
@@ -15,7 +15,7 @@ public abstract class MovingObjectAdapter extends PalpableObject{
 	private HashMap<Integer, Float> ratioMaxVelocity;
 	
 	
-	public MovingObjectAdapter(PalpableObjectPolygonDef objectDef,
+	public MovingObject(PalpableObjectPolygonDef objectDef,
 			float maxVelocity, float acceleration) {
 		super(objectDef);
 		this.maxVelocity = maxVelocity;
@@ -24,7 +24,7 @@ public abstract class MovingObjectAdapter extends PalpableObject{
 		ratioMaxVelocity = new HashMap<Integer, Float>();
 	}
 	
-	public MovingObjectAdapter(MovingObjectDef definition) {
+	public MovingObject(MovingObjectDef definition) {
 		super(definition);
 		this.maxVelocity = definition.maxVelocity;
 		this.acceleration = definition.acceleration;
@@ -145,4 +145,43 @@ public abstract class MovingObjectAdapter extends PalpableObject{
 	HashMap<Integer, Float> getMaxVelocityRatios(){
 		return ratioMaxVelocity;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Float.floatToIntBits(acceleration);
+		result = prime * result + Float.floatToIntBits(maxVelocity);
+		result = prime * result + ((ratioAcceleration == null) ? 0 : ratioAcceleration.hashCode());
+		result = prime * result + ((ratioMaxVelocity == null) ? 0 : ratioMaxVelocity.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MovingObject other = (MovingObject) obj;
+		if (Float.floatToIntBits(acceleration) != Float.floatToIntBits(other.acceleration))
+			return false;
+		if (Float.floatToIntBits(maxVelocity) != Float.floatToIntBits(other.maxVelocity))
+			return false;
+		if (ratioAcceleration == null) {
+			if (other.ratioAcceleration != null)
+				return false;
+		} else if (!ratioAcceleration.equals(other.ratioAcceleration))
+			return false;
+		if (ratioMaxVelocity == null) {
+			if (other.ratioMaxVelocity != null)
+				return false;
+		} else if (!ratioMaxVelocity.equals(other.ratioMaxVelocity))
+			return false;
+		return true;
+	}
+	
+	
 }

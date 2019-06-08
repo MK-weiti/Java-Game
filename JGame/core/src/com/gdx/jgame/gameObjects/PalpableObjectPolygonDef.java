@@ -12,14 +12,14 @@ import com.gdx.jgame.jBox2D.FixturePolData;
 import com.gdx.jgame.managers.MapManager;
 import com.gdx.jgame.managers.TextureManager;
 
-public class PalpableObjectPolygonDef implements Serializable, ObjectsID, Comparable<PalpableObjectPolygonDef>{
+public class PalpableObjectPolygonDef implements Serializable, ObjectsID<PalpableObjectPolygonDef>, Comparable<PalpableObjectPolygonDef>{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7170239912473329317L;
 	
-	private static long m_numberOfObjects = 0;
-	public final long ID = m_numberOfObjects;
+	private static int m_numberOfObjects = 0;
+	public final int ID = m_numberOfObjects;
 	
 	BodyData bodyData;
 	FixturePolData fixturePolData;
@@ -122,7 +122,7 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID, Compar
 		restoreBody();
 	}
 	
-	public long numberOfObjects() {
+	public int numberOfObjects() {
 		return m_numberOfObjects;
 	}
 	
@@ -134,11 +134,12 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID, Compar
 		restoreFixBody();
 	}
 
+	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (int) (ID ^ (ID >>> 32));
 		result = prime * result + ((bodyData == null) ? 0 : bodyData.hashCode());
 		result = prime * result + ((fixturePolData == null) ? 0 : fixturePolData.hashCode());
 		result = prime * result + ((texturePath == null) ? 0 : texturePath.hashCode());
@@ -155,8 +156,6 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID, Compar
 		if (getClass() != obj.getClass())
 			return false;
 		PalpableObjectPolygonDef other = (PalpableObjectPolygonDef) obj;
-		if (ID != other.ID)
-			return false;
 		if (bodyData == null) {
 			if (other.bodyData != null)
 				return false;
@@ -179,10 +178,15 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID, Compar
 
 	@Override
 	public int compareTo(PalpableObjectPolygonDef object) {
-		if(this.numberOfObjects() == object.numberOfObjects()) return 0;
-		else if(this.numberOfObjects() < object.numberOfObjects()) return -1;
+		if(this.ID == object.ID) return 0;
+		else if(this.ID < object.ID) return -1;
 		else return 1;
 	}
 	
+	@Override
+	public boolean equalsID(PalpableObjectPolygonDef object) {
+		if(ID == object.ID) return true;
+		return false;
+	}
 	
 }

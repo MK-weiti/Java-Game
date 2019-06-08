@@ -6,8 +6,6 @@ import java.util.TreeMap;
 
 import com.gdx.jgame.JGame;
 import com.gdx.jgame.gameObjects.missiles.def.NormalBulletDef;
-import com.gdx.jgame.gameObjects.PalpableObject;
-import com.gdx.jgame.gameObjects.PalpableObjectPolygonDef;
 import com.gdx.jgame.gameObjects.missiles.def.BouncingBulletDef;
 
 public class SaveMisiles implements Serializable{	
@@ -33,33 +31,30 @@ public class SaveMisiles implements Serializable{
 	
 	
 	public void save() {
-		// the owner id is from definition of the object
-		for(MissileAdapter missile : m_missileManager.getMissiles()) {
-			PalpableObjectPolygonDef owner = new PalpableObjectPolygonDef((PalpableObject) missile.getOwner());
+		for(Missile missile : m_missileManager.getMissiles()) {
+			
 			if(missile instanceof NormalBullet) {
 				NormalBulletDef tmp = new NormalBulletDef(  ((NormalBullet) missile)  );
-				tmp.setOwnerID(owner.hashCode());
 				normalBulletDef.add(tmp);
 			}
 			else if(missile instanceof BouncingBullet) {
 				BouncingBulletDef tmp = new BouncingBulletDef(  ((BouncingBullet) missile)  );
-				tmp.setOwnerID(owner.hashCode());
 				bouncingBulletDef.add(tmp);
 			}
 		}
 	}
 	
+	// get from Map
 	public void load(JGame jGame, TreeMap<Integer, Object> ownerSet) {
 		m_missileManager = jGame.getMisslesManager();
 		
 		for(NormalBulletDef def : normalBulletDef) {
-			System.out.println(ownerSet.get(def.hashCode()));
-			def.restore(jGame.getBulletsTextures(), jGame.getjBox().getWorld(), ownerSet.get(def.hashCode()));
+			def.restore(jGame.getBulletsTextures(), jGame.getjBox().getWorld(), ownerSet.get(def.getObjectOwnerID()));
 			m_missileManager.add(new NormalBullet(def));			
 		}
 		
 		for(BouncingBulletDef def : bouncingBulletDef) {
-			def.restore(jGame.getBulletsTextures(), jGame.getjBox().getWorld(), ownerSet.get(def.hashCode()));
+			def.restore(jGame.getBulletsTextures(), jGame.getjBox().getWorld(), ownerSet.get(def.getObjectOwnerID()));
 			m_missileManager.add(new BouncingBullet(def));			
 		}
 	}

@@ -10,8 +10,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.gdx.jgame.Camera;
 import com.gdx.jgame.ObjectsID;
+import com.gdx.jgame.jBox2D.FixturePolData;
 import com.gdx.jgame.managers.MapManager;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -29,7 +31,7 @@ public abstract class PalpableObject implements ObjectsID<PalpableObject>, Compa
 	
 	private World world;
 	private Body body;	// get access to give forces to body
-	protected Fixture firstFixture;
+	protected Fixture mainFixture;
 	private float m_scale;
 	private String m_texturePath;
 	private Vector2 lastPosition;
@@ -43,11 +45,13 @@ public abstract class PalpableObject implements ObjectsID<PalpableObject>, Compa
 		m_texturePath = objectDef.texturePath;
 		body = world.createBody(objectDef.bodyDef);
 		lastPosition = new Vector2(objectDef.bodyDef.position);
+		objectDef.setObjectInGameID(ID);
 		
 		PolygonShape shape = new PolygonShape();
 		shape.set(objectDef.fixturePolData.shapeVertices);
 		objectDef.fixtureDef.shape = shape;
-		firstFixture = body.createFixture(objectDef.fixtureDef); 
+		mainFixture = body.createFixture(objectDef.fixtureDef); 
+		body.setUserData(this);
 		
 		setTexture(objectDef.texture);
 		shape.dispose();
@@ -58,6 +62,27 @@ public abstract class PalpableObject implements ObjectsID<PalpableObject>, Compa
 		defaultSprite.setBounds(0, 0, defaultSprite.getWidth() * m_scale / MapManager.PIXELS_PER_METER, 
 				defaultSprite.getHeight() * m_scale / MapManager.PIXELS_PER_METER);
 		defaultSprite.setOriginCenter();
+	}
+	
+	private void changeMainFixture(Vector2[] vertices) {
+		FixturePolData def = new FixturePolData(mainFixture);
+		PolygonShape shape = new PolygonShape();
+		FixtureDef fdef = new FixtureDef();
+		body.destroyFixture(mainFixture);
+		
+		shape.set(vertices);
+		def.restore(fdef);
+		fdef.shape = shape;
+		
+		mainFixture = body.createFixture(fdef);
+		
+		shape.dispose();
+	}
+	
+	public void changeMainFixture(Texture texture, Vector2[] vertices, float txScale) {
+		m_scale = txScale;
+		changeMainFixture(vertices);
+		setTexture(texture);
 	}
 	
 	public static boolean overlaps(Polygon polygon, Rectangle rectangle) {
@@ -92,7 +117,6 @@ public abstract class PalpableObject implements ObjectsID<PalpableObject>, Compa
 	}
 	
 	public Vector2 getPositionOnScreen(Camera camera) {
-		//to be more transparent
 		if(camera.getFollower() != this) {
 			throw new IllegalArgumentException("Camera do not follow this object");
 		}

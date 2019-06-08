@@ -4,9 +4,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.gdx.jgame.gameObjects.characters.BasicEnemy;
 import com.gdx.jgame.gameObjects.characters.PlainCharacter;
-import com.gdx.jgame.gameObjects.missiles.NormalBullet;
 import com.gdx.jgame.jBox2D.BodiesToDestroy;
 
 public class EnemiesListener implements ContactListener{
@@ -33,7 +31,6 @@ public class EnemiesListener implements ContactListener{
 		}
 		
 		if(object == null || enemy == null) return;
-		
 		enemy.updateObject(object);
 		if(enemy.isRemovable()) m_destroy.add(enemy.getBody());	
 	}

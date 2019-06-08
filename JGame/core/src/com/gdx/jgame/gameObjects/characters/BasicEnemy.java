@@ -1,19 +1,19 @@
 package com.gdx.jgame.gameObjects.characters;
 
 import com.gdx.jgame.gameObjects.characters.def.CharacterPolygonDef;
-import com.gdx.jgame.gameObjects.missiles.MissileAdapter;
+import com.gdx.jgame.gameObjects.missiles.Missile;
 
 public class BasicEnemy extends PlainCharacter{
 
 	public BasicEnemy(CharacterPolygonDef characterPolygonDef) {
 		super(characterPolygonDef);
-		this.getBody().setUserData(this);
 	}	
 
 	@Override
 	public void updateObject(Object object) {
-		if(object instanceof MissileAdapter) {
-			changeHealth(((MissileAdapter) object).getDamage());
+		
+		if(object instanceof Missile) {
+			changeHealth(((Missile) object).getDamage());
 		}
 	}
 

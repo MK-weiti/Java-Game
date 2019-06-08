@@ -2,14 +2,13 @@ package com.gdx.jgame.gameObjects.missiles;
 
 import com.gdx.jgame.gameObjects.missiles.def.BouncingBulletDef;
 
-public class BouncingBullet extends MissileAdapter{
+public class BouncingBullet extends Missile{
 	
 	private int m_numberOfBounces;
 
 	public BouncingBullet(BouncingBulletDef bullet) {
 		super(bullet, bullet.getOwner());
 		m_numberOfBounces = bullet.numberOfBounces;
-		this.getBody().setUserData(this);
 		// TODO Auto-generated constructor stub
 	}
 

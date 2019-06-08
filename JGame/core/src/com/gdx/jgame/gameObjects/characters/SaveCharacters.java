@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 import com.gdx.jgame.JGame;
-import com.gdx.jgame.gameObjects.PalpableObject;
-import com.gdx.jgame.gameObjects.PalpableObjectPolygonDef;
 import com.gdx.jgame.gameObjects.characters.def.BasicEnemyDef;
-import com.gdx.jgame.gameObjects.characters.def.PlayerDef;
 import com.gdx.jgame.managers.CharactersManager;
 
 public class SaveCharacters implements Serializable{
@@ -38,21 +35,22 @@ public class SaveCharacters implements Serializable{
 		}
 	}
 	
+	// put in Map
 	public void load(JGame jGame, TreeMap<Integer, Object> restoreOwner) {
 		m_manager = jGame.getCharactersManager();
-		
 		playerDef.restore(jGame.getCharactersTextures(), jGame.getjBox().getWorld());
-		restoreOwner.put(((PalpableObjectPolygonDef) playerDef).hashCode(), m_manager.addPlayer(playerDef, jGame.getBulletsTextures()));
-		System.out.println(playerDef.hashCode());
+		restoreOwner.put(playerDef.getObjectInGameID(), m_manager.addPlayer(playerDef, jGame.getBulletsTextures()));
 		
 		for(String name : m_groupNames) {
 			m_manager.addGroup(name);
-			for(BasicEnemyDef character : basicEnemy) {
-				character.restore(jGame.getCharactersTextures(), jGame.getjBox().getWorld());
-				restoreOwner.put(((PalpableObjectPolygonDef) character).hashCode(), m_manager.addEnemies(character).first());
-			}
-			// and additional loops for other types
 		}
+		
+		for(BasicEnemyDef character : basicEnemy) {
+			character.restore(jGame.getCharactersTextures(), jGame.getjBox().getWorld());
+			restoreOwner.put(character.getObjectInGameID(), m_manager.addEnemies(character).first());
+		}
+		// and additional loops for other types
+		
 	}
 	
 	public SaveCharacters(CharactersManager manager) {

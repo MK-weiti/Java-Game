@@ -4,7 +4,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.gdx.jgame.gameObjects.missiles.MissileAdapter;
+import com.gdx.jgame.gameObjects.missiles.Missile;
 import com.gdx.jgame.jBox2D.BodiesToDestroy;
 
 public class MissleListener implements ContactListener{
@@ -19,16 +19,16 @@ public class MissleListener implements ContactListener{
 		Object dataA = contact.getFixtureA().getBody().getUserData();
 		Object dataB = contact.getFixtureB().getBody().getUserData();
 		Object object = null;
-		MissileAdapter missile = null;	
+		Missile missile = null;	
 		
-		if(dataA instanceof MissileAdapter) {
+		if(dataA instanceof Missile) {
 			object = dataB;
-			missile = (MissileAdapter) dataA;
+			missile = (Missile) dataA;
 			if(contact.getFixtureB().getBody().getFixtureList().first().isSensor()) return;
 		}
-		else if(dataB instanceof MissileAdapter) {
+		else if(dataB instanceof Missile) {
 			object = dataA;
-			missile = (MissileAdapter) dataB;
+			missile = (Missile) dataB;
 			if(contact.getFixtureA().getBody().getFixtureList().first().isSensor()) return;
 		}
 		

@@ -6,8 +6,6 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.gdx.jgame.JGame;
 import com.gdx.jgame.gameObjects.characters.Player;
-import com.gdx.jgame.gameObjects.missiles.MissileAdapter;
-import com.gdx.jgame.gameObjects.missiles.NormalBullet;
 import com.gdx.jgame.jBox2D.BodiesToDestroy;
 import com.gdx.jgame.jBox2D.mapObjects.*;
 

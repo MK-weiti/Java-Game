@@ -1,14 +1,14 @@
 package com.gdx.jgame;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.lang.reflect.Field;
 import java.util.TreeMap;
 
 import com.badlogic.gdx.math.Vector2;
 import com.gdx.jgame.hud.Hud;
-import com.gdx.jgame.gameObjects.characters.PlainCharacter;
+import com.gdx.jgame.gameObjects.PalpableObject;
+import com.gdx.jgame.gameObjects.PalpableObjectPolygonDef;
 import com.gdx.jgame.gameObjects.characters.SaveCharacters;
-import com.gdx.jgame.gameObjects.characters.def.CharacterPolygonDef;
 import com.gdx.jgame.gameObjects.missiles.SaveMisiles;
 import com.gdx.jgame.jBox2D.JBoxObjects;
 
@@ -36,27 +36,46 @@ public class GameState implements Serializable{
 		cameraZoom = m_game.getWorldCamera().zoom;
 		cameraShift = new Vector2(m_game.getWorldCamera().getShift());
 		
-		missiles.save();
-		characters.save();
+		saveGameObjects();
 	}
 	
-	public void load(JGame jGame) {
-		TreeMap<Integer, Object> restoreOwner = new TreeMap<Integer, Object>();
+	public void load(JGame jGame) 
+			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		m_game = jGame;
 		
+		Field f1 = PalpableObject.class.getDeclaredField("m_numberOfObjects");
+		Field f2 = PalpableObjectPolygonDef.class.getDeclaredField("m_numberOfObjects");
+		
+		f1.setAccessible(true);
+		f2.setAccessible(true);
+		f1.setInt(null, 0);
+		f2.setInt(null, 0);
+
 		m_game.getWorldCamera().zoom = cameraZoom;
 		m_game.getWorldCamera().setShift(cameraShift);
 		
 		m_game.setJBox(new JBoxObjects(m_game, m_game.getMaps().getLayers(), m_game.getWorldCamera(), m_game.isDebugMode(), m_game.isShowLayout()));
 		
-		characters.load(jGame, restoreOwner);
+		loadGameObjects();
 		
 		m_game.setHud(new Hud(m_game.getBatch(), m_game.getCharacters().getPlayer(), m_game.isDebugMode(), m_game.isShowLayout()));
 		m_game.getCharacters().setCameraFollower(m_game.getCharacters().getPlayer());
-		missiles.load(m_game, restoreOwner);
 	}
 	
 	public String getMapName() {
 		return mapName;
+	}
+	
+	private void saveGameObjects() {
+		missiles.save();
+		characters.save();
+	}
+	
+	private void loadGameObjects() {
+		// the order matters
+		TreeMap<Integer, Object> restoreOwner = new TreeMap<Integer, Object>();
+		
+		characters.load(m_game, restoreOwner);
+		missiles.load(m_game, restoreOwner);
 	}
 }

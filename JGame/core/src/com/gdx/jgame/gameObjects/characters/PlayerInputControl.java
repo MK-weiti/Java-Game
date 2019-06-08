@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.gdx.jgame.Camera;
-import com.gdx.jgame.gameObjects.missiles.MissileAdapter;
+import com.gdx.jgame.gameObjects.missiles.Missile;
 
 public class PlayerInputControl implements InputProcessor{
 	
@@ -95,10 +95,10 @@ public class PlayerInputControl implements InputProcessor{
 		if(m_character instanceof Player) {
 			Player player = (Player) m_character;
 			if(button == Input.Buttons.LEFT) {
-				player.spawnBullet(m_camera, new Vector2(0.05f, 0.05f), MissileAdapter.MissileType.NormalBullet);
+				player.spawnBullet(m_camera, new Vector2(0.05f, 0.05f), Missile.MissileType.NormalBullet);
 			}
 			else if(button == Input.Buttons.RIGHT) {
-				player.spawnBullet(m_camera, new Vector2(0.05f, 0.05f), MissileAdapter.MissileType.BouncingBullet);
+				player.spawnBullet(m_camera, new Vector2(0.05f, 0.05f), Missile.MissileType.BouncingBullet);
 			}
 		}
 		

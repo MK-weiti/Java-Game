@@ -5,31 +5,30 @@ import java.util.HashMap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class MissilesManager {
-	private HashMap<MissileAdapter, MissileAdapter> missiles;
+	private HashMap<Integer, Missile> missiles;
 	
 	public MissilesManager(){
-		missiles = new HashMap<MissileAdapter, MissileAdapter>();
+		missiles = new HashMap<Integer, Missile>();
 	}
 	
-	public void remove(MissileAdapter missile) {
+	public void remove(Missile missile) {
 		if(missile.isRemovable()) {
-			missiles.remove(missile);
+			missiles.remove(missile.ID);
 			missile.deleteObject();
 		}
 	}
 	
-	public void add(MissileAdapter missile) {
-		missiles.put(missile, missile);
+	public void add(Missile missile) {
+		if(missiles.put(missile.ID, missile) != null) throw new IllegalArgumentException("The missile is already in manager.");
 	}
 	
 	public void render(SpriteBatch batch) {
-		
-		for(MissileAdapter bullet : missiles.keySet()) {
+		for(Missile bullet : missiles.values()) {
 			bullet.render(batch);
 		}
 	}
 	
-	Collection<MissileAdapter> getMissiles() {
+	Collection<Missile> getMissiles() {
 		return missiles.values();
 	}
 }

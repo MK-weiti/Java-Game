@@ -6,22 +6,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.gdx.jgame.gameObjects.MovingObjectDef;
 import com.gdx.jgame.gameObjects.PalpableObject;
-import com.gdx.jgame.gameObjects.characters.BasicEnemy;
-import com.gdx.jgame.gameObjects.characters.Player;
-import com.gdx.jgame.gameObjects.characters.def.BasicEnemyDef;
-import com.gdx.jgame.gameObjects.characters.def.PlayerDef;
-import com.gdx.jgame.gameObjects.missiles.MissileAdapter;
-import com.gdx.jgame.gameObjects.missiles.NormalBullet;
+import com.gdx.jgame.gameObjects.missiles.Missile;
 import com.gdx.jgame.managers.TextureManager;
 
-public abstract class MissileDef extends MovingObjectDef implements Serializable, MissileDefMethods{
+public abstract class MissileDef extends MovingObjectDef implements Serializable{
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1609565569277397245L;
-	protected transient Object owner;
-	private int ownerId;
+	protected transient Object owner = null;
+	// created only from existing object in game
+	private int objectOwnerID = -1;
 	public int damage = 0;
 	
 	
@@ -33,46 +29,40 @@ public abstract class MissileDef extends MovingObjectDef implements Serializable
 	public MissileDef(MissileDef definition) {
 		super(definition);
 		setOwner(definition.owner);
+		damage = definition.damage;
+		objectOwnerID = definition.getObjectInGameID();
 	}
 	
-	public MissileDef(MissileAdapter definition) {
-		super(definition);
-		setOwner(definition.getOwner());
+	public MissileDef(Missile missile) {
+		super(missile);
+		setOwner(missile.getOwner());
+		damage = missile.getDamage();
 	}
 
 	public Object getOwner() {
 		return owner;
 	}
-
-	public int getOwnerId() {
-		return ownerId;
-	}
 	
 	public void restore(TextureManager txMan, World world, Object owner) {
 		super.restore(txMan, world);
 		setOwner(owner);
+		objectOwnerID = ((PalpableObject) owner).ID;
 	}
 	
 	public void setOwner(Object owner) {
 		this.owner = owner;
-		/*if(owner instanceof Player) {
-			PlayerDef tmp = new PlayerDef((Player) owner);
-			ownerId = (tmp.hashCode());
-		} else if(owner instanceof BasicEnemy) {
-			BasicEnemyDef tmp = new BasicEnemyDef((BasicEnemy) owner);
-			ownerId = (tmp.hashCode());
-		}*/
+		objectOwnerID = ((PalpableObject) owner).ID;
 	}
 	
-	public void setOwnerID(int hash) {
-		ownerId = hash;
+	public int getObjectOwnerID() {
+		return objectOwnerID;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ownerId;
+		result = prime * result + damage;
 		return result;
 	}
 
@@ -85,7 +75,7 @@ public abstract class MissileDef extends MovingObjectDef implements Serializable
 		if (getClass() != obj.getClass())
 			return false;
 		MissileDef other = (MissileDef) obj;
-		if (ownerId != other.ownerId)
+		if (damage != other.damage)
 			return false;
 		return true;
 	}

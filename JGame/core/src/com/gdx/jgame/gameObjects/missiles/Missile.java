@@ -3,8 +3,9 @@ package com.gdx.jgame.gameObjects.missiles;
 import com.gdx.jgame.gameObjects.*;
 import com.gdx.jgame.gameObjects.missiles.def.MissileDef;
 
-public abstract class MissileAdapter extends MovingObject implements MisslesMethods{
+public abstract class Missile extends MovingObject implements MisslesMethods{
 	
+	// only for specifying what kind of missile you want to spawn
 	public enum MissileType {
 		NormalBullet,
 		BouncingBullet;
@@ -13,9 +14,10 @@ public abstract class MissileAdapter extends MovingObject implements MisslesMeth
 	private Object m_owner;
 	private int m_damage;
 	
-	public MissileAdapter(MissileDef bullet, Object owner) {
+	public Missile(MissileDef bullet, Object owner) {
 		super(bullet);
 		getBody().setBullet(true);
+		if(owner == null) throw new IllegalArgumentException("NormalBullet have not any owner");
 		m_owner = bullet.getOwner();
 		m_damage = bullet.damage;
 	}

@@ -24,6 +24,9 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID<Palpabl
 	BodyData bodyData;
 	FixturePolData fixturePolData;
 	
+	// created only from existing object in game
+	private int objectInGameID = -1;
+	
 	public String texturePath;
 	public float textureScale;
 	
@@ -66,6 +69,7 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID<Palpabl
 		this.texture = palpableObject.getDefaultSprite().getTexture();
 		texturePath = palpableObject.getTexturePath();
 		textureScale = palpableObject.getScale();
+		objectInGameID = palpableObject.ID;
 		
 		restoreFixBody();
 	}
@@ -79,6 +83,7 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID<Palpabl
 		
 		texturePath = new String(definition.texturePath);
 		textureScale = definition.textureScale;
+		objectInGameID = definition.getObjectInGameID();
 		
 		texture = definition.texture;
 		world = definition.world;
@@ -122,6 +127,11 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID<Palpabl
 		restoreBody();
 	}
 	
+	public void setVertices(Vector2[] vertices) {
+		fixturePolData.setVertices(vertices);
+	}
+	
+	@Override
 	public int numberOfObjects() {
 		return m_numberOfObjects;
 	}
@@ -134,7 +144,13 @@ public class PalpableObjectPolygonDef implements Serializable, ObjectsID<Palpabl
 		restoreFixBody();
 	}
 
+	public int getObjectInGameID() {
+		return objectInGameID;
+	}
 	
+	void setObjectInGameID(int ID) {
+		objectInGameID = ID;
+	}
 
 	@Override
 	public int hashCode() {

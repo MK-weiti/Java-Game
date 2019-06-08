@@ -11,23 +11,16 @@ public abstract class PlainCharacter extends MovingObject implements CharacterMe
 	private int m_maxHealth;
 	private int m_health;
 	
-	//private CHAR_TYPE m_type;
-	private String m_groupName;
-	
-	/*public enum CHAR_TYPE {
-		PLAYER,
-		ENEMY;
-	}*/
+	private String m_groupName = null;
 	
 	public PlainCharacter(CharacterPolygonDef characterPolygonDef) {
 		super(characterPolygonDef, characterPolygonDef.maxVelocity, characterPolygonDef.acceleration);
 		m_maxHealth = characterPolygonDef.maxHealth;
 		m_health = characterPolygonDef.m_health;
 		m_groupName = characterPolygonDef.charGroupName;
-		//m_type = characterPolygonDef.charType;
 	}
 	
-	protected Vector2 initialImpulseAndPosition(Camera camera, Vector2 space, MissileDef missile, float initialImpulse) {
+	public Vector2 initialImpulseAndPosition(Camera camera, Vector2 space, MissileDef missile, float initialImpulse) {
 		Vector2 rad = new Vector2(0f, 1f);
 		Vector2 bulletPos = new Vector2();
 		Vector2 impulse = new Vector2();
@@ -98,14 +91,6 @@ public abstract class PlainCharacter extends MovingObject implements CharacterMe
 			m_health += heal;
 		}
 	}
-
-	/*public CHAR_TYPE getCharType() {
-		return m_type;
-	}
-
-	void setCharType(CHAR_TYPE type) {
-		this.m_type = type;
-	}*/
 
 	public String getGroupName() {
 		return m_groupName;

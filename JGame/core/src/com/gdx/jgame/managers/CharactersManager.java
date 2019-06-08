@@ -8,8 +8,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gdx.jgame.gameObjects.characters.BasicEnemy;
 import com.gdx.jgame.gameObjects.characters.PlainCharacter;
 import com.gdx.jgame.gameObjects.characters.Player;
+import com.gdx.jgame.gameObjects.characters.PlayerDef;
 import com.gdx.jgame.gameObjects.characters.def.CharacterPolygonDef;
-import com.gdx.jgame.gameObjects.characters.def.PlayerDef;
 import com.gdx.jgame.gameObjects.missiles.MissilesManager;
 
 public class CharactersManager{
@@ -25,7 +25,8 @@ public class CharactersManager{
 	
 	public void addGroup(String ... names) {
 		for (String name : names) {
-			m_enemyGroups.put(name, new TreeMap<Integer, PlainCharacter>());
+			if(m_enemyGroups.put(name, new TreeMap<Integer, PlainCharacter>()) != null) 
+				throw new IllegalArgumentException("The group name is already in manager.");
 		}
 	}
 	
@@ -45,7 +46,8 @@ public class CharactersManager{
 			tree = m_enemyGroups.get(group);
 			groupException(tree, group);
 			BasicEnemy tmp = new BasicEnemy(enemyDef);
-			tree.put(tmp.ID, tmp);
+			if(tree.put(tmp.ID, tmp) != null) 
+				throw new IllegalArgumentException("The enemy is already in manager.");
 			retVal.add(tmp.ID);
 		}
 		return retVal;

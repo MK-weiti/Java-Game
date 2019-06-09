@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.gdx.jgame.Camera;
 import com.gdx.jgame.gameObjects.MovingObject;
+import com.gdx.jgame.gameObjects.missiles.Missile.MissileType;
 import com.gdx.jgame.gameObjects.missiles.def.MissileDef;
 import com.gdx.jgame.logic.Armory;
 import com.gdx.jgame.logic.ArmoryMethods;
@@ -101,6 +102,11 @@ public abstract class PlainCharacter extends MovingObject implements CharacterMe
 	public String getGroupName() {
 		return m_groupName;
 	}	
+	
+	@Override
+	public void spawnBullet(Camera camera, Vector2 space, MissileType type) {
+		m_armory.spawnBullet(camera, space, type);
+	}
 	
 	@Override
 	public float getInitialImpulseNormalBullet() {

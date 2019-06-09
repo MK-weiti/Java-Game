@@ -37,7 +37,7 @@ public abstract class MovingObject extends PalpableObject{
 		getBody().applyLinearImpulse(new Vector2(deltaX, deltaY), getBody().getWorldCenter(), true);
 	}
 	
-	public float getActualVelocity() {
+	public float getCurrentVelocity() {
 		return (float) Math.hypot(getBody().getLinearVelocity().x, getBody().getLinearVelocity().y);
 	}
 		

@@ -54,7 +54,7 @@ public class PlayerListener implements ContactListener{
 			}
 			if(object instanceof FieldVelocityChange) {
 				player.addRatioAcceleration(m_fieldBoostId, ((FieldVelocityChange) object).speedChange);
-				player.addRatioMaxVelocity(m_fieldMaxVelocityId, ((FieldVelocityChange) object).maxSpeedChange);
+				player.addRatioMaxLinearSpeed(m_fieldMaxVelocityId, ((FieldVelocityChange) object).maxSpeedChange);
 			}
 		}
 		else {

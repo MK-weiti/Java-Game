@@ -36,16 +36,16 @@ public abstract class MissileDef extends MovingObjectDef implements Serializable
 		setOwner(missile.getOwner());
 		damage = missile.getDamage();
 	}
-
-	public Object getOwner() {
-		return owner;
-	}
 	
 	public void restore(TextureManager txMan, World world, Object owner) {
 		super.restore(txMan, world);
 		setOwner(owner);
 		objectOwnerID = ((PalpableObject) owner).ID;
 	}
+
+	public Object getOwner() {
+		return owner;
+	}	
 	
 	public void setOwner(Object owner) {
 		this.owner = owner;

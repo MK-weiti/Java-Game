@@ -316,11 +316,16 @@ public final class JGame implements Screen {
 		tmp.getArrive().setTimeToTarget(1f)
 		.setArrivalTolerance(0.5f)
 		.setDecelerationRadius(0.01f);
+		
+		tmp.getFace().setTimeToTarget(1f)
+		.setDecelerationRadius(0.01f)
+		.setAlignTolerance(0.01f);
+		
 		tmp.setBehavior();
 		
-		m_characters.getEnemy("test_group", enemyID).setMaxAngularSpeed(5f);
+		m_characters.getEnemy("test_group", enemyID).setMaxAngularSpeed(2f);
 		m_characters.getEnemy("test_group", enemyID).setMaxAngularAcceleration(3f);
-		m_characters.getEnemy("test_group", enemyID).setMaxLinearSpeed(5f);
+		m_characters.getEnemy("test_group", enemyID).setMaxLinearSpeed(1f);
 		m_characters.getEnemy("test_group", enemyID).setMaxLinearAcceleration(3f);
 	}
 	

@@ -25,15 +25,17 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.gdx.jgame.gameObjects.Methods;
+import com.gdx.jgame.gameObjects.characters.BasicEnemy;
 import com.gdx.jgame.gameObjects.characters.BasicEnemyDef;
 import com.gdx.jgame.gameObjects.characters.CharacterPolygonDef;
+import com.gdx.jgame.gameObjects.characters.Player;
 import com.gdx.jgame.gameObjects.characters.PlayerDef;
 import com.gdx.jgame.gameObjects.missiles.MissilesManager;
 import com.gdx.jgame.gameObjects.missiles.def.BouncingBulletDef;
 import com.gdx.jgame.gameObjects.missiles.def.NormalBulletDef;
 import com.gdx.jgame.hud.Hud;
 import com.gdx.jgame.jBox2D.JBoxObjects;
+import com.gdx.jgame.logic.ai.FollowerEntity;
 import com.gdx.jgame.managers.CharactersManager;
 import com.gdx.jgame.managers.MapManager;
 import com.gdx.jgame.managers.SavesManager;
@@ -82,7 +84,9 @@ public final class JGame implements Screen {
 	private boolean gameCreated = false;
 	private final boolean m_debugMode;
 	private boolean m_showLayout;
-	//private String m_mapName;
+	
+	
+	private int enemyID;
 	
 	public boolean isGameCreated() {
 		return gameCreated;
@@ -205,6 +209,7 @@ public final class JGame implements Screen {
 		
 		createPlayer();
 		createEnemy();
+		setAI();
 		
 		m_hud = new Hud(m_batch, m_characters.getPlayer(), m_debugMode, m_showLayout);
 		m_characters.setCameraFollower(m_characters.getPlayer());
@@ -216,18 +221,21 @@ public final class JGame implements Screen {
 		float scale = 0.05f;
 		BasicEnemyDef objectDef = new BasicEnemyDef(m_jBox.getWorld(), this.getCharactersTextures(),
 				this.getBulletsTextures(), this.getMisslesManager(), "honeybee.png", scale, groupName, 
-				Methods.setVerticesToTexture(texture, scale));
+				Utils.setVerticesToTexture(texture, scale));
 		
 		playerObjectDef(scale, objectDef, 400, 200);
 		objectDef.maxVelocity = 1f;
 		objectDef.acceleration = 0.5f;
 		objectDef.armory.normalBulletDef = createBulletDef(m_bulletsTextures);
 		
-		m_characters.addEnemies(objectDef);
+		enemyID = m_characters.addEnemies(objectDef).first();
 		
 		BasicEnemyDef objectDef2 = new BasicEnemyDef(m_jBox.getWorld(), this.getCharactersTextures(),
 				this.getBulletsTextures(), this.getMisslesManager(),
-				"honeybee.png", scale, groupName, Methods.setVerticesToTexture(texture, scale));
+				"honeybee.png", scale, groupName, Utils.setVerticesToTexture(texture, scale));
+		
+		objectDef2.maxVelocity = 1f;
+		objectDef2.acceleration = 0.5f;
 		
 		playerObjectDef(scale, objectDef2, 500, 250);
 		m_characters.addEnemies(objectDef2);
@@ -246,7 +254,7 @@ public final class JGame implements Screen {
 		float scale = 1f;
 		
 		PlayerDef objectDef = new PlayerDef(m_jBox.getWorld(), m_charactersTextures, m_bulletsTextures, m_missleManager, 
-				"player.png", scale, null, Methods.setVerticesToTexture(texture, scale));
+				"player.png", scale, null, Utils.setVerticesToTexture(texture, scale));
 		
 		playerObjectDef(scale, objectDef, 128, 192);
 		objectDef.maxVelocity = 1f;
@@ -274,7 +282,7 @@ public final class JGame implements Screen {
 	private NormalBulletDef createBulletDef(TextureManager txBulletManager) {
 		NormalBulletDef normalBulletDef;
 		normalBulletDef = new NormalBulletDef(m_jBox.getWorld(), txBulletManager, "rocket.png", 
-				0.05f, Methods.setVerticesToTexture(txBulletManager.get("rocket.png"), 0.01f));
+				0.05f, Utils.setVerticesToTexture(txBulletManager.get("rocket.png"), 0.01f));
 		normalBulletDef.damage = -2;
 		normalBulletDef.maxVelocity = 40f;
 		normalBulletDef.acceleration = 5f;
@@ -289,7 +297,7 @@ public final class JGame implements Screen {
 	private BouncingBulletDef createmBouncingBulletDef(TextureManager txBulletManager) {
 		BouncingBulletDef bouncingBulletDef;
 		bouncingBulletDef = new BouncingBulletDef(m_jBox.getWorld(), txBulletManager, "normalBullet.png", 
-				0.05f, Methods.setVerticesToTexture(txBulletManager.get("normalBullet.png"), 0.01f));
+				0.05f, Utils.setVerticesToTexture(txBulletManager.get("normalBullet.png"), 0.01f));
 		bouncingBulletDef.numberOfBounces = 3;
 		bouncingBulletDef.damage = -2;
 		bouncingBulletDef.maxVelocity = 40f;
@@ -301,6 +309,19 @@ public final class JGame implements Screen {
 		bouncingBulletDef.fixtureDef.restitution = 1f;
 		
 		return bouncingBulletDef;
+	}
+	
+	private void setAI() {
+		FollowerEntity tmp = new FollowerEntity(m_characters.getEnemy("test_group", enemyID), m_characters.getPlayer());
+		tmp.getArrive().setTimeToTarget(1f)
+		.setArrivalTolerance(0.5f)
+		.setDecelerationRadius(0.01f);
+		tmp.setBehavior();
+		
+		m_characters.getEnemy("test_group", enemyID).setMaxAngularSpeed(5f);
+		m_characters.getEnemy("test_group", enemyID).setMaxAngularAcceleration(3f);
+		m_characters.getEnemy("test_group", enemyID).setMaxLinearSpeed(5f);
+		m_characters.getEnemy("test_group", enemyID).setMaxLinearAcceleration(3f);
 	}
 	
 	@Override

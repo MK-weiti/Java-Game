@@ -204,5 +204,45 @@ public abstract class PalpableObject implements ObjectsID<PalpableObject>, Compa
 		if(ID == object.ID) return true;
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (isBodyDestroyed ? 1231 : 1237);
+		result = prime * result + (isDestructible ? 1231 : 1237);
+		result = prime * result + ((lastPosition == null) ? 0 : lastPosition.hashCode());
+		result = prime * result + Float.floatToIntBits(m_scale);
+		result = prime * result + ((m_texturePath == null) ? 0 : m_texturePath.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PalpableObject other = (PalpableObject) obj;
+		if (isBodyDestroyed != other.isBodyDestroyed)
+			return false;
+		if (isDestructible != other.isDestructible)
+			return false;
+		if (lastPosition == null) {
+			if (other.lastPosition != null)
+				return false;
+		} else if (!lastPosition.equals(other.lastPosition))
+			return false;
+		if (Float.floatToIntBits(m_scale) != Float.floatToIntBits(other.m_scale))
+			return false;
+		if (m_texturePath == null) {
+			if (other.m_texturePath != null)
+				return false;
+		} else if (!m_texturePath.equals(other.m_texturePath))
+			return false;
+		return true;
+	}
 	
 }

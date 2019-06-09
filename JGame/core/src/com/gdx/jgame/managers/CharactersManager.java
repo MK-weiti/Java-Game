@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gdx.jgame.gameObjects.characters.BasicEnemy;
 import com.gdx.jgame.gameObjects.characters.BasicEnemyDef;
@@ -95,12 +96,16 @@ public class CharactersManager{
 	}
 	
 	public void renderPlayer(SpriteBatch batch) {
-		if(m_player != null) m_player.render(batch);
+		if(m_player != null) {
+			m_player.updateAI(Gdx.graphics.getDeltaTime());
+			m_player.render(batch);
+		}
 	}
 	
 	public void renderEnemiesGroup(SpriteBatch batch, String groupName) {
 		ArrayList<PlainCharacter> list = getGroupList(groupName);
 		for (PlainCharacter character : list) {
+			character.updateAI(Gdx.graphics.getDeltaTime());
 			character.render(batch);
 		}
 	}

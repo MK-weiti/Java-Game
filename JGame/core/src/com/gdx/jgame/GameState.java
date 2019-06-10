@@ -11,6 +11,7 @@ import com.gdx.jgame.gameObjects.PalpableObjectPolygonDef;
 import com.gdx.jgame.gameObjects.characters.SaveCharacters;
 import com.gdx.jgame.gameObjects.missiles.SaveMisiles;
 import com.gdx.jgame.jBox2D.JBoxObjects;
+import com.gdx.jgame.logic.ai.AIManager;
 
 public class GameState implements Serializable{
 	/**
@@ -24,11 +25,13 @@ public class GameState implements Serializable{
 	private String mapName;
 	private float cameraZoom;
 	private Vector2 cameraShift;
+	private AIManager managerAI;
 	
 	public GameState(JGame jGame) {
 		characters = new SaveCharacters(jGame.getCharactersManager());
 		missiles = new SaveMisiles(jGame.getMisslesManager());
 		m_game = jGame;
+		managerAI = jGame.getManagerAI();
 	}
 	
 	public void save() {
@@ -58,6 +61,7 @@ public class GameState implements Serializable{
 		
 		loadGameObjects();
 		
+		
 		m_game.setHud(new Hud(m_game.getBatch(), m_game.getCharacters().getPlayer(), m_game.isDebugMode(), m_game.isShowLayout()));
 		m_game.getCharacters().setCameraFollower(m_game.getCharacters().getPlayer());
 	}
@@ -69,6 +73,7 @@ public class GameState implements Serializable{
 	private void saveGameObjects() {
 		missiles.save();
 		characters.save();
+		managerAI.save();
 	}
 	
 	private void loadGameObjects() {
@@ -77,5 +82,6 @@ public class GameState implements Serializable{
 		
 		characters.load(m_game, restoreOwner);
 		missiles.load(m_game, restoreOwner);
+		managerAI.load(restoreOwner);
 	}
 }

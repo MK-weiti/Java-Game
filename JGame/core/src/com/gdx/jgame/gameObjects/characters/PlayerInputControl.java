@@ -20,8 +20,6 @@ public class PlayerInputControl implements InputProcessor{
 	public void keyPressed(PlainCharacter character) {
 		float impulse = character.getImpulse();
 		
-		System.out.println(character.getMaxLinearSpeed());
-		
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {	
 			if(-character.getMaxLinearSpeed() < character.getBody().getLinearVelocity().x) {
 				if(character.getBody().getLinearVelocity().x - impulse < -character.getMaxLinearSpeed())

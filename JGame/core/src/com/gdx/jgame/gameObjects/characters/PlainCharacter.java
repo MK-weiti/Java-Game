@@ -18,7 +18,7 @@ public abstract class PlainCharacter extends MovingObject implements CharacterMe
 	private String m_groupName = null;
 	
 	public PlainCharacter(CharacterPolygonDef characterPolygonDef) {
-		super(characterPolygonDef, characterPolygonDef.maxVelocity, characterPolygonDef.acceleration);
+		super(characterPolygonDef, characterPolygonDef.acceleration);
 		m_maxHealth = characterPolygonDef.maxHealth;
 		m_health = characterPolygonDef.m_health;
 		m_groupName = characterPolygonDef.charGroupName;
@@ -166,6 +166,43 @@ public abstract class PlainCharacter extends MovingObject implements CharacterMe
 	@Override
 	public void setCurrentAmmoBouncingBullet(int currentAmmoBouncingBullet) {
 		m_armory.currentAmmoBouncingBullet = currentAmmoBouncingBullet;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((m_armory == null) ? 0 : m_armory.hashCode());
+		result = prime * result + ((m_groupName == null) ? 0 : m_groupName.hashCode());
+		result = prime * result + m_health;
+		result = prime * result + m_maxHealth;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PlainCharacter other = (PlainCharacter) obj;
+		if (m_armory == null) {
+			if (other.m_armory != null)
+				return false;
+		} else if (!m_armory.equals(other.m_armory))
+			return false;
+		if (m_groupName == null) {
+			if (other.m_groupName != null)
+				return false;
+		} else if (!m_groupName.equals(other.m_groupName))
+			return false;
+		if (m_health != other.m_health)
+			return false;
+		if (m_maxHealth != other.m_maxHealth)
+			return false;
+		return true;
 	}
 	
 }

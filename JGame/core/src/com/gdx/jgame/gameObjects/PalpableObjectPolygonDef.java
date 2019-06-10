@@ -205,8 +205,7 @@ public abstract class PalpableObjectPolygonDef implements Serializable, ObjectsI
 	
 	@Override
 	public boolean equalsID(PalpableObjectPolygonDef object) {
-		if(ID == object.ID) return true;
-		return false;
+		return ID == object.ID;
 	}
 	
 }

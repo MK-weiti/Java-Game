@@ -35,6 +35,7 @@ import com.gdx.jgame.gameObjects.missiles.def.BouncingBulletDef;
 import com.gdx.jgame.gameObjects.missiles.def.NormalBulletDef;
 import com.gdx.jgame.hud.Hud;
 import com.gdx.jgame.jBox2D.JBoxObjects;
+import com.gdx.jgame.logic.ai.AIManager;
 import com.gdx.jgame.logic.ai.FollowerEntity;
 import com.gdx.jgame.managers.CharactersManager;
 import com.gdx.jgame.managers.MapManager;
@@ -64,6 +65,7 @@ public final class JGame implements Screen {
 	private SavesManager m_recordManager;
 	private MapManager m_map;
 	private MissilesManager m_missleManager;
+	private AIManager managerAI;
 	
 	// in game classes
 	private Camera m_mainCamera;
@@ -192,6 +194,7 @@ public final class JGame implements Screen {
 		m_characters = new CharactersManager(m_missleManager);
 		m_mainCamera = new Camera(m_characters);
 		m_batch = new SpriteBatch();
+		managerAI = new AIManager();
 		
 		if(m_debugMode) {
 			m_stopRender = new Semaphore(1);
@@ -224,7 +227,6 @@ public final class JGame implements Screen {
 				Utils.setVerticesToTexture(texture, scale));
 		
 		playerObjectDef(scale, objectDef, 400, 200);
-		objectDef.maxVelocity = 1f;
 		objectDef.acceleration = 0.5f;
 		objectDef.armory.normalBulletDef = createBulletDef(m_bulletsTextures);
 		
@@ -234,7 +236,6 @@ public final class JGame implements Screen {
 				this.getBulletsTextures(), this.getMisslesManager(),
 				"honeybee.png", scale, groupName, Utils.setVerticesToTexture(texture, scale));
 		
-		objectDef2.maxVelocity = 1f;
 		objectDef2.acceleration = 0.5f;
 		
 		playerObjectDef(scale, objectDef2, 500, 250);
@@ -257,9 +258,9 @@ public final class JGame implements Screen {
 				"player.png", scale, null, Utils.setVerticesToTexture(texture, scale));
 		
 		playerObjectDef(scale, objectDef, 128, 192);
-		objectDef.maxVelocity = 1f;
 		objectDef.acceleration = 0.5f;
 		objectDef.bodyDef.fixedRotation = true;
+		objectDef.maxLinearSpeed = 1f;
 		objectDef.armory.currentAmmoBouncingBullet = 5;
 		objectDef.armory.currentAmmoNormalBullet = 10;
 		
@@ -284,7 +285,6 @@ public final class JGame implements Screen {
 		normalBulletDef = new NormalBulletDef(m_jBox.getWorld(), txBulletManager, "rocket.png", 
 				0.05f, Utils.setVerticesToTexture(txBulletManager.get("rocket.png"), 0.01f));
 		normalBulletDef.damage = -2;
-		normalBulletDef.maxVelocity = 40f;
 		normalBulletDef.acceleration = 5f;
 		normalBulletDef.fixtureDef.density = 2f;
 		normalBulletDef.bodyDef.type = BodyType.DynamicBody;
@@ -300,7 +300,6 @@ public final class JGame implements Screen {
 				0.05f, Utils.setVerticesToTexture(txBulletManager.get("normalBullet.png"), 0.01f));
 		bouncingBulletDef.numberOfBounces = 3;
 		bouncingBulletDef.damage = -2;
-		bouncingBulletDef.maxVelocity = 40f;
 		bouncingBulletDef.acceleration = 5f;
 		bouncingBulletDef.fixtureDef.density = 2f;
 		bouncingBulletDef.bodyDef.type = BodyType.DynamicBody;
@@ -427,6 +426,10 @@ public final class JGame implements Screen {
 
 	public JBoxObjects getjBox() {
 		return m_jBox;
+	}
+
+	public AIManager getManagerAI() {
+		return managerAI;
 	}	
 	
 }

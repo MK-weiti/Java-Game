@@ -52,7 +52,6 @@ public class SaveCharacters implements Serializable{
 			restoreOwner.put(character.getObjectInGameID(), m_manager.addEnemies(character).first());
 		}
 		// and additional loops for other types
-		
 	}
 	
 	public SaveCharacters(CharactersManager manager) {

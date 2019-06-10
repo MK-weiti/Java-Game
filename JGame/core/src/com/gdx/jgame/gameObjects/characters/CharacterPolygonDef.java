@@ -1,76 +1,75 @@
 package com.gdx.jgame.gameObjects.characters;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.gdx.jgame.ObjectsID;
-import com.gdx.jgame.gameObjects.PalpableObjectPolygonDef;
+import com.gdx.jgame.gameObjects.MovingObjectDef;
+import com.gdx.jgame.gameObjects.missiles.MissilesManager;
+import com.gdx.jgame.logic.Armory;
 import com.gdx.jgame.managers.TextureManager;
 
-public class CharacterPolygonDef extends PalpableObjectPolygonDef implements Serializable, ObjectsID{	
+public class CharacterPolygonDef extends MovingObjectDef implements Serializable{	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -2433937948903941797L;
+	private static final long serialVersionUID = -3557435280659148355L;
 	
-	private static long m_numberOfObjects = 0;
-	public final long ID;
-	
-	public float maxVelocity = 1f;
-	public float acceleration = 0f;
 	public int maxHealth = 5;
 	public int m_health = maxHealth;
-	public CharType charType;
 	public String charGroupName = null;
 	
-	public enum CharType {
-		Player,
-		Enemy;
-	}
+	public Armory armory = null;
 	
-	public CharacterPolygonDef(World world, TextureManager texManager, String texPath, 
-			float texScale, String characterGroupName, Vector2[] b2vertices, CharType charType) {	
-		super(world, texManager.get(texPath), texPath, texScale, b2vertices);
-		ID = m_numberOfObjects;
-		++m_numberOfObjects;
-		this.charType = charType;
+	public CharacterPolygonDef(World world, TextureManager charTexManager, TextureManager missileTexManager, 
+			MissilesManager missileManager, String texPath, 
+			float texScale, String characterGroupName, Vector2[] b2vertices) {	
+		super(world, charTexManager.get(texPath), texPath, texScale, b2vertices);
 		charGroupName = characterGroupName;
+		armory = new Armory(missileTexManager, missileManager);
 	}
 
+	public CharacterPolygonDef(PlainCharacter plainCharacter) {
+		super(plainCharacter);
+		
+		maxHealth = plainCharacter.getMaxHealth();
+		m_health = plainCharacter.getHealth();
+		if(plainCharacter.getGroupName() != null) { // Player do not have a group
+			charGroupName = new String(plainCharacter.getGroupName());
+		}
+		armory = plainCharacter.m_armory;
+	}
+	
 	public CharacterPolygonDef(CharacterPolygonDef definition) {
-		super((PalpableObjectPolygonDef)definition);
-		ID = m_numberOfObjects;
-		++m_numberOfObjects;
-		maxVelocity = definition.maxVelocity;
-		acceleration = definition.acceleration;
+		super(definition);
 		maxHealth = definition.maxHealth;
 		m_health = definition.m_health;
-		charType = definition.charType;
-		if(definition.charGroupName != null) { // Player do not have a group
-			charGroupName = new String(definition.charGroupName);
-		}
+		charGroupName = new String(definition.charGroupName);
+		
+		armory = definition.armory;
 	}
 	
-	public void restoreCharacter(TextureManager txMan, World world) {
-		super.restoreObject(txMan, world);
+	public void restore(World world, Map <Integer, Object> restoreOwner, 
+			TextureManager bulletsTextures, TextureManager txCharMan, MissilesManager missileManager) {
+		armory.load(restoreOwner, bulletsTextures, missileManager);
+		
+		super.restore(txCharMan, world);
+		if(armory.bouncingBulletDef != null)
+			armory.bouncingBulletDef.restore(bulletsTextures, world);
+		if(armory.normalBulletDef != null)
+			armory.normalBulletDef.restore(bulletsTextures, world);
 	}
 	
-	public long numberOfObjects() {
-		return m_numberOfObjects;
-	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + (int) (ID ^ (ID >>> 32));
-		result = prime * result + Float.floatToIntBits(acceleration);
+		result = prime * result + ((armory == null) ? 0 : armory.hashCode());
 		result = prime * result + ((charGroupName == null) ? 0 : charGroupName.hashCode());
-		result = prime * result + ((charType == null) ? 0 : charType.hashCode());
 		result = prime * result + m_health;
 		result = prime * result + maxHealth;
-		result = prime * result + Float.floatToIntBits(maxVelocity);
 		return result;
 	}
 
@@ -83,25 +82,21 @@ public class CharacterPolygonDef extends PalpableObjectPolygonDef implements Ser
 		if (getClass() != obj.getClass())
 			return false;
 		CharacterPolygonDef other = (CharacterPolygonDef) obj;
-		if (ID != other.ID)
-			return false;
-		if (Float.floatToIntBits(acceleration) != Float.floatToIntBits(other.acceleration))
+		if (armory == null) {
+			if (other.armory != null)
+				return false;
+		} else if (!armory.equals(other.armory))
 			return false;
 		if (charGroupName == null) {
 			if (other.charGroupName != null)
 				return false;
 		} else if (!charGroupName.equals(other.charGroupName))
 			return false;
-		if (charType != other.charType)
-			return false;
 		if (m_health != other.m_health)
 			return false;
 		if (maxHealth != other.maxHealth)
 			return false;
-		if (Float.floatToIntBits(maxVelocity) != Float.floatToIntBits(other.maxVelocity))
-			return false;
 		return true;
 	}
-
 	
 }

@@ -1,23 +1,64 @@
 package com.gdx.jgame.gameObjects.characters;
 
-import com.gdx.jgame.gameObjects.MovingObjectAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
+import com.gdx.jgame.Camera;
+import com.gdx.jgame.gameObjects.MovingObject;
+import com.gdx.jgame.gameObjects.missiles.Missile.MissileType;
+import com.gdx.jgame.gameObjects.missiles.def.MissileDef;
+import com.gdx.jgame.logic.Armory;
+import com.gdx.jgame.logic.ArmoryMethods;
 
-public abstract class PlainCharacter extends MovingObjectAdapter{
+public abstract class PlainCharacter extends MovingObject implements CharacterMethods, ArmoryMethods{
 	private int m_maxHealth;
 	private int m_health;
 	
+	Armory m_armory;
+	
+	private String m_groupName = null;
+	
 	public PlainCharacter(CharacterPolygonDef characterPolygonDef) {
-		super(characterPolygonDef, characterPolygonDef.maxVelocity, characterPolygonDef.acceleration);
+		super(characterPolygonDef, characterPolygonDef.acceleration);
 		m_maxHealth = characterPolygonDef.maxHealth;
-		this.m_health = characterPolygonDef.m_health;
+		m_health = characterPolygonDef.m_health;
+		m_groupName = characterPolygonDef.charGroupName;
+		
+		characterPolygonDef.armory.setOwner(this);
+		m_armory = new Armory(characterPolygonDef.armory);
+	}
+	
+	public Vector2 initialImpulseAndPosition(Camera camera, Vector2 space, MissileDef missile, float initialImpulse) {
+		Vector2 rad = new Vector2(0f, 1f);
+		Vector2 bulletPos = new Vector2();
+		Vector2 impulse = new Vector2();
+		rad.setAngleRad( - this.rawAngleRadOnScreen(camera, new Vector2(Gdx.input.getX(), Gdx.input.getY())));
+		
+		
+		bulletPos.x = this.getPosition().x + (this.getDefaultSprite().getWidth()/2 + space.x) * rad.x;
+		bulletPos.y = this.getPosition().y + (this.getDefaultSprite().getHeight()/2 + space.y) * rad.y;
+		missile.setPositionInGame(bulletPos);
+		missile.setOwner(this);
+		
+		impulse.x = rad.x * initialImpulse;
+		impulse.y = rad.y * initialImpulse;
+		
+		return impulse;
 	}
 
 	public int getMaxHealth() {
 		return m_maxHealth;
 	}
 	
+	public float getMaxHealthFloat() {
+		return (float) m_maxHealth;
+	}
+	
 	public int getHealth() {
 		return m_health;
+	}
+	
+	public float getHealthFloat() {
+		return (float) m_health;
 	}
 	
 	public void setMaxHealth(int health) {
@@ -56,5 +97,112 @@ public abstract class PlainCharacter extends MovingObjectAdapter{
 		else {
 			m_health += heal;
 		}
+	}
+
+	public String getGroupName() {
+		return m_groupName;
 	}	
+	
+	@Override
+	public void spawnBullet(Camera camera, Vector2 space, MissileType type) {
+		m_armory.spawnBullet(camera, space, type);
+	}
+	
+	@Override
+	public float getInitialImpulseNormalBullet() {
+		return m_armory.initialImpulseNormalBullet;
+	}
+	
+	@Override
+	public void setInitialImpulseNormalBullet(float initialImpulseNormalBullet) {
+		m_armory.initialImpulseNormalBullet = initialImpulseNormalBullet;
+	}
+
+	@Override
+	public float getInitialImpulseBouncingBullet() {
+		return m_armory.initialImpulseBouncingBullet;
+	}
+
+	@Override
+	public void setInitialImpulseBouncingBullet(float initialImpulseBouncingBullet) {
+		m_armory.initialImpulseBouncingBullet = initialImpulseBouncingBullet;
+	}
+	
+	@Override
+	public int getMaxAmmoNormalBullet() {
+		return m_armory.maxAmmoNormalBullet;
+	}
+
+	@Override
+	public void setMaxAmmoNormalBullet(int maxAmmoNormalBullet) {
+		m_armory.maxAmmoNormalBullet = maxAmmoNormalBullet;
+	}
+
+	@Override
+	public int getMaxAmmoBouncingBullet() {
+		return m_armory.maxAmmoBouncingBullet;
+	}
+
+	@Override
+	public void setMaxAmmoBouncingBullet(int maxAmmoBouncingBullet) {
+		m_armory.maxAmmoBouncingBullet = maxAmmoBouncingBullet;
+	}
+
+	@Override
+	public int getCurrentAmmoNormalBullet() {
+		return m_armory.currentAmmoNormalBullet;
+	}
+
+	@Override
+	public void setCurrentAmmoNormalBullet(int currentAmmoNormalBullet) {
+		m_armory.currentAmmoNormalBullet = currentAmmoNormalBullet;
+	}
+
+	@Override
+	public int getCurrentAmmoBouncingBullet() {
+		return m_armory.currentAmmoBouncingBullet;
+	}
+
+	@Override
+	public void setCurrentAmmoBouncingBullet(int currentAmmoBouncingBullet) {
+		m_armory.currentAmmoBouncingBullet = currentAmmoBouncingBullet;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((m_armory == null) ? 0 : m_armory.hashCode());
+		result = prime * result + ((m_groupName == null) ? 0 : m_groupName.hashCode());
+		result = prime * result + m_health;
+		result = prime * result + m_maxHealth;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PlainCharacter other = (PlainCharacter) obj;
+		if (m_armory == null) {
+			if (other.m_armory != null)
+				return false;
+		} else if (!m_armory.equals(other.m_armory))
+			return false;
+		if (m_groupName == null) {
+			if (other.m_groupName != null)
+				return false;
+		} else if (!m_groupName.equals(other.m_groupName))
+			return false;
+		if (m_health != other.m_health)
+			return false;
+		if (m_maxHealth != other.m_maxHealth)
+			return false;
+		return true;
+	}
+	
 }

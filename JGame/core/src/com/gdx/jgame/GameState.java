@@ -1,33 +1,37 @@
 package com.gdx.jgame;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.lang.reflect.Field;
+import java.util.TreeMap;
 
 import com.badlogic.gdx.math.Vector2;
-import com.gdx.jgame.gameObjects.characters.CharacterPolygonDef;
-import com.gdx.jgame.gameObjects.characters.CharacterPolygonDef.CharType;
 import com.gdx.jgame.hud.Hud;
-import com.gdx.jgame.gameObjects.characters.CharacterSet;
-import com.gdx.jgame.gameObjects.characters.SaveCharacter;
-import com.gdx.jgame.jBox2D.JBoxManager;
+import com.gdx.jgame.gameObjects.PalpableObject;
+import com.gdx.jgame.gameObjects.PalpableObjectPolygonDef;
+import com.gdx.jgame.gameObjects.characters.SaveCharacters;
+import com.gdx.jgame.gameObjects.missiles.SaveMisiles;
+import com.gdx.jgame.jBox2D.JBoxObjects;
+import com.gdx.jgame.logic.ai.AIManager;
 
 public class GameState implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -7114218668434763987L;
+	private static final long serialVersionUID = 3912629976721885987L;
 	
 	private transient JGame m_game;
-	private ArrayList<SaveCharacter> characters;
-	private ArrayList<String> charGroupsNames;
+	private SaveCharacters characters;
+	private SaveMisiles missiles;
 	private String mapName;
 	private float cameraZoom;
 	private Vector2 cameraShift;
+	private AIManager managerAI;
 	
 	public GameState(JGame jGame) {
-		characters = new ArrayList<SaveCharacter>();
-		charGroupsNames = new ArrayList<String>();
+		characters = new SaveCharacters(jGame.getCharactersManager());
+		missiles = new SaveMisiles(jGame.getMisslesManager());
 		m_game = jGame;
+		managerAI = jGame.getManagerAI();
 	}
 	
 	public void save() {
@@ -35,41 +39,49 @@ public class GameState implements Serializable{
 		cameraZoom = m_game.getWorldCamera().zoom;
 		cameraShift = new Vector2(m_game.getWorldCamera().getShift());
 		
-		for (String name: m_game.getCharacters().getGroupsNamesList()) {
-			charGroupsNames.add(name);
-			for (CharacterSet set : m_game.getCharacters().getGroupSets(name)) {
-				characters.add(new SaveCharacter(set));
-			}
-		}
-		characters.add(new SaveCharacter(m_game.getCharacters().getPlayerSet()));	
+		saveGameObjects();
 	}
 	
-	public void load(JGame jGame) {
-		
+	public void load(JGame jGame) 
+			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		m_game = jGame;
-		for (String name : charGroupsNames) {
-			m_game.getCharacters().addGroup(name);	
-		}
 		
+		Field f1 = PalpableObject.class.getDeclaredField("m_numberOfObjects");
+		Field f2 = PalpableObjectPolygonDef.class.getDeclaredField("m_numberOfObjects");
+		
+		f1.setAccessible(true);
+		f2.setAccessible(true);
+		f1.setInt(null, 0);
+		f2.setInt(null, 0);
+
 		m_game.getWorldCamera().zoom = cameraZoom;
 		m_game.getWorldCamera().setShift(cameraShift);
 		
-		m_game.getMaps().setMap(mapName);
-		m_game.setJBox(new JBoxManager(m_game.getMaps().getLayers(), m_game.getWorldCamera(), m_game.isDebugMode(), m_game.isShowLayout()));
+		m_game.setJBox(new JBoxObjects(m_game, m_game.getMaps().getLayers(), m_game.getWorldCamera(), m_game.isDebugMode(), m_game.isShowLayout()));
 		
-		for (SaveCharacter character : characters) {
-			CharacterPolygonDef charDef = character.getCharacterPolygonDef();
-			character.restoreCharacter(jGame.getCharactersTextures(), jGame.getJBox().world);
-			
-			if(charDef.charType == CharType.Player) {
-				m_game.getCharacters().addPlayer(character.getCharacterPolygonDef());
-			} 
-			else if(charDef.charType == CharType.Enemy) {
-				m_game.getCharacters().addEnemies(charDef);
-			}
-		}
+		loadGameObjects();
+		
 		
 		m_game.setHud(new Hud(m_game.getBatch(), m_game.getCharacters().getPlayer(), m_game.isDebugMode(), m_game.isShowLayout()));
-		m_game.getWorldCamera().follower = m_game.getCharacters().getPlayer();
+		m_game.getCharacters().setCameraFollower(m_game.getCharacters().getPlayer());
+	}
+	
+	public String getMapName() {
+		return mapName;
+	}
+	
+	private void saveGameObjects() {
+		missiles.save();
+		characters.save();
+		managerAI.save();
+	}
+	
+	private void loadGameObjects() {
+		// the order matters
+		TreeMap<Integer, Object> restoreOwner = new TreeMap<Integer, Object>();
+		
+		characters.load(m_game, restoreOwner);
+		missiles.load(m_game, restoreOwner);
+		managerAI.load(restoreOwner);
 	}
 }

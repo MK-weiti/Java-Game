@@ -28,8 +28,6 @@ import org.junit.runner.RunWith;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.gdx.jgame.gameObjects.characters.Player;
-import com.gdx.jgame.managers.MapManager;
-
 import de.tomgrill.gdxtesting.GdxTestRunner;
 
 @RunWith(GdxTestRunner.class)
@@ -39,7 +37,7 @@ public class AssetExistsExampleTest {
 	
 	static Player test;
 	static Texture tx;
-	static MapManager m_map;
+	//static MapManager m_map;
 	
 
 	@BeforeClass
@@ -54,7 +52,7 @@ public class AssetExistsExampleTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		tx.dispose();
-		m_map.dispose();
+		//m_map.dispose();
 	}
 
 	@Before

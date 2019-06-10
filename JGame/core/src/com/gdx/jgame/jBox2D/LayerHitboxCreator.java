@@ -7,13 +7,13 @@ import com.badlogic.gdx.maps.objects.*;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Ellipse;
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.gdx.jgame.jBox2D.mapObjects.FieldGameState;
+import com.gdx.jgame.jBox2D.mapObjects.PolygonObject;
 import com.gdx.jgame.managers.MapManager;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -37,7 +37,8 @@ public class LayerHitboxCreator {
 		
 		// check layer properties
 		tmpPropertyName = (String) m_layer.getProperties().get(LayerConstants.bodyType);
-		
+		if(tmpPropertyName == null) throw new IllegalArgumentException("Layer do not have Body Type property");
+			
 		if(tmpPropertyName.equals(LayerConstants.BodyType.dynamicBody)) bodyType = BodyType.DynamicBody;
 		else if(tmpPropertyName.equals(LayerConstants.BodyType.staticBody)) bodyType = BodyType.StaticBody;
 		else if(tmpPropertyName.equals(LayerConstants.BodyType.kinematicBody)) bodyType = BodyType.KinematicBody;
@@ -161,58 +162,11 @@ public class LayerHitboxCreator {
 	}
 
 	private void createRectangle(World world, RectangleMapObject rectangleObject) {
-		Rectangle rectangle = rectangleObject.getRectangle();
-		PolygonShape shape = new PolygonShape();
-		Vector2[] points = new Vector2[4];
+		PolygonObject object = new PolygonObject(world, bodyType);
 		
-		BodyDef bodyDef = new BodyDef();
-		FixtureDef fixtureDef = new FixtureDef();
-		bodyDef.position.set(rectangle.x / MapManager.PIXELS_PER_METER, 
-				rectangle.y / MapManager.PIXELS_PER_METER);
-		bodyDef.type = bodyType;
-		bodyDef.fixedRotation = false;
+		object.createRectangle(rectangleObject);
 		
-		points[0] = new Vector2(0, 0);
-		points[1] = new Vector2(rectangle.getWidth() / MapManager.PIXELS_PER_METER, 0);
-		points[2] = new Vector2(rectangle.getWidth() / MapManager.PIXELS_PER_METER, 
-				rectangle.getHeight() / MapManager.PIXELS_PER_METER);
-		points[3] = new Vector2(0, rectangle.getHeight() / MapManager.PIXELS_PER_METER);
-		
-		
-		shape.set(points);
-		fixtureDef.shape = shape;
-		fixtureDef.density = 0.1f;
-		fixtureDef.friction = 0.2f;
-		
-		// part with if statements (check object properties)
-		MapProperties objectProperties = rectangleObject.getProperties();
-		if(objectProperties.containsKey(LayerConstants.CustomProperties.strongBlocked) &&
-				objectProperties.get(LayerConstants.CustomProperties.strongBlocked).equals(true)) {
-			
-			// everything should not be able to get through this object
-			// default
-			// fixtureDef.filter.maskBits = -1;
-			
-			fixtureDef.filter.categoryBits = -1;
-			fixtureDef.isSensor = false;
-			bodyDef.type = BodyType.StaticBody;
-		}
-		else if(objectProperties.containsKey(LayerConstants.CustomProperties.blocked) &&
-				objectProperties.get(LayerConstants.CustomProperties.blocked).equals(true)) {
-			
-			fixtureDef.filter.maskBits = 1;
-		}
-		else {
-			bodyDef.type = BodyType.DynamicBody;
-			fixtureDef.density = 1f;
-			fixtureDef.friction = 0.2f;
-			fixtureDef.restitution = 0.5f;
-		}
-		Body body = world.createBody(bodyDef);
-		@SuppressWarnings("unused")
-		Fixture fixture = body.createFixture(fixtureDef);
-		//world.createBody(bodyDef).createFixture(fixtureDef);
-		shape.dispose();
+		object.dispose();
 	}
 	
 	private ChainShape createPolyline(PolylineMapObject polyline) {
@@ -226,5 +180,50 @@ public class LayerHitboxCreator {
 	    ChainShape chainShape = new ChainShape();
 	    chainShape.createChain(worldVertices);
 	    return chainShape;
+	}
+
+	public static Body setProperties(World world, MapProperties objectProperties, BodyDef bodyDef, FixtureDef fixtureDef) {		
+		Object userData = null;
+		
+		if(objectProperties.containsKey(LayerConstants.ObstaclesProperties.maskBits)) {
+			String maskBits = (String) objectProperties.get(LayerConstants.ObstaclesProperties.maskBits);
+			
+			if(maskBits.contentEquals(LayerConstants.ObstaclesProperties.MaskBits.strongBlocked)) {
+				
+				// almost nothing should be able to get through this object
+				// default: fixtureDef.filter.maskBits = -1;
+				
+				fixtureDef.filter.categoryBits = CollisionConstants.strongBlocked;
+				bodyDef.type = BodyType.StaticBody;
+			}
+			else if(maskBits.contentEquals(LayerConstants.ObstaclesProperties.MaskBits.blocked)) {
+				
+				fixtureDef.filter.maskBits = CollisionConstants.blocked;
+				bodyDef.type = BodyType.StaticBody;
+			}
+			else return null;
+		}
+		
+		if(objectProperties.containsKey(LayerConstants.Logic.changeGameState)) {
+			String changeGameState = (String) objectProperties.get(LayerConstants.Logic.changeGameState);
+			
+			if(changeGameState.contentEquals(LayerConstants.Logic.ChangeGameState.loseGame)) {
+				fixtureDef.isSensor = true;
+				userData = new FieldGameState(false, true);
+				// TODO
+			}
+			else if(changeGameState.contentEquals(LayerConstants.Logic.ChangeGameState.winGame)) {
+				fixtureDef.isSensor = true;
+				userData = new FieldGameState(true, false);
+				// TODO
+			}
+			else return null;
+		}
+		
+		Body body = world.createBody(bodyDef);
+		body.createFixture(fixtureDef);
+		body.setUserData(userData);
+		
+		return body;
 	}
 }

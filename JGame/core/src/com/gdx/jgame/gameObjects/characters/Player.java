@@ -1,19 +1,31 @@
 package com.gdx.jgame.gameObjects.characters;
 
-import com.gdx.jgame.ObjectsID;
+import com.gdx.jgame.gameObjects.missiles.Missile;
+import com.gdx.jgame.gameObjects.missiles.MissilesManager;
+import com.gdx.jgame.managers.TextureManager;
 
-public class Player extends PlainCharacter implements ObjectsID{
+public class Player extends PlainCharacter{
 	
-	private static long m_numberOfObjects = 0;
-	public final long ID;
-	
-	public Player(CharacterPolygonDef characterPolygonDef) {
-		super(characterPolygonDef);
-		ID = m_numberOfObjects;
-		++m_numberOfObjects;
+	public Player(PlayerDef playerDef, TextureManager txBulletManager, MissilesManager missileManager) {
+		super(playerDef);
+	}
+
+	@Override
+	public void updateObject(Object object) {
+		if(object instanceof Missile) {
+			changeHealth(((Missile) object).getDamage());
+		}
+	}
+
+	@Override
+	public boolean isRemovable() {
+		if(getHealth() > 0) return false;
+		return isDestructible();
+	}
+
+	@Override
+	public void deleteObject() {
+		destoryBody();
 	}
 	
-	public long m_numberOfObjects() {
-		return m_numberOfObjects;
-	}
 }

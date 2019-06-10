@@ -14,11 +14,11 @@ import com.badlogic.gdx.Gdx;
 import com.gdx.jgame.GameState;
 import com.gdx.jgame.JGame;
 
-public class RecordManager {
+public class SavesManager {
 	private final String pathToSaves = "saves/";
 	private GameState m_tmpGameState = null;
 	
-	public RecordManager() {
+	public SavesManager() {
 		setSaveDir();
 	}
 	
@@ -33,7 +33,6 @@ public class RecordManager {
 					e.printStackTrace();
 				}
 		}
-		//FileHandle fileHandle = Gdx.files.local(pathToSaves);
 	}
 	
 	public void save(JGame game, String name) {
@@ -64,7 +63,21 @@ public class RecordManager {
 	
 	public void loadData(JGame game) {
 		if(m_tmpGameState != null) {
-			m_tmpGameState.load(game);
+			try {
+				m_tmpGameState.load(game);
+			} catch (NoSuchFieldException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			m_tmpGameState = null;
 		}
 		else {
@@ -89,11 +102,28 @@ public class RecordManager {
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
 	public boolean isDataLoaded() {
 		if(m_tmpGameState == null) return false;
 		return true;
+	}
+	
+	public String mapName() {
+		if(m_tmpGameState == null) return null;
+		return m_tmpGameState.getMapName();
 	}
 }

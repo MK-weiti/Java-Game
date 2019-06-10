@@ -11,9 +11,8 @@ import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.utils.Disposable;
 
-public class MapManager implements Disposable{
+public class MapManager{
 	
 	// virtual screen size
 	public static final float PIXELS_PER_VIRTUAL_P = 1.5f;
@@ -23,33 +22,33 @@ public class MapManager implements Disposable{
 	public static float PIXELS_PER_METER = 100f;
 	
 	private TreeMap<String, TiledMap> m_map;
-	private OrthogonalTiledMapRenderer m_renderer;
+	private OrthogonalTiledMapRenderer m_renderer = null;
 	private TiledMap m_actualMap = null;
 	private String m_actualMapName;	
 	
-	public MapManager(String... paths) {
+	MapManager(String... paths) {
 		m_map = new TreeMap<String, TiledMap>();
 		
 		add(paths);
 	}
 	
-	public void add(String... paths) {
+	void add(String... paths) {
 		for (String path : paths) {
 			m_map.put(FilenameUtils.getName(path), new TmxMapLoader().load(path));
 		}
 	}
 	
-	public void addWithPath(String... paths) {
+	void addWithPath(String... paths) {
 		for (String path : paths) {
 			m_map.put(path, new TmxMapLoader().load(path));
 		}
 	}
 	
-	public int getSize() {
+	int getSize() {
 		return m_map.size();
 	}
 	
-	public void setMap(String name) {
+	void setMap(String name) {
 		if(m_actualMap != null) m_renderer.dispose();
 		
 		m_actualMap = m_map.get(name);
@@ -60,7 +59,7 @@ public class MapManager implements Disposable{
 		m_actualMapName = name;
 	}
 	
-	public void remove(String... names) {
+	void remove(String... names) {
 		TiledMap tmp;
 		for (int i = 0; i < names.length; ++i) {
 			tmp = m_map.get(names[i]);
@@ -79,9 +78,9 @@ public class MapManager implements Disposable{
 		m_renderer.render();
 	}
 	
-	@Override
-	public void dispose() {
-		m_renderer.dispose();
+	void dispose() {
+		if(m_renderer != null) m_renderer.dispose();
+		
 		for (Map.Entry<String, TiledMap> entry : m_map.entrySet()) {
 			entry.getValue().dispose();
 		}

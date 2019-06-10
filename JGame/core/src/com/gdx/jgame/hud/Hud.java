@@ -17,7 +17,7 @@ import com.gdx.jgame.managers.MapManager;
 public class Hud implements Disposable{
 	
 	Stage m_stage;
-	Table table;
+	Table tableTop, tableBottom;
 	private Viewport m_viewport;
 	private Player m_player;
 	private final boolean m_debugMode;
@@ -25,39 +25,43 @@ public class Hud implements Disposable{
 	
 	Label health;
 	Label fps, deltaTime;
+	Label gameMapState;
+	Label ammo;
 	
 	public Hud(SpriteBatch batch, Player player, boolean debugMode, boolean showLayoutLines) {	
 		m_layoutLines = showLayoutLines;
 		m_debugMode = debugMode;
 		m_player = player;
-		table = new Table();
+		tableTop = new Table();
+		tableBottom = new Table();
 		
 		m_viewport = new FitViewport(MapManager.V_WIDTH, MapManager.V_HEIGHT,  new OrthographicCamera());		
 		m_stage = new Stage(m_viewport, batch);
 		
-		table.top();
-		table.setFillParent(true);
+		tableTop.top();
+		tableBottom.bottom();
+		tableTop.setFillParent(true);
+		tableBottom.setFillParent(true);
 		
 		health = new Label(null, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+		ammo = new Label(null, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 		if(m_debugMode) {
 			fps = new Label(null, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 			deltaTime = new Label(null, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 		}
 		
 		
-		table.add().expandX();
-		table.add(health).expandX().padTop(10);
+		tableTop.add().expandX();
+		tableTop.add(health).expandX().padTop(10);
+		tableBottom.add().expandX();
+		tableBottom.add(ammo).padRight(70).padBottom(10);
 		if(m_debugMode) {
-			table.add(fps).expandX().padTop(10);
-			table.add(deltaTime).expandX().padTop(10);
+			tableTop.add(fps).expandX().padTop(10);
+			tableTop.add(deltaTime).expandX().padTop(10);
 		}
 		
-		
-		m_stage.addActor(table);
-		
-		/*if(m_debugMode && m_layoutLines) {
-			m_stage.setDebugAll(true);
-		}*/
+		m_stage.addActor(tableTop);
+		m_stage.addActor(tableBottom);
 	}
 	
 	public void update(SpriteBatch batch) {
@@ -74,7 +78,9 @@ public class Hud implements Disposable{
 	}
 
 	void drawLabels() {
-		health.setText("Health: " + (m_player.getHealth()/m_player.getMaxHealth() * 100 + "%"));
+		float currentHealth = m_player.getHealthFloat()/m_player.getMaxHealthFloat() * 100;
+		health.setText("Health: " + String.format("%.0f", currentHealth) + "%");
+		ammo.setText("Ammo: " + m_player.getCurrentAmmoBouncingBullet());
 	}
 	
 	private float raw = 0f;

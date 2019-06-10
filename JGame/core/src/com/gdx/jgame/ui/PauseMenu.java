@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.gdx.jgame.JGame;
-import com.gdx.jgame.managers.RecordManager;
+import com.gdx.jgame.managers.SavesManager;
 import com.gdx.jgame.managers.ScreenManager;
 import com.gdx.jgame.managers.ScreenManager.SCREEN_STATE;
 
@@ -25,18 +25,10 @@ public class PauseMenu extends Menu {
 	private int m_tableWidth = 100;
 	private int m_tableHeight = 640;
 	
-	public PauseMenu(RecordManager recordManager, ScreenManager screenManager, boolean showLayoutLines) {
-		super(recordManager, screenManager, "buttons/glassy/skin/glassy-ui.json");
+	public PauseMenu(SavesManager savesManager, ScreenManager screenManager, boolean showLayoutLines) {
+		super(savesManager, screenManager, "buttons/glassy/skin/glassy-ui.json");
 		m_layoutLines = showLayoutLines;
-	}
-	
-	public void connectWithGame(JGame game) {
-		m_game = game;
-	}
-
-	@Override
-	public void show() {
-		super.show();
+		
 		m_table = new Table(m_skin);
 		m_table.setBounds(Gdx.graphics.getWidth()/2 - m_tableWidth/2, 
 				Gdx.graphics.getHeight()/2 - m_tableHeight/2, 
@@ -59,6 +51,16 @@ public class PauseMenu extends Menu {
 		m_table.add(m_buttonExit).width(100).height(m_tableHeight/5);//.padTop(20f).padBottom(20f);
 		
 		m_stage.addActor(m_table);
+	}
+	
+	public void connectWithGame(JGame game) {
+		m_game = game;
+	}
+
+	@Override
+	public void show() {
+		super.show();
+		m_table.setVisible(true);
 		
 		if(m_screenManager.isDebugMode() && m_layoutLines) {
 			m_stage.setDebugAll(true);
@@ -116,7 +118,7 @@ public class PauseMenu extends Menu {
 					e.printStackTrace();
 				}
 	 			m_firstRun = false;
-	 			m_screenManager.createNewGame();
+	 			m_screenManager.loadGame();
 		 	}
 		});
 	}
@@ -199,8 +201,7 @@ public class PauseMenu extends Menu {
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
-		
+		m_table.setVisible(false);		
 	}
 
 	public boolean isLayoutLines() {

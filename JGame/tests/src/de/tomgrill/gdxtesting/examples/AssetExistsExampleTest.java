@@ -27,68 +27,44 @@ import org.junit.runner.RunWith;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.gdx.jgame.gameObjects.characters.Player;
+import com.gdx.jgame.JGame;
+import com.gdx.jgame.Utils;
+import com.gdx.jgame.gameObjects.characters.PlayerDef;
+import com.gdx.jgame.managers.ScreenManager;
+
 import de.tomgrill.gdxtesting.GdxTestRunner;
 
 @RunWith(GdxTestRunner.class)
 public class AssetExistsExampleTest {
 	
-	public static final String path = "map.tmx";
+	public static ScreenManager manager;
+	public static JGame game;
 	
-	static Player test;
-	static Texture tx;
-	//static MapManager m_map;
-	
-
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		/*tx = new Texture("badlogic.jpg");
-		m_map = new MapManager(path);	
-		assertTrue(m_map != null);
-		test = new Player( (TiledMapTileLayer) m_map.getLayers().get("background"), 
-				tx, 9, 11, 250);*/
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		tx.dispose();
-		//m_map.dispose();
+
 	}
 
 	@Before
 	public void setUp() throws Exception {
-		//test.setPosition(9, 11);
+		manager = new ScreenManager(true);
+		game = manager.testGame();
 	}
 
 	@After
 	public void tearDown() throws Exception{
 	}
 	
+	
 	@Test
-	public void testLoadMap() {
-		//assertTrue((TiledMapTileLayer) m_map.getLayers().get("background") != null);
-	}
-
-	@Test
-	public void testPlayerFloatFloat() {
-		
-		//assertEquals(test.getX(), 9, 0.0001);
-		//assertEquals(test.getY(), 11, 0.0001);
-	}
-
-	@Test
-	public void testSetPosition() {
-		
-		//assertEquals(test.getX(), 9, 0.0001);
-		//assertEquals(test.getY(), 11, 0.0001);
-	}
-
-	@Test
-	public void testMove() {
-		//test.move(1, -1);
-		
-		//assertEquals(test.getX(), 10, 0.0001);
-		//assertEquals(test.getY(), 10, 0.0001);
+	public void checkPalpableObjectDef() {
+		Texture texture = game.getCharactersTextures().get("player.png");
+		PlayerDef pldef = new PlayerDef(game.getjBox().getWorld(), game.getCharactersTextures(), game.getBulletsTextures(), 
+				game.getMisslesManager(), "player.png", 1f, null, Utils.setVerticesToTexture(texture, 1f));
 	}
 	
 	

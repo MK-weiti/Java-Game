@@ -11,11 +11,12 @@ import com.gdx.jgame.JGame.GAME_LEVEL_STATE;
 import com.gdx.jgame.ui.PauseMenu;
 
 public class ScreenManager extends Game{
-	private HashMap<SCREEN_STATE, Screen> m_gameScreens;
-	private SavesManager m_savesManager;
-	private MapManager m_map;
-	private boolean m_debugMode;
-	private boolean m_showLayout;
+	private HashMap<SCREEN_STATE, Screen> gameScreens;
+	private SavesManager savesManager;
+	private MapManager map;
+	private boolean debugMode;
+	private boolean showLayout;
+	private boolean isTest;
 	private GAME_LEVEL_STATE m_gameState;
 	
 	public enum SCREEN_STATE {
@@ -28,83 +29,87 @@ public class ScreenManager extends Game{
 		LOSE;
 	}
 	
+	public ScreenManager(boolean isTest) {
+		this.isTest = isTest;
+	}
+	
 	public boolean isDebugMode() {
-		return m_debugMode;
+		return debugMode;
 	}
 	
 	@Override
 	public void create() {
 		setPreferences();
-		m_savesManager = new SavesManager();
-		m_map = new MapManager("maps/map.tmx", "maps/nextLevel.tmx");
-		m_gameScreens = new HashMap<SCREEN_STATE, Screen>();
-		m_gameScreens.put(SCREEN_STATE.PAUSE_MENU, new PauseMenu(m_savesManager, this, m_showLayout));
+		savesManager = new SavesManager();
+		map = new MapManager("maps/map.tmx", "maps/nextLevel.tmx");
+		gameScreens = new HashMap<SCREEN_STATE, Screen>();
+		gameScreens.put(SCREEN_STATE.PAUSE_MENU, new PauseMenu(savesManager, this, showLayout));
 		
 		setScreen(SCREEN_STATE.PAUSE_MENU);
 	}
 	
 	public void setScreen(SCREEN_STATE screenName) {
-		if(m_gameScreens.get(screenName) == null) {
+		if(gameScreens.get(screenName) == null) {
 			// create new Game
-			m_map.setMap("map.tmx");
-			m_gameScreens.put(SCREEN_STATE.PLAY, new JGame
-					(this, m_savesManager, (PauseMenu) m_gameScreens.get(SCREEN_STATE.PAUSE_MENU), m_map));
+			map.setMap("map.tmx");
+			gameScreens.put(SCREEN_STATE.PLAY, new JGame
+					(this, savesManager, (PauseMenu) gameScreens.get(SCREEN_STATE.PAUSE_MENU), map));
 		}
-		super.setScreen(m_gameScreens.get(screenName));
+		super.setScreen(gameScreens.get(screenName));
 	}
 	
 	private void setPreferences() {
 		
 		Preferences prefs = Gdx.app.getPreferences("com.gdx.jgame.Configuration");
-		m_debugMode = prefs.getBoolean("Debug", false);
-		m_showLayout = prefs.getBoolean("Debug layout", false);
-		prefs.putBoolean("Debug", m_debugMode);
-		prefs.putBoolean("Debug layout", m_showLayout);
+		debugMode = prefs.getBoolean("Debug", false);
+		showLayout = prefs.getBoolean("Debug layout", false);
+		prefs.putBoolean("Debug", debugMode);
+		prefs.putBoolean("Debug layout", showLayout);
 		prefs.flush();
 	}
 	
 	public void createNewGame() {
 		JGame tmp;
-		tmp = (JGame) m_gameScreens.remove(SCREEN_STATE.PLAY);
+		tmp = (JGame) gameScreens.remove(SCREEN_STATE.PLAY);
 		if(tmp != null) tmp.dispose();
-		m_map.setMap("map.tmx");
-		m_gameScreens.put(SCREEN_STATE.PLAY, new JGame
-				(this, m_savesManager, (PauseMenu) m_gameScreens.get(SCREEN_STATE.PAUSE_MENU), m_map));
-		super.setScreen(m_gameScreens.get(SCREEN_STATE.PLAY));
+		map.setMap("map.tmx");
+		gameScreens.put(SCREEN_STATE.PLAY, new JGame
+				(this, savesManager, (PauseMenu) gameScreens.get(SCREEN_STATE.PAUSE_MENU), map));
+		super.setScreen(gameScreens.get(SCREEN_STATE.PLAY));
 	}
 	
 	public void nextMap() {
-		if(m_map.getActualMapName() == "nextLevel.tmx") {
+		if(map.getActualMapName() == "nextLevel.tmx") {
 			System.out.println("You win the game!");
 			setScreen(SCREEN_STATE.PAUSE_MENU);
 			return;
 		}
 		JGame tmp;
-		tmp = (JGame) m_gameScreens.remove(SCREEN_STATE.PLAY);
+		tmp = (JGame) gameScreens.remove(SCREEN_STATE.PLAY);
 		if(tmp != null) tmp.dispose();
-		m_map.setMap("nextLevel.tmx");
-		m_gameScreens.put(SCREEN_STATE.PLAY, new JGame
-				(this, m_savesManager, (PauseMenu) m_gameScreens.get(SCREEN_STATE.PAUSE_MENU), m_map));
-		super.setScreen(m_gameScreens.get(SCREEN_STATE.PLAY));
+		map.setMap("nextLevel.tmx");
+		gameScreens.put(SCREEN_STATE.PLAY, new JGame
+				(this, savesManager, (PauseMenu) gameScreens.get(SCREEN_STATE.PAUSE_MENU), map));
+		super.setScreen(gameScreens.get(SCREEN_STATE.PLAY));
 	}
 	
 	public void loadGame() {
 		JGame tmp;
-		tmp = (JGame) m_gameScreens.remove(SCREEN_STATE.PLAY);
+		tmp = (JGame) gameScreens.remove(SCREEN_STATE.PLAY);
 		if(tmp != null) tmp.dispose();
-		m_map.setMap(m_savesManager.mapName());
-		m_gameScreens.put(SCREEN_STATE.PLAY, new JGame
-				(this, m_savesManager, (PauseMenu) m_gameScreens.get(SCREEN_STATE.PAUSE_MENU), m_map));
-		super.setScreen(m_gameScreens.get(SCREEN_STATE.PLAY));
+		map.setMap(savesManager.mapName());
+		gameScreens.put(SCREEN_STATE.PLAY, new JGame
+				(this, savesManager, (PauseMenu) gameScreens.get(SCREEN_STATE.PAUSE_MENU), map));
+		super.setScreen(gameScreens.get(SCREEN_STATE.PLAY));
 	}
 	
 	@Override
 	public void dispose() {
 		super.dispose();
-		for (Screen screen : m_gameScreens.values()) {
+		for (Screen screen : gameScreens.values()) {
 			if(screen != null && getScreen() != screen) screen.dispose();
 		}
-		m_map.dispose();
+		map.dispose();
 	}
 	
 	@Override
@@ -118,18 +123,26 @@ public class ScreenManager extends Game{
 		super.resize(width, height);
 	}
 
-	public GAME_LEVEL_STATE getM_gameState() {
+	public GAME_LEVEL_STATE getGameState() {
 		return m_gameState;
 	}
 
-	public void setM_gameState(GAME_LEVEL_STATE m_gameState) {
+	public void setGameState(GAME_LEVEL_STATE m_gameState) {
 		this.m_gameState = m_gameState;
 	}
 
 	public boolean isShowLayout() {
-		return m_showLayout;
+		return showLayout;
 	}
 	
-	
+	public JGame testGame() {
+		if(isTest) {
+			SavesManager savesManager2 = new SavesManager();
+			MapManager map2= new MapManager("maps/map.tmx", "maps/nextLevel.tmx");
+			HashMap<SCREEN_STATE, Screen> gameScreens2 = new HashMap<SCREEN_STATE, Screen>();
+			return new JGame(this, savesManager2, (PauseMenu) gameScreens2.get(SCREEN_STATE.PAUSE_MENU), map2);
+		}
+		return null;
+	}
 	
 }

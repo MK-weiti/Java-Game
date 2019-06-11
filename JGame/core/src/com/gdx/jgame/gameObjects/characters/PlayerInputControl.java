@@ -14,7 +14,7 @@ public class PlayerInputControl implements InputProcessor{
 	
 	public void mouseInput(Camera camera, PlainCharacter character) {
 		character.rotate(character.angleRadOnScreen(camera, new Vector2(Gdx.input.getX(), 
-				Gdx.graphics.getHeight() - Gdx.input.getY())));
+				 Gdx.input.getY()), ((float) Math.PI/2)));
 	}
 	
 	public void keyPressed(PlainCharacter character) {

@@ -6,26 +6,26 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.gdx.jgame.ObjectsID;
+import com.gdx.jgame.IDAdapterSerializable;
+import com.gdx.jgame.SaveReference;
 import com.gdx.jgame.jBox2D.BodyData;
 import com.gdx.jgame.jBox2D.FixturePolData;
 import com.gdx.jgame.managers.MapManager;
 import com.gdx.jgame.managers.TextureManager;
 
-public abstract class PalpableObjectPolygonDef implements Serializable, ObjectsID<PalpableObjectPolygonDef>, Comparable<PalpableObjectPolygonDef>{
+public abstract class PalpableObjectPolygonDef extends IDAdapterSerializable implements Serializable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7170239912473329317L;
 	
 	private static int m_numberOfObjects = 0;
-	public final int ID = m_numberOfObjects;
+	public transient final int ID = m_numberOfObjects;
+	
+	private SaveReference<PalpableObject> referenceToOldBody;
 	
 	BodyData bodyData;
 	FixturePolData fixturePolData;
-	
-	// created only from existing object in game
-	private int objectInGameID = -1;
 	
 	public String texturePath;
 	public float textureScale;
@@ -36,7 +36,9 @@ public abstract class PalpableObjectPolygonDef implements Serializable, ObjectsI
 	public transient BodyDef bodyDef;
 	
 	public PalpableObjectPolygonDef(World world, Texture texture, String texPath, float texScale, Vector2[] vertices) {
-		++m_numberOfObjects;
+		super();
+		referenceToOldBody = new SaveReference<PalpableObject>();
+		
 		bodyDef = new BodyDef();
 		fixturePolData = new FixturePolData();
 		fixtureDef = new FixtureDef();
@@ -58,7 +60,8 @@ public abstract class PalpableObjectPolygonDef implements Serializable, ObjectsI
 	}
 	
 	public PalpableObjectPolygonDef(PalpableObject palpableObject) {
-		++m_numberOfObjects;
+		super();
+		referenceToOldBody = new SaveReference<PalpableObject>(palpableObject);
 		
 		bodyDef = new BodyDef();
 		fixturePolData = new FixturePolData(palpableObject.getBody().getFixtureList().first());
@@ -69,13 +72,13 @@ public abstract class PalpableObjectPolygonDef implements Serializable, ObjectsI
 		this.texture = palpableObject.getDefaultSprite().getTexture();
 		texturePath = palpableObject.getTexturePath();
 		textureScale = palpableObject.getScale();
-		objectInGameID = palpableObject.ID;
 		
 		restoreFixBody();
 	}
 
 	public PalpableObjectPolygonDef(PalpableObjectPolygonDef definition) {
-		++m_numberOfObjects;
+		super();
+		referenceToOldBody = new SaveReference<PalpableObject>(definition.referenceToOldBody);
 		
 		bodyData = new BodyData(definition.bodyData);
 		fixturePolData = new FixturePolData(definition.fixturePolData);
@@ -84,7 +87,6 @@ public abstract class PalpableObjectPolygonDef implements Serializable, ObjectsI
 		
 		texturePath = new String(definition.texturePath);
 		textureScale = definition.textureScale;
-		objectInGameID = definition.getObjectInGameID();
 		
 		texture = definition.texture;
 		world = definition.world;
@@ -135,11 +137,6 @@ public abstract class PalpableObjectPolygonDef implements Serializable, ObjectsI
 		fixturePolData.setVertices(vertices);
 	}
 	
-	@Override
-	public int numberOfObjects() {
-		return m_numberOfObjects;
-	}
-	
 	public void restore(TextureManager txMan, World world) {
 		texture = txMan.get(texturePath);
 		this.world = world;
@@ -147,15 +144,17 @@ public abstract class PalpableObjectPolygonDef implements Serializable, ObjectsI
 		bodyDef = new BodyDef();
 		restoreFixBody();
 	}
-
-	public int getObjectInGameID() {
-		return objectInGameID;
+	
+	
+	// for situation when object definition do not disappear and will be saved
+	void saveReferenceToBody(PalpableObject object){
+		referenceToOldBody.setOwner(object);
 	}
 	
-	void setObjectInGameID(int ID) {
-		objectInGameID = ID;
+	public int getOldIDToBody() {
+		return referenceToOldBody.getOwnerID();
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -194,18 +193,5 @@ public abstract class PalpableObjectPolygonDef implements Serializable, ObjectsI
 		if (Float.floatToIntBits(textureScale) != Float.floatToIntBits(other.textureScale))
 			return false;
 		return true;
-	}
-
-	@Override
-	public int compareTo(PalpableObjectPolygonDef object) {
-		if(this.ID == object.ID) return 0;
-		else if(this.ID < object.ID) return -1;
-		else return 1;
-	}
-	
-	@Override
-	public boolean equalsID(PalpableObjectPolygonDef object) {
-		return ID == object.ID;
-	}
-	
+	}	
 }

@@ -18,7 +18,7 @@ public class BodiesToDestroy {
 	public BodiesToDestroy(JGame m_jGame) {
 		m_array = new ArrayList<Body>();
 		m_array.ensureCapacity(m_ensureCapacity);
-		m_missleManager = m_jGame.getM_missleManager();
+		m_missleManager = m_jGame.getMisslesManager();
 		m_charManager = m_jGame.getCharactersManager();
 	}
 	

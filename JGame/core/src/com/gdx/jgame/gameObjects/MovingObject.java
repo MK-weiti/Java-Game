@@ -1,5 +1,6 @@
 package com.gdx.jgame.gameObjects;
 
+import java.awt.IllegalComponentStateException;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -15,43 +16,63 @@ import com.gdx.jgame.Utils;
 public abstract class MovingObject extends PalpableObject implements Steerable<Vector2>{
 	
 	// the acceleration which object will have when control over him was taken over.
-	private float m_acceleration;	
+	private float acceleration;	
 	
-	private float m_maxLinearSpeed, m_maxLinearAcceleration;
-	private float m_maxAngularSpeed, m_maxAngularAcceleration;
-	private float m_zeroThreshold;
+	private float maxLinearSpeed, maxLinearAcceleration;
+	private float maxAngularSpeed, maxAngularAcceleration;
+	private float zeroThreshold;
 	
 	// fields for buffs, debuffs
-	private HashMap<Integer, Float> m_ratioAcceleration;
-	private HashMap<Integer, Float> m_ratioMaxLinearSpeed;
+	private HashMap<Integer, Float> ratioAcceleration;
+	private HashMap<Integer, Float> ratioMaxLinearSpeed;
 	
-	private boolean m_tagged;
-	private float m_boundingRadious; // used for Collision Avoidance
-	private float m_boundingToActivateAI;
-	private BlendedSteering<Vector2> m_blend;
+	private boolean tagged;
+	private float boundingRadious; // used for Collision Avoidance, idk.
+	private float boundingToActivateAI;
+	private transient BlendedSteering<Vector2> blend;
 	
 	public MovingObject(MovingObjectDef objectDef, float acceleration) {
 		super(objectDef);
-		this.m_acceleration = acceleration;
-		m_ratioAcceleration = new HashMap<Integer, Float>();
-		m_ratioMaxLinearSpeed = new HashMap<Integer, Float>();
+		checkArguments(objectDef, acceleration);		
 		
-		m_maxLinearSpeed = objectDef.maxLinearSpeed;
-		m_maxLinearAcceleration = objectDef.maxLinearAcceleration;
-		m_maxAngularSpeed = objectDef.maxAngularSpeed;
-		m_maxAngularAcceleration = objectDef.maxAngularAcceleration;
-		m_zeroThreshold = objectDef.zeroThreshold;
-		m_tagged = objectDef.tagged;
-		m_boundingRadious = objectDef.boundingRadious;
-		m_boundingToActivateAI = objectDef.boundingToActivateAI;
+		this.acceleration = acceleration;
+		ratioAcceleration = new HashMap<Integer, Float>();
+		ratioMaxLinearSpeed = new HashMap<Integer, Float>();
+		
+		setArguments(objectDef);
 	}
 	
-	public MovingObject(MovingObjectDef definition) {
-		super(definition);
-		this.m_acceleration = definition.acceleration;
+	public MovingObject(MovingObjectDef objectDef) {
+		super(objectDef);
+		checkArguments(objectDef, objectDef.acceleration);	
+		this.acceleration = objectDef.acceleration;
 		
-		m_ratioAcceleration = new HashMap<Integer, Float>(definition.getRatioAcceleration());
-		m_ratioMaxLinearSpeed = new HashMap<Integer, Float>(definition.getRatioMaxVelocity());
+		ratioAcceleration = new HashMap<Integer, Float>(objectDef.getRatioAcceleration());
+		ratioMaxLinearSpeed = new HashMap<Integer, Float>(objectDef.getRatioMaxVelocity());
+		
+		setArguments(objectDef);
+	}
+
+	private void checkArguments(MovingObjectDef objectDef, float acceleration) {
+		if(acceleration == 0) throw new IllegalComponentStateException("Wrong acceleration.");
+		if(objectDef.maxLinearSpeed == 0) throw new IllegalComponentStateException("No maxLinearSpeed.");
+		if(objectDef.maxLinearAcceleration == 0) throw new IllegalComponentStateException("No maxLinearAcceleration.");
+		if(objectDef.maxAngularSpeed == 0) throw new IllegalComponentStateException("No maxAngularSpeed.");
+		if(objectDef.maxAngularAcceleration == 0) throw new IllegalComponentStateException("No maxAngularAcceleration.");
+		if(objectDef.zeroThreshold == 0) throw new IllegalComponentStateException("No zeroThreshold.");
+		if(objectDef.boundingRadious == 0) throw new IllegalComponentStateException("No boundingRadious.");
+		if(objectDef.boundingToActivateAI == 0) throw new IllegalComponentStateException("No boundingToActivateAI.");
+	}
+
+	private void setArguments(MovingObjectDef objectDef) {
+		maxLinearSpeed = objectDef.maxLinearSpeed;
+		maxLinearAcceleration = objectDef.maxLinearAcceleration;
+		maxAngularSpeed = objectDef.maxAngularSpeed;
+		maxAngularAcceleration = objectDef.maxAngularAcceleration;
+		zeroThreshold = objectDef.zeroThreshold;
+		tagged = objectDef.tagged;
+		boundingRadious = objectDef.boundingRadious;
+		boundingToActivateAI = objectDef.boundingToActivateAI;
 	}
 	
 	private void applyImpulseWithin(float deltaX, float deltaY) {
@@ -71,8 +92,8 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 	}	
 	
 	public float getAcceleration() {
-		float tmp = m_acceleration;
-		for (float next : m_ratioAcceleration.values()) {
+		float tmp = acceleration;
+		for (float next : ratioAcceleration.values()) {
 			tmp *= next;
 		}
 		return tmp;
@@ -80,7 +101,7 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 
 	public float getRatioAcceleration() {
 		float tmp = 1f;
-		for (float next : m_ratioAcceleration.values()) {
+		for (float next : ratioAcceleration.values()) {
 			tmp *= next;
 		}
 		return tmp;
@@ -88,30 +109,30 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 
 	public float getRatioMaxLinearSpeed() {
 		float tmp = 1f;
-		for (float next : m_ratioMaxLinearSpeed.values()) {
+		for (float next : ratioMaxLinearSpeed.values()) {
 			tmp *= next;
 		}
 		return tmp;
 	}
 	
 	public void addRatioAcceleration(int ratioId, float newRatio) {
-		m_ratioAcceleration.put(ratioId, newRatio);
+		ratioAcceleration.put(ratioId, newRatio);
 	}
 
 	public void addRatioMaxLinearSpeed(int ratioId, float newRatio) {
-		m_ratioMaxLinearSpeed.put(ratioId, newRatio);
+		ratioMaxLinearSpeed.put(ratioId, newRatio);
 	}
 	
 	public void removeRatioAcceleration(int ratioId) {
-		m_ratioAcceleration.remove(ratioId);
+		ratioAcceleration.remove(ratioId);
 	}
 	
 	public void removeRatioMaxLinearSpeed(int ratioId) {
-		m_ratioMaxLinearSpeed.remove(ratioId);
+		ratioMaxLinearSpeed.remove(ratioId);
 	}
 	
 	void setAcceleration(float acceleration) {
-		this.m_acceleration = acceleration;
+		this.acceleration = acceleration;
 	}
 	
 	public int generateAccelerationId() {
@@ -121,7 +142,7 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 		do {
 			result = generator.nextInt();
 		}
-		while(m_ratioAcceleration.containsKey(result));
+		while(ratioAcceleration.containsKey(result));
 		return result;
 	}
 	
@@ -131,7 +152,7 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 		do {
 			result = generator.nextInt();
 		}
-		while(m_ratioMaxLinearSpeed.containsKey(result));
+		while(ratioMaxLinearSpeed.containsKey(result));
 		return result;
 	}
 
@@ -140,15 +161,15 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 	}
 	
 	public float getRawAcceleration() {
-		return m_acceleration;
+		return acceleration;
 	}
 	
 	HashMap<Integer, Float> getAccelerationRatios(){
-		return m_ratioAcceleration;
+		return ratioAcceleration;
 	}
 	
 	HashMap<Integer, Float> getMaxVelocityRatios(){
-		return m_ratioMaxLinearSpeed;
+		return ratioMaxLinearSpeed;
 	}
 	
 	//
@@ -158,14 +179,14 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 	
 	// TODO
 	public boolean canAIrun() {
-		return m_blend != null && ((Arrive<Vector2>) m_blend.get(0).getBehavior())
-				.getTarget().getPosition().dst(getBody().getPosition()) < m_boundingToActivateAI;
+		return blend != null && ((Arrive<Vector2>) blend.get(0).getBehavior())
+				.getTarget().getPosition().dst(getBody().getPosition()) < boundingToActivateAI;
 	}
 	
 	public void updateAI(float deltaTime) {
 		if(canAIrun()) {
 			SteeringAcceleration<Vector2> steerOutput = new SteeringAcceleration<Vector2>(new Vector2());
-			m_blend.calculateSteering(steerOutput);
+			blend.calculateSteering(steerOutput);
 			applySteering(deltaTime, steerOutput);
 		}
 	}
@@ -187,30 +208,30 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 		if(anyAccelerations) {
 			Vector2 velocity = getBody().getLinearVelocity();
 			float currentSpeedSquare = velocity.len2();
-			if(currentSpeedSquare > m_maxLinearSpeed * m_maxLinearSpeed) {
-				getBody().setLinearVelocity(velocity.scl(m_maxLinearSpeed / (float) Math.sqrt(currentSpeedSquare)));
+			if(currentSpeedSquare > maxLinearSpeed * maxLinearSpeed) {
+				getBody().setLinearVelocity(velocity.scl(maxLinearSpeed / (float) Math.sqrt(currentSpeedSquare)));
 			}
 			
-			if(getBody().getAngularVelocity() > m_maxAngularSpeed) {
-				getBody().setAngularVelocity(m_maxAngularSpeed);
+			if(getBody().getAngularVelocity() > maxAngularSpeed) {
+				getBody().setAngularVelocity(maxAngularSpeed);
 			}
 		}		
 	}
 	
 	public void setBehavior(BlendedSteering<Vector2> blend) {
-		m_blend = blend;
+		this.blend = blend;
 	}
 	
 	public BlendedSteering<Vector2> getBehavior() {
-		return m_blend;
+		return blend;
 	}
 	
 	public float getBoundingToActivateAI() {
-		return m_boundingToActivateAI;
+		return boundingToActivateAI;
 	}
 
 	public void setBoundingToActivateAI(float m_boundingToActivateAI) {
-		this.m_boundingToActivateAI = m_boundingToActivateAI;
+		this.boundingToActivateAI = m_boundingToActivateAI;
 	}
 
 	@Override
@@ -247,22 +268,22 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 
 	@Override
 	public float getZeroLinearSpeedThreshold() {
-		return m_zeroThreshold;
+		return zeroThreshold;
 	}
 
 	@Override
 	public void setZeroLinearSpeedThreshold(float value) {
-		m_zeroThreshold = value;
+		zeroThreshold = value;
 	}
 	
 	public float getRawMaxLinearSpeed() {
-		return m_maxLinearSpeed;
+		return maxLinearSpeed;
 	}
 
 	@Override
 	public float getMaxLinearSpeed() {
-		float tmp = m_maxLinearSpeed;
-		for (float next : m_ratioMaxLinearSpeed.values()) {
+		float tmp = maxLinearSpeed;
+		for (float next : ratioMaxLinearSpeed.values()) {
 			tmp *= next;
 		}
 		return tmp;
@@ -270,37 +291,37 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 
 	@Override
 	public void setMaxLinearSpeed(float maxLinearSpeed) {
-		this.m_maxLinearSpeed = maxLinearSpeed;
+		this.maxLinearSpeed = maxLinearSpeed;
 	}
 
 	@Override
 	public float getMaxLinearAcceleration() {
-		return m_maxLinearAcceleration;
+		return maxLinearAcceleration;
 	}
 
 	@Override
 	public void setMaxLinearAcceleration(float maxLinearAcceleration) {
-		this.m_maxLinearAcceleration = maxLinearAcceleration;
+		this.maxLinearAcceleration = maxLinearAcceleration;
 	}
 
 	@Override
 	public float getMaxAngularSpeed() {
-		return m_maxAngularSpeed;
+		return maxAngularSpeed;
 	}
 
 	@Override
 	public void setMaxAngularSpeed(float maxAngularSpeed) {
-		this.m_maxAngularSpeed = maxAngularSpeed;
+		this.maxAngularSpeed = maxAngularSpeed;
 	}
 
 	@Override
 	public float getMaxAngularAcceleration() {
-		return m_maxAngularAcceleration;
+		return maxAngularAcceleration;
 	}
 
 	@Override
 	public void setMaxAngularAcceleration(float maxAngularAcceleration) {
-		this.m_maxAngularAcceleration = maxAngularAcceleration;
+		this.maxAngularAcceleration = maxAngularAcceleration;
 	}
 
 	@Override
@@ -315,34 +336,34 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 
 	@Override
 	public float getBoundingRadius() {
-		return m_boundingRadious;
+		return boundingRadious;
 	}
 
 	@Override
 	public boolean isTagged() {
-		return m_tagged;
+		return tagged;
 	}
 
 	@Override
 	public void setTagged(boolean tagged) {
-		m_tagged = tagged;
+		this.tagged = tagged;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Float.floatToIntBits(m_acceleration);
-		result = prime * result + Float.floatToIntBits(m_boundingRadious);
-		result = prime * result + Float.floatToIntBits(m_boundingToActivateAI);
-		result = prime * result + Float.floatToIntBits(m_maxAngularAcceleration);
-		result = prime * result + Float.floatToIntBits(m_maxAngularSpeed);
-		result = prime * result + Float.floatToIntBits(m_maxLinearAcceleration);
-		result = prime * result + Float.floatToIntBits(m_maxLinearSpeed);
-		result = prime * result + ((m_ratioAcceleration == null) ? 0 : m_ratioAcceleration.hashCode());
-		result = prime * result + ((m_ratioMaxLinearSpeed == null) ? 0 : m_ratioMaxLinearSpeed.hashCode());
-		result = prime * result + (m_tagged ? 1231 : 1237);
-		result = prime * result + Float.floatToIntBits(m_zeroThreshold);
+		result = prime * result + Float.floatToIntBits(acceleration);
+		result = prime * result + Float.floatToIntBits(boundingRadious);
+		result = prime * result + Float.floatToIntBits(boundingToActivateAI);
+		result = prime * result + Float.floatToIntBits(maxAngularAcceleration);
+		result = prime * result + Float.floatToIntBits(maxAngularSpeed);
+		result = prime * result + Float.floatToIntBits(maxLinearAcceleration);
+		result = prime * result + Float.floatToIntBits(maxLinearSpeed);
+		result = prime * result + ((ratioAcceleration == null) ? 0 : ratioAcceleration.hashCode());
+		result = prime * result + ((ratioMaxLinearSpeed == null) ? 0 : ratioMaxLinearSpeed.hashCode());
+		result = prime * result + (tagged ? 1231 : 1237);
+		result = prime * result + Float.floatToIntBits(zeroThreshold);
 		return result;
 	}
 
@@ -355,33 +376,33 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 		if (getClass() != obj.getClass())
 			return false;
 		MovingObject other = (MovingObject) obj;
-		if (Float.floatToIntBits(m_acceleration) != Float.floatToIntBits(other.m_acceleration))
+		if (Float.floatToIntBits(acceleration) != Float.floatToIntBits(other.acceleration))
 			return false;
-		if (Float.floatToIntBits(m_boundingRadious) != Float.floatToIntBits(other.m_boundingRadious))
+		if (Float.floatToIntBits(boundingRadious) != Float.floatToIntBits(other.boundingRadious))
 			return false;
-		if (Float.floatToIntBits(m_boundingToActivateAI) != Float.floatToIntBits(other.m_boundingToActivateAI))
+		if (Float.floatToIntBits(boundingToActivateAI) != Float.floatToIntBits(other.boundingToActivateAI))
 			return false;
-		if (Float.floatToIntBits(m_maxAngularAcceleration) != Float.floatToIntBits(other.m_maxAngularAcceleration))
+		if (Float.floatToIntBits(maxAngularAcceleration) != Float.floatToIntBits(other.maxAngularAcceleration))
 			return false;
-		if (Float.floatToIntBits(m_maxAngularSpeed) != Float.floatToIntBits(other.m_maxAngularSpeed))
+		if (Float.floatToIntBits(maxAngularSpeed) != Float.floatToIntBits(other.maxAngularSpeed))
 			return false;
-		if (Float.floatToIntBits(m_maxLinearAcceleration) != Float.floatToIntBits(other.m_maxLinearAcceleration))
+		if (Float.floatToIntBits(maxLinearAcceleration) != Float.floatToIntBits(other.maxLinearAcceleration))
 			return false;
-		if (Float.floatToIntBits(m_maxLinearSpeed) != Float.floatToIntBits(other.m_maxLinearSpeed))
+		if (Float.floatToIntBits(maxLinearSpeed) != Float.floatToIntBits(other.maxLinearSpeed))
 			return false;
-		if (m_ratioAcceleration == null) {
-			if (other.m_ratioAcceleration != null)
+		if (ratioAcceleration == null) {
+			if (other.ratioAcceleration != null)
 				return false;
-		} else if (!m_ratioAcceleration.equals(other.m_ratioAcceleration))
+		} else if (!ratioAcceleration.equals(other.ratioAcceleration))
 			return false;
-		if (m_ratioMaxLinearSpeed == null) {
-			if (other.m_ratioMaxLinearSpeed != null)
+		if (ratioMaxLinearSpeed == null) {
+			if (other.ratioMaxLinearSpeed != null)
 				return false;
-		} else if (!m_ratioMaxLinearSpeed.equals(other.m_ratioMaxLinearSpeed))
+		} else if (!ratioMaxLinearSpeed.equals(other.ratioMaxLinearSpeed))
 			return false;
-		if (m_tagged != other.m_tagged)
+		if (tagged != other.tagged)
 			return false;
-		if (Float.floatToIntBits(m_zeroThreshold) != Float.floatToIntBits(other.m_zeroThreshold))
+		if (Float.floatToIntBits(zeroThreshold) != Float.floatToIntBits(other.zeroThreshold))
 			return false;
 		return true;
 	}	

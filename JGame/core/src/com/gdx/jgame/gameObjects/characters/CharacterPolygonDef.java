@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.gdx.jgame.IDAdapter;
 import com.gdx.jgame.gameObjects.MovingObjectDef;
 import com.gdx.jgame.gameObjects.missiles.MissilesManager;
 import com.gdx.jgame.logic.Armory;
@@ -16,8 +17,8 @@ public class CharacterPolygonDef extends MovingObjectDef implements Serializable
 	 */
 	private static final long serialVersionUID = -3557435280659148355L;
 	
-	public int maxHealth = 5;
-	public int m_health = maxHealth;
+	public int maxHealth;
+	public int health;
 	public String charGroupName = null;
 	
 	public Armory armory = null;
@@ -34,23 +35,23 @@ public class CharacterPolygonDef extends MovingObjectDef implements Serializable
 		super(plainCharacter);
 		
 		maxHealth = plainCharacter.getMaxHealth();
-		m_health = plainCharacter.getHealth();
+		health = plainCharacter.getHealth();
 		if(plainCharacter.getGroupName() != null) { // Player do not have a group
 			charGroupName = new String(plainCharacter.getGroupName());
 		}
-		armory = plainCharacter.m_armory;
+		armory = plainCharacter.armory;
 	}
 	
 	public CharacterPolygonDef(CharacterPolygonDef definition) {
 		super(definition);
 		maxHealth = definition.maxHealth;
-		m_health = definition.m_health;
+		health = definition.health;
 		charGroupName = new String(definition.charGroupName);
 		
 		armory = definition.armory;
 	}
 	
-	public void restore(World world, Map <Integer, Object> restoreOwner, 
+	public void restore(World world, Map <Integer, IDAdapter> restoreOwner, 
 			TextureManager bulletsTextures, TextureManager txCharMan, MissilesManager missileManager) {
 		armory.load(restoreOwner, bulletsTextures, missileManager);
 		
@@ -68,7 +69,7 @@ public class CharacterPolygonDef extends MovingObjectDef implements Serializable
 		int result = super.hashCode();
 		result = prime * result + ((armory == null) ? 0 : armory.hashCode());
 		result = prime * result + ((charGroupName == null) ? 0 : charGroupName.hashCode());
-		result = prime * result + m_health;
+		result = prime * result + health;
 		result = prime * result + maxHealth;
 		return result;
 	}
@@ -92,11 +93,21 @@ public class CharacterPolygonDef extends MovingObjectDef implements Serializable
 				return false;
 		} else if (!charGroupName.equals(other.charGroupName))
 			return false;
-		if (m_health != other.m_health)
+		if (health != other.health)
 			return false;
 		if (maxHealth != other.maxHealth)
 			return false;
 		return true;
+	}
+
+	@Override
+	public void load(Map<Integer, IDAdapter> restoreOwner) {
+		return;
+	}
+
+	@Override
+	public void save() {
+		return;
 	}
 	
 }

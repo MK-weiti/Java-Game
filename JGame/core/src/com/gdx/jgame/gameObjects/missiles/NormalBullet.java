@@ -1,10 +1,11 @@
 package com.gdx.jgame.gameObjects.missiles;
 
+import com.gdx.jgame.IDAdapter;
 import com.gdx.jgame.gameObjects.missiles.def.NormalBulletDef;
 
 public class NormalBullet extends Missile{	
 	
-	public NormalBullet(NormalBulletDef missileDef, Object owner) {
+	public NormalBullet(NormalBulletDef missileDef, IDAdapter owner) {
 		super(missileDef, owner);
 	}
 

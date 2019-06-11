@@ -3,6 +3,8 @@ package com.gdx.jgame.logic.ai;
 import java.io.Serializable;
 import java.util.TreeMap;
 
+import com.gdx.jgame.IDAdapter;
+import com.gdx.jgame.IDAdapterSerializable;
 import com.gdx.jgame.gameObjects.MovingObject;
 
 public class AIManager implements Serializable{
@@ -11,10 +13,13 @@ public class AIManager implements Serializable{
 	 */
 	private static final long serialVersionUID = 97896323903573628L;
 	
-	private TreeMap<Integer, AIAdapter> map;
+	private TreeMap<Integer, IDAdapterSerializable> map;
 	
 	public AIManager() {
-		map = new TreeMap<Integer, AIAdapter>();
+		if(map == null) {
+			map = new TreeMap<Integer, IDAdapterSerializable>();
+		}
+		
 	}
 	
 	public FollowerEntity createFollowerEntity(MovingObject behaviorOwner, MovingObject targer) {
@@ -24,15 +29,19 @@ public class AIManager implements Serializable{
 	}
 	
 	public void save() {
-		for(AIAdapter object : map.values()) {
+		for(IDAdapterSerializable object : map.values()) {
 			object.save();
 		}
 	}
 	
-	public void load(TreeMap<Integer, Object> restoreOwner) {
-		for(AIAdapter object : map.values()) {
+	public void load(TreeMap<Integer, IDAdapter> restoreOwner) {
+		TreeMap<Integer, IDAdapterSerializable> tmp = new TreeMap<Integer, IDAdapterSerializable>();
+		for(IDAdapterSerializable object : map.values()) {
 			object.load(restoreOwner);
+			tmp.put(object.ID, object);
+			
 		}
+		map = tmp;
 	}
 	
 }

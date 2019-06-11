@@ -26,6 +26,8 @@ import org.junit.runners.model.InitializationError;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.gdx.jgame.JGame;
+import com.gdx.jgame.managers.ScreenManager;
 
 import static org.mockito.Mockito.mock;
 
@@ -43,7 +45,6 @@ public class GdxTestRunner extends BlockJUnit4ClassRunner implements Application
 
 		new HeadlessApplication(this, conf);
 		Gdx.gl = mock(GL20.class);
-		
 	}
 
 	@Override

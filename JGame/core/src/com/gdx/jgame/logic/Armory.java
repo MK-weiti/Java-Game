@@ -6,12 +6,15 @@ import java.util.Map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.gdx.jgame.Camera;
+import com.gdx.jgame.IDAdapter;
+import com.gdx.jgame.SaveReference;
 import com.gdx.jgame.gameObjects.characters.PlainCharacter;
 import com.gdx.jgame.gameObjects.missiles.BouncingBullet;
 import com.gdx.jgame.gameObjects.missiles.Missile;
 import com.gdx.jgame.gameObjects.missiles.MissilesManager;
 import com.gdx.jgame.gameObjects.missiles.NormalBullet;
 import com.gdx.jgame.gameObjects.missiles.def.BouncingBulletDef;
+import com.gdx.jgame.gameObjects.missiles.def.MissileDef;
 import com.gdx.jgame.gameObjects.missiles.def.NormalBulletDef;
 import com.gdx.jgame.managers.TextureManager;
 
@@ -21,26 +24,26 @@ public class Armory implements Serializable{
 	 */
 	private static final long serialVersionUID = -3412328135321223411L;
 	
-	public float initialImpulseNormalBullet = 0.005f;
-	public float initialImpulseBouncingBullet = 0.005f;
+	public float initialImpulseNormalBullet;
+	public float initialImpulseBouncingBullet;
 	
 	public NormalBulletDef normalBulletDef = null;
 	public BouncingBulletDef bouncingBulletDef = null;
 	
-	public int maxAmmoNormalBullet = 1;
-	public int maxAmmoBouncingBullet = 1;
+	public int maxAmmoNormalBullet;
+	public int maxAmmoBouncingBullet;
 	
-	public int currentAmmoNormalBullet = 1;
-	public int currentAmmoBouncingBullet = 0;
+	public int currentAmmoNormalBullet;
+	public int currentAmmoBouncingBullet;
 	
-	private transient TextureManager m_bulletsTextures;
-	private transient MissilesManager m_missileManager;
-	private transient PlainCharacter m_owner;
-	private int m_ownerID;
+	private transient TextureManager bulletsTextures;
+	private transient MissilesManager missileManager;
+	private SaveReference<PlainCharacter> owner;
 	
 	public Armory(TextureManager bulletsTextures, MissilesManager missileManager) {
-		m_bulletsTextures = bulletsTextures;
-		m_missileManager = missileManager;
+		this.bulletsTextures = bulletsTextures;
+		this.missileManager = missileManager;
+		owner = new SaveReference<PlainCharacter>();
 	}
 	
 	public Armory(Armory copy) {
@@ -56,39 +59,61 @@ public class Armory implements Serializable{
 		maxAmmoBouncingBullet = copy.maxAmmoBouncingBullet;
 		currentAmmoNormalBullet = copy.currentAmmoNormalBullet;
 		currentAmmoBouncingBullet = copy.currentAmmoBouncingBullet;
-		m_bulletsTextures = copy.m_bulletsTextures;
-		m_missileManager = copy.m_missileManager;
-		m_owner = copy.m_owner;
-		m_ownerID = copy.m_ownerID;
+		this.bulletsTextures = copy.bulletsTextures;
+		this.missileManager = copy.missileManager;
+		owner = new SaveReference<PlainCharacter>(copy.owner);
 	}
 	
 	public void setOwner(PlainCharacter owner) {
-		m_owner = owner;
-		m_ownerID = owner.ID;
+		this.owner.setAndSave(owner);
 		if(normalBulletDef != null) normalBulletDef.setOwner(owner);
 		if(bouncingBulletDef != null) bouncingBulletDef.setOwner(owner);		
 	}
 	
 	public void spawnBullet(Camera camera, Vector2 space, Missile.MissileType type) {
+		Method method = (MissileDef missile, float initialImpulse) -> {
+			return ((PlainCharacter) owner.getOwner()).
+					initialImpulseAndPosition(camera, space, missile, initialImpulse, 0);
+		};
+		spawnBulletMethod(space, type, method);
+	}
+	
+	public void spawnBullet(Vector2 target, Vector2 space, Missile.MissileType type) {
+		Method method = (MissileDef missile, float initialImpulse) -> {
+			return ((PlainCharacter) owner.getOwner())
+					.initialImpulseAndPosition(target, space, missile, initialImpulse, ((float) Math.PI/2));
+		};
+		spawnBulletMethod(space, type, method);
+	}
+	
+	public void spawnBullet(Vector2 space, Missile.MissileType type) {
+		Method method = (MissileDef missile, float initialImpulse) -> {
+			return ((PlainCharacter) owner.getOwner()).
+					initialImpulseAndPosition(space, missile, initialImpulse, ((float) Math.PI/2));
+		};
+		spawnBulletMethod(space, type, method);
+	}
+	
+	private void spawnBulletMethod(Vector2 space, Missile.MissileType type, Method method) {
 		Vector2 imp = null;
 		Missile bullet = null;
 		
 		if(type.equals(Missile.MissileType.NormalBullet) && normalBulletDef != null && 
 				currentAmmoNormalBullet > 0) {
-			imp = m_owner.initialImpulseAndPosition(camera, space, normalBulletDef, initialImpulseNormalBullet);
-			bullet = new NormalBullet(normalBulletDef, m_owner);
+			imp = method.run(normalBulletDef, initialImpulseNormalBullet);
+			bullet = new NormalBullet(normalBulletDef, owner.getOwner());
 			--currentAmmoNormalBullet;
 		}
 		else if(type.equals(Missile.MissileType.BouncingBullet) && bouncingBulletDef != null &&
 				currentAmmoBouncingBullet > 0) {
-			imp = m_owner.initialImpulseAndPosition(camera, space, bouncingBulletDef, initialImpulseBouncingBullet);
-			bullet = new BouncingBullet(bouncingBulletDef, m_owner);
+			imp = method.run(bouncingBulletDef, initialImpulseBouncingBullet);
+			bullet = new BouncingBullet(bouncingBulletDef, owner.getOwner());
 			--currentAmmoBouncingBullet;
 		}
 		if(bullet == null) return;
 		
 		bullet.getBody().applyLinearImpulse(imp, bullet.getBody().getWorldCenter(), true);
-		m_missileManager.add(bullet);
+		this.missileManager.add(bullet);
 	}
 	
 	public void changeTexture(String textureName, Vector2[] vertices, Missile.MissileType type, float txScale) {
@@ -103,7 +128,7 @@ public class Armory implements Serializable{
 			normalBulletDef.texturePath = textureName;
 			normalBulletDef.textureScale = txScale;
 			normalBulletDef.fixtureDef.shape = shape;
-			normalBulletDef.texture = m_bulletsTextures.get(textureName);
+			normalBulletDef.texture = bulletsTextures.get(textureName);
 			normalBulletDef.setVertices(vertices);
 		}
 		else if(type.equals(Missile.MissileType.BouncingBullet)) {
@@ -114,17 +139,17 @@ public class Armory implements Serializable{
 			bouncingBulletDef.texturePath = textureName;
 			bouncingBulletDef.textureScale = txScale;
 			bouncingBulletDef.fixtureDef.shape = shape;
-			bouncingBulletDef.texture = m_bulletsTextures.get(textureName);
+			bouncingBulletDef.texture = bulletsTextures.get(textureName);
 			bouncingBulletDef.setVertices(vertices);
 		}
 		
 		shape.dispose();
 	}	
 	
-	public void load(Map <Integer, Object> restoreOwner, TextureManager bulletsTextures, MissilesManager missileManager) {
-		m_owner = (PlainCharacter) restoreOwner.get(m_ownerID);
-		m_bulletsTextures = bulletsTextures;
-		m_missileManager = missileManager;
+	public void load(Map <Integer, IDAdapter> restoreOwner, TextureManager bulletsTextures, MissilesManager missileManager) {
+		owner.load(restoreOwner);
+		this.bulletsTextures = bulletsTextures;
+		this.missileManager = missileManager;
 	}
 
 	@Override
@@ -136,10 +161,10 @@ public class Armory implements Serializable{
 		result = prime * result + currentAmmoNormalBullet;
 		result = prime * result + Float.floatToIntBits(initialImpulseBouncingBullet);
 		result = prime * result + Float.floatToIntBits(initialImpulseNormalBullet);
-		result = prime * result + m_ownerID;
 		result = prime * result + maxAmmoBouncingBullet;
 		result = prime * result + maxAmmoNormalBullet;
 		result = prime * result + ((normalBulletDef == null) ? 0 : normalBulletDef.hashCode());
+		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
 		return result;
 	}
 
@@ -166,8 +191,6 @@ public class Armory implements Serializable{
 			return false;
 		if (Float.floatToIntBits(initialImpulseNormalBullet) != Float.floatToIntBits(other.initialImpulseNormalBullet))
 			return false;
-		if (m_ownerID != other.m_ownerID)
-			return false;
 		if (maxAmmoBouncingBullet != other.maxAmmoBouncingBullet)
 			return false;
 		if (maxAmmoNormalBullet != other.maxAmmoNormalBullet)
@@ -177,7 +200,16 @@ public class Armory implements Serializable{
 				return false;
 		} else if (!normalBulletDef.equals(other.normalBulletDef))
 			return false;
+		if (owner == null) {
+			if (other.owner != null)
+				return false;
+		} else if (!owner.equals(other.owner))
+			return false;
 		return true;
+	}
+	
+	private interface Method{
+		public Vector2 run(MissileDef missile, float initialImpulse);
 	}
 	
 }

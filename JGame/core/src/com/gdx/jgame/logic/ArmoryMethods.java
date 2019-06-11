@@ -3,9 +3,14 @@ package com.gdx.jgame.logic;
 import com.badlogic.gdx.math.Vector2;
 import com.gdx.jgame.Camera;
 import com.gdx.jgame.gameObjects.missiles.Missile;
+import com.gdx.jgame.gameObjects.missiles.Missile.MissileType;
 
 public interface ArmoryMethods {
 	public void spawnBullet(Camera camera, Vector2 space, Missile.MissileType type);
+	
+	public void spawnBullet(Vector2 target, Vector2 space, Missile.MissileType type);
+	
+	public void spawnBullet(Vector2 space, MissileType type);
 	
 	public float getInitialImpulseNormalBullet();
 

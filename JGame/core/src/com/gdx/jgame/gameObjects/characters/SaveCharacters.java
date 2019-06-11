@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
+import com.gdx.jgame.IDAdapter;
 import com.gdx.jgame.JGame;
 import com.gdx.jgame.managers.CharactersManager;
 
@@ -28,19 +29,22 @@ public class SaveCharacters implements Serializable{
 			m_groupNames.add(name);
 			for(PlainCharacter character : m_manager.getGroupSets(name)) {
 				if(character instanceof BasicEnemy) {
-					basicEnemy.add(new BasicEnemyDef( (BasicEnemy)character) );
+					BasicEnemyDef tmp = new BasicEnemyDef((BasicEnemy)character);
+					basicEnemy.add(tmp);
 				}
 			}
 		}
 	}
 	
 	// put in Map
-	public void load(JGame jGame, TreeMap<Integer, Object> restoreOwner) {
+	public void load(JGame jGame, TreeMap<Integer, IDAdapter> restoreOwner) {
 		m_manager = jGame.getCharactersManager();
 		
 		playerDef.restore(jGame.getjBox().getWorld(), restoreOwner, jGame.getBulletsTextures(), 
 				jGame.getCharactersTextures(), jGame.getMisslesManager());
-		restoreOwner.put(playerDef.getObjectInGameID(), m_manager.addPlayer(playerDef, jGame.getBulletsTextures()));
+		
+		IDAdapter object = m_manager.addPlayer(playerDef, jGame.getBulletsTextures());
+		restoreOwner.put(playerDef.getOldIDToBody(), object);
 		
 		for(String name : m_groupNames) {
 			m_manager.addGroup(name);
@@ -49,7 +53,9 @@ public class SaveCharacters implements Serializable{
 		for(BasicEnemyDef character : basicEnemy) {
 			character.restore(jGame.getjBox().getWorld(), restoreOwner, jGame.getBulletsTextures(), 
 					jGame.getCharactersTextures(), jGame.getMisslesManager());
-			restoreOwner.put(character.getObjectInGameID(), m_manager.addEnemies(character).first());
+
+			object = m_manager.getEnemy(character.charGroupName, m_manager.addEnemies(character).first());
+			restoreOwner.put(character.getOldIDToBody(), object);
 		}
 		// and additional loops for other types
 	}

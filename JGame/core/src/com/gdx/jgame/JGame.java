@@ -25,10 +25,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.gdx.jgame.gameObjects.characters.BasicEnemy;
+import com.gdx.jgame.gameObjects.DefaultDef;
+import com.gdx.jgame.gameObjects.MovingObjectDef;
 import com.gdx.jgame.gameObjects.characters.BasicEnemyDef;
 import com.gdx.jgame.gameObjects.characters.CharacterPolygonDef;
-import com.gdx.jgame.gameObjects.characters.Player;
 import com.gdx.jgame.gameObjects.characters.PlayerDef;
 import com.gdx.jgame.gameObjects.missiles.MissilesManager;
 import com.gdx.jgame.gameObjects.missiles.def.BouncingBulletDef;
@@ -58,27 +58,27 @@ public final class JGame implements Screen {
 	}
 	
 	// managers
-	private ScreenManager m_screenManager;	
-	private CharactersManager m_characters;
-	private TextureManager m_charactersTextures;
-	private TextureManager m_bulletsTextures;
-	private SavesManager m_recordManager;
-	private MapManager m_map;
-	private MissilesManager m_missleManager;
+	private ScreenManager screenManager;	
+	private CharactersManager characters;
+	private TextureManager charactersTextures;
+	private TextureManager bulletsTextures;
+	private SavesManager recordManager;
+	private MapManager map;
+	private MissilesManager missleManager;
 	private AIManager managerAI;
 	
 	// in game classes
-	private Camera m_mainCamera;
-	private SpriteBatch m_batch;
+	private Camera mainCamera;
+	private SpriteBatch batch;
 	
 	// these have debug mode
-	private Hud m_hud;
-	private PauseMenu m_pauseMenu;
-	private JBoxObjects m_jBox;
+	private Hud hud;
+	private PauseMenu pauseMenu;
+	private JBoxObjects jBox;
 	
 	// these are used in debug mode
-	private Semaphore m_stopRender;
-	private DebugCommands m_debugBuffer;
+	private Semaphore stopRender;
+	private DebugCommands debugBuffer;
 	
 	
 	GAME_STATE gameState = GAME_STATE.PAUSE;
@@ -95,195 +95,167 @@ public final class JGame implements Screen {
 	}
 	
 	public JGame(ScreenManager screenManager, SavesManager savesManager, PauseMenu pauseMenu, MapManager map) {
-		m_debugMode = screenManager.isDebugMode();
-		m_showLayout = screenManager.isShowLayout();
-		m_recordManager = savesManager;
-		m_screenManager = screenManager;
-		m_pauseMenu = pauseMenu;
-		m_pauseMenu.connectWithGame(this);
-		m_map = map;
+		this.m_debugMode = screenManager.isDebugMode();
+		this.m_showLayout = screenManager.isShowLayout();
+		this.recordManager = savesManager;
+		this.screenManager = screenManager;
+		this.pauseMenu = pauseMenu;
+		this.pauseMenu.connectWithGame(this);
+		this.map = map;
 		create();
 	}
 	
 	public void create () {		
-		createAllReferences();
+		createAllIndependentReferences();
 		
-		if(!m_recordManager.isDataLoaded()) createNewGame();
-		else m_recordManager.loadData(this);
+		if(!recordManager.isDataLoaded()) createNewGame();
+		else recordManager.loadData(this);
 		
 		gameCreated = true;
-		if(m_debugMode) m_debugBuffer.start();
+		if(m_debugMode) debugBuffer.start();
 	}	
 	
 	public void render () {
-		if(m_debugMode) m_stopRender.acquireUninterruptibly();
+		if(m_debugMode) stopRender.acquireUninterruptibly();
 		
 		renderGame();
 		
 		if(gameLevelState == GAME_LEVEL_STATE.WIN) {
-			m_screenManager.setM_gameState(GAME_LEVEL_STATE.WIN);
-			m_screenManager.nextMap();
+			screenManager.setGameState(GAME_LEVEL_STATE.WIN);
+			screenManager.nextMap();
 		}
 		else if(gameLevelState == GAME_LEVEL_STATE.LOSE) {
-			m_screenManager.setM_gameState(GAME_LEVEL_STATE.LOSE);
+			screenManager.setGameState(GAME_LEVEL_STATE.LOSE);
 			System.out.println("You lose the game!");
 			this.setMenu();
 		}
 		
-		if(m_debugMode) m_stopRender.release();
+		if(m_debugMode) stopRender.release();
 	}
 	
-	@Override
-	public void dispose () {
-		m_jBox.dispose();
-		m_batch.dispose();
-		m_charactersTextures.dispose();
-		m_bulletsTextures.dispose();
-		m_hud.dispose();
-	}
-	
-	@Override
-	public void resize(int width, int height) {
-		m_mainCamera.resize(width, height);
-		m_hud.resize(width, height);
-	}	
-	
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-	}
-	
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-	}
-	
-	public Camera getCamera() {
-		return m_mainCamera;
-	}
-	
-	public void setMenu() {
-		m_screenManager.setScreen(SCREEN_STATE.PAUSE_MENU);
-	}
 
 	private void renderGame() {
-		m_jBox.removeBodies();
-		GameInputControl.update(this, m_characters.getPlayer());
+		jBox.removeBodies();
+		GameInputControl.update(this, characters.getPlayer());
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA); // transparency of part of the image
 		
-		m_map.render(m_mainCamera);		
-		m_jBox.render(m_mainCamera);
-		m_hud.update(m_batch);
+		map.render(mainCamera);		
+		jBox.render(mainCamera);
+		hud.update(batch);
 		
-		m_mainCamera.update(m_batch);	
+		mainCamera.update(batch);	
 		
-		m_batch.begin();
-			m_missleManager.render(m_batch);
-			m_characters.renderAll(m_batch);
-		m_batch.end();		
+		batch.begin();
+			missleManager.render(batch);
+			characters.renderAll(batch);
+		batch.end();		
 	}
 	
-	private void createAllReferences() {
-		m_charactersTextures = new TextureManager("characters/player.png", "badlogic.jpg",
+	private void createAllIndependentReferences() {
+		charactersTextures = new TextureManager("characters/player.png", "badlogic.jpg",
 				"characters/honeybee.png", "characters/honeybee2.png");
-		m_bulletsTextures = new TextureManager("bullets/normalBullet.png", "bullets/rocket.png");	
-		m_missleManager = new MissilesManager();
-		m_characters = new CharactersManager(m_missleManager);
-		m_mainCamera = new Camera(m_characters);
-		m_batch = new SpriteBatch();
-		managerAI = new AIManager();
+		bulletsTextures = new TextureManager("bullets/normalBullet.png", "bullets/rocket.png");	
+		missleManager = new MissilesManager();
+		characters = new CharactersManager(missleManager);
+		mainCamera = new Camera(characters);
+		batch = new SpriteBatch();
 		
 		if(m_debugMode) {
-			m_stopRender = new Semaphore(1);
-			m_debugBuffer = new DebugCommands(this);
+			stopRender = new Semaphore(1);
+			debugBuffer = new DebugCommands(this);
 		}
 	}
 
 	private void createNewGame() {
-		m_characters.addGroup("test_group");		
+		managerAI = new AIManager();
 		
-		m_mainCamera.zoom = 0.7f;
-		m_mainCamera.setShift(new Vector2(0, 0));
+		characters.addGroup("test_group");		
 		
-		m_jBox = new JBoxObjects(this, m_map.getLayers(), m_mainCamera, m_debugMode, m_showLayout);
+		mainCamera.zoom = 0.7f;
+		mainCamera.setShift(new Vector2(0, 0));
+		
+		jBox = new JBoxObjects(this, map.getLayers(), mainCamera, m_debugMode, m_showLayout);
 		
 		createPlayer();
 		createEnemy();
 		setAI();
 		
-		m_hud = new Hud(m_batch, m_characters.getPlayer(), m_debugMode, m_showLayout);
-		m_characters.setCameraFollower(m_characters.getPlayer());
+		hud = new Hud(batch, characters.getPlayer(), m_debugMode, m_showLayout);
+		characters.setCameraFollower(characters.getPlayer());
 	}
 	
 	private void createEnemy() {		
 		String groupName = "test_group";
-		Texture texture = m_charactersTextures.get("honeybee.png");
+		Texture texture = charactersTextures.get("honeybee.png");
 		float scale = 0.05f;
-		BasicEnemyDef objectDef = new BasicEnemyDef(m_jBox.getWorld(), this.getCharactersTextures(),
+		BasicEnemyDef objectDef = new BasicEnemyDef(jBox.getWorld(), this.getCharactersTextures(),
 				this.getBulletsTextures(), this.getMisslesManager(), "honeybee.png", scale, groupName, 
 				Utils.setVerticesToTexture(texture, scale));
 		
-		playerObjectDef(scale, objectDef, 400, 200);
-		objectDef.acceleration = 0.5f;
-		objectDef.armory.normalBulletDef = createBulletDef(m_bulletsTextures);
+		DefaultDef.defBasicEnemy(objectDef);
+		objectDef.bodyDef.fixedRotation = false;
+		objectDef.setPosition(400, 200);
+		objectDef.textureScale = scale;
 		
-		enemyID = m_characters.addEnemies(objectDef).first();
+		objectDef.armory.normalBulletDef = createBulletDef(bulletsTextures);
+		objectDef.armory.normalBulletDef = createBulletDef(bulletsTextures);
 		
-		BasicEnemyDef objectDef2 = new BasicEnemyDef(m_jBox.getWorld(), this.getCharactersTextures(),
+		enemyID = characters.addEnemies(objectDef).first();
+		
+		BasicEnemyDef objectDef2 = new BasicEnemyDef(jBox.getWorld(), this.getCharactersTextures(),
 				this.getBulletsTextures(), this.getMisslesManager(),
 				"honeybee.png", scale, groupName, Utils.setVerticesToTexture(texture, scale));
 		
-		objectDef2.acceleration = 0.5f;
 		
-		playerObjectDef(scale, objectDef2, 500, 250);
-		m_characters.addEnemies(objectDef2);
-		m_characters.addEnemies(objectDef2);
+		DefaultDef.defBasicEnemy(objectDef2);
+		objectDef2.acceleration = 0.5f;
+		objectDef2.bodyDef.fixedRotation = false;
+		objectDef2.setPosition(500, 250);
+		objectDef2.textureScale = scale;
+		
+		
+		characters.addEnemies(objectDef2);
+		characters.addEnemies(objectDef2);
 		
 		BasicEnemyDef objectDef3 = new BasicEnemyDef(objectDef);
 		
+		objectDef3.armory.normalBulletDef = null;
+		DefaultDef.defBasicEnemy(objectDef3);
+		objectDef3.bodyDef.fixedRotation = false;
+		objectDef3.setPosition(400, 250);
+		objectDef3.textureScale = scale;
 		
-		playerObjectDef(scale, objectDef3, 400, 250);
-		m_characters.addEnemies(objectDef3).first();
+		characters.addEnemies(objectDef3).first();
 		
 	}
 
 	private void createPlayer() {
-		Texture texture = m_charactersTextures.get("player.png");
+		Texture texture = charactersTextures.get("player.png");
 		float scale = 1f;
 		
-		PlayerDef objectDef = new PlayerDef(m_jBox.getWorld(), m_charactersTextures, m_bulletsTextures, m_missleManager, 
+		PlayerDef objectDef = new PlayerDef(jBox.getWorld(), charactersTextures, bulletsTextures, missleManager, 
 				"player.png", scale, null, Utils.setVerticesToTexture(texture, scale));
 		
-		playerObjectDef(scale, objectDef, 128, 192);
-		objectDef.acceleration = 0.5f;
+		DefaultDef.defPlayer(objectDef);
 		objectDef.bodyDef.fixedRotation = true;
-		objectDef.maxLinearSpeed = 1f;
-		objectDef.armory.currentAmmoBouncingBullet = 5;
-		objectDef.armory.currentAmmoNormalBullet = 10;
+		objectDef.setPosition(128, 192);
+		objectDef.textureScale = scale;
 		
-		objectDef.armory.bouncingBulletDef = createmBouncingBulletDef(m_bulletsTextures);
-		objectDef.armory.normalBulletDef = createBulletDef(m_bulletsTextures);
+		objectDef.armory.bouncingBulletDef = createmBouncingBulletDef(bulletsTextures);
+		objectDef.armory.normalBulletDef = createBulletDef(bulletsTextures);
+		objectDef.charGroupName = "";
 		
-		m_characters.addPlayer(objectDef, m_bulletsTextures);
-	}
-
-	private void playerObjectDef(float textureScale, CharacterPolygonDef objectDef, float posX, float posY) {
-		objectDef.bodyDef.type = BodyType.DynamicBody;
-		objectDef.bodyDef.active = true;
-		objectDef.bodyDef.allowSleep = false;
-		objectDef.bodyDef.fixedRotation = false;
-		objectDef.fixtureDef.friction = 0.2f;
-		objectDef.textureScale = textureScale;
-		objectDef.setPosition(posX, posY);
+		characters.addPlayer(objectDef, bulletsTextures);
 	}
 	
 	private NormalBulletDef createBulletDef(TextureManager txBulletManager) {
 		NormalBulletDef normalBulletDef;
-		normalBulletDef = new NormalBulletDef(m_jBox.getWorld(), txBulletManager, "rocket.png", 
+		normalBulletDef = new NormalBulletDef(jBox.getWorld(), txBulletManager, "rocket.png", 
 				0.05f, Utils.setVerticesToTexture(txBulletManager.get("rocket.png"), 0.01f));
+		DefaultDef.defNormalBullet(normalBulletDef);
 		normalBulletDef.damage = -2;
 		normalBulletDef.acceleration = 5f;
 		normalBulletDef.fixtureDef.density = 2f;
@@ -291,13 +263,15 @@ public final class JGame implements Screen {
 		normalBulletDef.bodyDef.fixedRotation = false;
 		normalBulletDef.fixtureDef.friction = 0f;
 		normalBulletDef.fixtureDef.restitution = 1f;
+		
 		return normalBulletDef;
 	}
 	
 	private BouncingBulletDef createmBouncingBulletDef(TextureManager txBulletManager) {
 		BouncingBulletDef bouncingBulletDef;
-		bouncingBulletDef = new BouncingBulletDef(m_jBox.getWorld(), txBulletManager, "normalBullet.png", 
+		bouncingBulletDef = new BouncingBulletDef(jBox.getWorld(), txBulletManager, "normalBullet.png", 
 				0.05f, Utils.setVerticesToTexture(txBulletManager.get("normalBullet.png"), 0.01f));
+		DefaultDef.defBouncingBullet(bouncingBulletDef);
 		bouncingBulletDef.numberOfBounces = 3;
 		bouncingBulletDef.damage = -2;
 		bouncingBulletDef.acceleration = 5f;
@@ -311,22 +285,53 @@ public final class JGame implements Screen {
 	}
 	
 	private void setAI() {
-		FollowerEntity tmp = new FollowerEntity(m_characters.getEnemy("test_group", enemyID), m_characters.getPlayer());
+		FollowerEntity tmp = managerAI.createFollowerEntity(characters.getEnemy("test_group", enemyID), characters.getPlayer());
 		tmp.getArrive().setTimeToTarget(1f)
 		.setArrivalTolerance(0.5f)
 		.setDecelerationRadius(0.01f);
 		
 		tmp.getFace().setTimeToTarget(1f)
-		.setDecelerationRadius(0.01f)
+		.setDecelerationRadius(0.5f)
 		.setAlignTolerance(0.01f);
 		
 		tmp.setBehavior();
 		
-		m_characters.getEnemy("test_group", enemyID).setMaxAngularSpeed(2f);
-		m_characters.getEnemy("test_group", enemyID).setMaxAngularAcceleration(3f);
-		m_characters.getEnemy("test_group", enemyID).setMaxLinearSpeed(1f);
-		m_characters.getEnemy("test_group", enemyID).setMaxLinearAcceleration(3f);
+		characters.getEnemy("test_group", enemyID).setMaxLinearSpeed(3f);
 	}
+	
+	@Override
+	public void dispose () {
+		jBox.dispose();
+		batch.dispose();
+		charactersTextures.dispose();
+		bulletsTextures.dispose();
+		hud.dispose();
+	}
+	
+	@Override
+	public void resize(int width, int height) {
+		mainCamera.resize(width, height);
+		hud.resize(width, height);
+	}	
+	
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+	}
+	
+	public Camera getCamera() {
+		return mainCamera;
+	}
+	
+	public void setMenu() {
+		screenManager.setScreen(SCREEN_STATE.PAUSE_MENU);
+	}
+	
 	
 	@Override
 	public void show() {
@@ -357,47 +362,47 @@ public final class JGame implements Screen {
 	}
 
 	SpriteBatch getBatch() {
-		return m_batch;
+		return batch;
 	}
 
 	Semaphore getRenderSemaphore() {
-		return m_stopRender;
+		return stopRender;
 	}
 
 	Camera getWorldCamera() {
-		return m_mainCamera;
+		return mainCamera;
 	}
 
 	CharactersManager getCharacters() {
-		return m_characters;
+		return characters;
 	}
 
 	public TextureManager getCharactersTextures() {
-		return m_charactersTextures;
+		return charactersTextures;
 	}
 
 	MapManager getMaps() {
-		return m_map;
+		return map;
 	}
 
 	Hud getHud() {
-		return m_hud;
+		return hud;
 	}
 	
 	void setHud(Hud m_hud) {
-		this.m_hud = m_hud;
+		this.hud = m_hud;
 	}	
 
 	PauseMenu getPauseMenu() {
-		return m_pauseMenu;
+		return pauseMenu;
 	}
 
 	JBoxObjects getJBox() {
-		return m_jBox;
+		return jBox;
 	}
 
 	void setJBox(JBoxObjects m_jBox) {
-		this.m_jBox = m_jBox;
+		this.jBox = m_jBox;
 	}
 
 	public GAME_LEVEL_STATE getGameLevelState() {
@@ -409,29 +414,28 @@ public final class JGame implements Screen {
 	}
 
 	public TextureManager getBulletsTextures() {
-		return m_bulletsTextures;
+		return bulletsTextures;
 	}	
 	
 	public MissilesManager getMisslesManager() {
-		return m_missleManager;
+		return missleManager;
 	}
 
 	public CharactersManager getCharactersManager() {
-		return m_characters;
-	}
-
-	public MissilesManager getM_missleManager() {
-		return m_missleManager;
+		return characters;
 	}
 
 	public JBoxObjects getjBox() {
-		return m_jBox;
+		return jBox;
 	}
 
 	public AIManager getManagerAI() {
 		return managerAI;
 	}	
 	
+	public void setManagerAI(AIManager aiManager) {
+		this.managerAI = aiManager;
+	}
 }
 
 

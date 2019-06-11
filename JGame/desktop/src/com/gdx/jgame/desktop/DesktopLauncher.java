@@ -15,6 +15,6 @@ public class DesktopLauncher {
 		config.foregroundFPS = GameProperties.FOREGROUND_FPS;
 		config.backgroundFPS = GameProperties.BACKGROUND_FPS;		
 		
-		new LwjglApplication(new ScreenManager(), config);
+		new LwjglApplication(new ScreenManager(false), config);
 	}
 }

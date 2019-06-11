@@ -1,24 +1,29 @@
 package com.gdx.jgame.gameObjects.missiles;
 
+import java.awt.IllegalComponentStateException;
+
+import com.gdx.jgame.IDAdapter;
 import com.gdx.jgame.gameObjects.missiles.def.BouncingBulletDef;
 
 public class BouncingBullet extends Missile{
 	
-	private int m_numberOfBounces;
+	private int numberOfBounces;
 
-	public BouncingBullet(BouncingBulletDef bullet, Object owner) {
+	public BouncingBullet(BouncingBulletDef bullet, IDAdapter owner) {
 		super(bullet, owner);
-		m_numberOfBounces = bullet.numberOfBounces;
+		if(bullet.numberOfBounces == 0) throw new IllegalComponentStateException("No numberOfBounces.");
+		
+		numberOfBounces = bullet.numberOfBounces;
 	}
 
 	@Override
 	public void updateObject(Object object) {
-		--m_numberOfBounces;
+		--numberOfBounces;
 	}
 
 	@Override
 	public boolean isRemovable() {
-		if(m_numberOfBounces <= 0) return true;
+		if(numberOfBounces <= 0) return true;
 		return false;
 	}
 
@@ -28,7 +33,7 @@ public class BouncingBullet extends Missile{
 	}
 
 	public int getNumberOfBounces() {
-		return m_numberOfBounces;
+		return numberOfBounces;
 	}
 
 }

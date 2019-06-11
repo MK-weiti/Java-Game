@@ -7,24 +7,24 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
-public class MovingObjectDef extends PalpableObjectPolygonDef implements Serializable{	
+public abstract class MovingObjectDef extends PalpableObjectPolygonDef implements Serializable{	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -5278441540157154961L;
 	
-	public float acceleration = 0f;
+	public float acceleration;
 	
 	public float maxLinearSpeed, maxLinearAcceleration;
 	public float maxAngularSpeed, maxAngularAcceleration;
-	public float zeroThreshold = 0.1f;
+	public float zeroThreshold;
 	
 	private HashMap<Integer, Float> ratioAcceleration;
 	private HashMap<Integer, Float> ratioMaxVelocity;
 	
 	public boolean tagged = false;
-	public float boundingRadious = 1f; // used for Collision Avoidance
-	public float boundingToActivateAI = 4f;
+	public float boundingRadious; // used for Collision Avoidance
+	public float boundingToActivateAI;
 	
 	public MovingObjectDef(World world, Texture texture, String texPath, float texScale, Vector2[] vertices) {
 		super(world, texture, texPath, texScale, vertices);
@@ -147,5 +147,5 @@ public class MovingObjectDef extends PalpableObjectPolygonDef implements Seriali
 		if (Float.floatToIntBits(zeroThreshold) != Float.floatToIntBits(other.zeroThreshold))
 			return false;
 		return true;
-	}	
+	}
 }

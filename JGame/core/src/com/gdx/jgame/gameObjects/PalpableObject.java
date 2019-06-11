@@ -1,5 +1,7 @@
 package com.gdx.jgame.gameObjects;
 
+import java.awt.IllegalComponentStateException;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,7 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.gdx.jgame.Camera;
-import com.gdx.jgame.ObjectsID;
+import com.gdx.jgame.IDAdapter;
 import com.gdx.jgame.jBox2D.FixturePolData;
 import com.gdx.jgame.managers.MapManager;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -22,30 +24,34 @@ import com.badlogic.gdx.physics.box2d.World;
  * Create as body with fixture.
  */
 
-public abstract class PalpableObject implements ObjectsID<PalpableObject>, Comparable<PalpableObject>{
+public abstract class PalpableObject extends IDAdapter{
 	
 	private static int m_numberOfObjects = 0;
-	public final int ID = m_numberOfObjects;
+	public transient final int ID = m_numberOfObjects;
 	
-	private Sprite defaultSprite;
+	private transient Sprite defaultSprite;
 	
-	private World world;
-	private Body body;	// get access to give forces to body
-	protected Fixture mainFixture;
-	private float m_scale;
-	private String m_texturePath;
-	private Vector2 lastPosition;
+	private transient World world;
+	private transient Body body;	// get access to give forces to body
+	protected transient Fixture mainFixture;
+	private float scale;
+	private String texturePath;
+	private transient Vector2 lastPosition; // to reconstruct destroyed body
 	private boolean isBodyDestroyed = false;
 	protected boolean isDestructible = true;
 
 	public PalpableObject(PalpableObjectPolygonDef objectDef) {
+		if(objectDef.textureScale == 0) throw new IllegalComponentStateException("No scale.");
+		if(objectDef.texturePath == null) throw new IllegalComponentStateException("No texture path.");
+		if(objectDef.fixturePolData.shapeVertices == null) throw new IllegalComponentStateException("No vertices.");
+		
 		++m_numberOfObjects;
 		world = objectDef.world;
-		m_scale = objectDef.textureScale;
-		m_texturePath = objectDef.texturePath;
+		scale = objectDef.textureScale;
+		
+		texturePath = objectDef.texturePath;		
 		body = world.createBody(objectDef.bodyDef);
 		lastPosition = new Vector2(objectDef.bodyDef.position);
-		objectDef.setObjectInGameID(ID);
 		
 		PolygonShape shape = new PolygonShape();
 		shape.set(objectDef.fixturePolData.shapeVertices);
@@ -59,8 +65,8 @@ public abstract class PalpableObject implements ObjectsID<PalpableObject>, Compa
 
 	private void setTexture(Texture defaultTexture) {
 		defaultSprite = new Sprite(defaultTexture);		
-		defaultSprite.setBounds(0, 0, defaultSprite.getWidth() * m_scale / MapManager.PIXELS_PER_METER, 
-				defaultSprite.getHeight() * m_scale / MapManager.PIXELS_PER_METER);
+		defaultSprite.setBounds(0, 0, defaultSprite.getWidth() * scale / MapManager.PIXELS_PER_METER, 
+				defaultSprite.getHeight() * scale / MapManager.PIXELS_PER_METER);
 		defaultSprite.setOriginCenter();
 	}
 	
@@ -80,7 +86,7 @@ public abstract class PalpableObject implements ObjectsID<PalpableObject>, Compa
 	}
 	
 	public void changeMainFixture(Texture texture, Vector2[] vertices, float txScale) {
-		m_scale = txScale;
+		scale = txScale;
 		changeMainFixture(vertices);
 		setTexture(texture);
 	}
@@ -127,15 +133,32 @@ public abstract class PalpableObject implements ObjectsID<PalpableObject>, Compa
 		return getVectorToMouse(camera, position).angleRad();
 	}
 	
-	public float angleRadOnScreen(Camera camera, Vector2 position) {		
-		return getVectorToMouse(camera, position).angleRad() - ((float) Math.PI/2);
+	public float angleRadOnScreen(Camera camera, Vector2 position, float shift) {		
+		return getVectorToMouse(camera, position).angleRad() + shift;
+	}
+	
+	public float angleToTarget(Vector2 target, float shift) {
+		return getVectorToTarget(target).angleRad() + shift;
+	}
+	
+	public float getBodyAngle(float shift) {
+		return body.getAngle() + shift;
 	}
 	
 	public Vector2 getVectorToMouse(Camera camera, Vector2 position) {
 		Vector2 tmp = new Vector2(position);
 		
-		tmp.x = tmp.x - getPositionOnScreen(camera).x;
+		tmp.x = getPositionOnScreen(camera).x - tmp.x;
 		tmp.y = tmp.y - getPositionOnScreen(camera).y;
+		
+		return tmp;
+	}
+	
+	public Vector2 getVectorToTarget(Vector2 target) {
+		Vector2 tmp = new Vector2(target);
+		
+		tmp.x = body.getPosition().x - tmp.x;
+		tmp.y = body.getPosition().y - tmp.y;
 		
 		return tmp;
 	}
@@ -153,11 +176,11 @@ public abstract class PalpableObject implements ObjectsID<PalpableObject>, Compa
 	}
 
 	public float getScale() {
-		return m_scale;
+		return scale;
 	}
 	
 	public String getTexturePath() {
-		return m_texturePath;
+		return texturePath;
 	}
 	
 	protected void destoryBody() {
@@ -187,33 +210,13 @@ public abstract class PalpableObject implements ObjectsID<PalpableObject>, Compa
 	}
 
 	@Override
-	public int numberOfObjects() {
-		return m_numberOfObjects;
-	}
-
-	// only for optimization of Map
-	@Override
-	public int compareTo(PalpableObject object) {
-		if(this.ID == object.ID) return 0;
-		else if(this.ID < object.ID) return -1;
-		else return 1;
-	}
-
-	@Override
-	public boolean equalsID(PalpableObject object) {
-		if(ID == object.ID) return true;
-		return false;
-	}
-
-	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (isBodyDestroyed ? 1231 : 1237);
 		result = prime * result + (isDestructible ? 1231 : 1237);
-		result = prime * result + ((lastPosition == null) ? 0 : lastPosition.hashCode());
-		result = prime * result + Float.floatToIntBits(m_scale);
-		result = prime * result + ((m_texturePath == null) ? 0 : m_texturePath.hashCode());
+		result = prime * result + Float.floatToIntBits(scale);
+		result = prime * result + ((texturePath == null) ? 0 : texturePath.hashCode());
 		return result;
 	}
 
@@ -230,17 +233,12 @@ public abstract class PalpableObject implements ObjectsID<PalpableObject>, Compa
 			return false;
 		if (isDestructible != other.isDestructible)
 			return false;
-		if (lastPosition == null) {
-			if (other.lastPosition != null)
-				return false;
-		} else if (!lastPosition.equals(other.lastPosition))
+		if (Float.floatToIntBits(scale) != Float.floatToIntBits(other.scale))
 			return false;
-		if (Float.floatToIntBits(m_scale) != Float.floatToIntBits(other.m_scale))
-			return false;
-		if (m_texturePath == null) {
-			if (other.m_texturePath != null)
+		if (texturePath == null) {
+			if (other.texturePath != null)
 				return false;
-		} else if (!m_texturePath.equals(other.m_texturePath))
+		} else if (!texturePath.equals(other.texturePath))
 			return false;
 		return true;
 	}

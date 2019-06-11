@@ -1,5 +1,7 @@
 package com.gdx.jgame.gameObjects.characters;
 
+import java.awt.IllegalComponentStateException;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.gdx.jgame.Camera;
@@ -10,30 +12,38 @@ import com.gdx.jgame.logic.Armory;
 import com.gdx.jgame.logic.ArmoryMethods;
 
 public abstract class PlainCharacter extends MovingObject implements CharacterMethods, ArmoryMethods{
-	private int m_maxHealth;
-	private int m_health;
+	private int maxHealth;
+	private int health;
 	
-	Armory m_armory;
+	Armory armory;
 	
-	private String m_groupName = null;
+	private String groupName = null;
 	
 	public PlainCharacter(CharacterPolygonDef characterPolygonDef) {
 		super(characterPolygonDef, characterPolygonDef.acceleration);
-		m_maxHealth = characterPolygonDef.maxHealth;
-		m_health = characterPolygonDef.m_health;
-		m_groupName = characterPolygonDef.charGroupName;
+		if(characterPolygonDef.maxHealth == 0) throw new IllegalComponentStateException("No maxHealth.");
+		if(characterPolygonDef.health == 0) throw new IllegalComponentStateException("No health.");
+		if(characterPolygonDef.charGroupName == null) throw new IllegalComponentStateException("No charGroupName.");
+		if(characterPolygonDef.armory == null) throw new IllegalComponentStateException("No armory.");
+		
+		
+		maxHealth = characterPolygonDef.maxHealth;
+		health = characterPolygonDef.health;
+		groupName = characterPolygonDef.charGroupName;
 		
 		characterPolygonDef.armory.setOwner(this);
-		m_armory = new Armory(characterPolygonDef.armory);
+		armory = new Armory(characterPolygonDef.armory);
 	}
 	
-	public Vector2 initialImpulseAndPosition(Camera camera, Vector2 space, MissileDef missile, float initialImpulse) {
-		Vector2 rad = new Vector2(0f, 1f);
+	public Vector2 initialImpulseAndPosition(Camera camera, Vector2 space, MissileDef missile, float initialImpulse, float shift) {
+		Vector2 rad = new Vector2(1f, 0f);
+		rad.setAngleRad(this.angleRadOnScreen(camera, new Vector2(Gdx.input.getX(), Gdx.input.getY()), ((float) Math.PI)) + shift);		
+		return impulseAndPosition(space, missile, initialImpulse, rad);
+	}
+
+	private Vector2 impulseAndPosition(Vector2 space, MissileDef missile, float initialImpulse, Vector2 rad) {
 		Vector2 bulletPos = new Vector2();
 		Vector2 impulse = new Vector2();
-		rad.setAngleRad( - this.rawAngleRadOnScreen(camera, new Vector2(Gdx.input.getX(), Gdx.input.getY())));
-		
-		
 		bulletPos.x = this.getPosition().x + (this.getDefaultSprite().getWidth()/2 + space.x) * rad.x;
 		bulletPos.y = this.getPosition().y + (this.getDefaultSprite().getHeight()/2 + space.y) * rad.y;
 		missile.setPositionInGame(bulletPos);
@@ -44,138 +54,161 @@ public abstract class PlainCharacter extends MovingObject implements CharacterMe
 		
 		return impulse;
 	}
+	
+	// TODO need test
+	public Vector2 initialImpulseAndPosition(Vector2 target, Vector2 space, MissileDef missile, float initialImpulse, float shift) {
+		Vector2 rad = new Vector2(0f, 1f);
+		rad.setAngleRad(this.angleToTarget(target, shift));
+		return impulseAndPosition(space, missile, initialImpulse, rad);
+	}
+	
+	public Vector2 initialImpulseAndPosition(Vector2 space, MissileDef missile, float initialImpulse, float shift) {
+		Vector2 rad = new Vector2(0f, 1f);
+		rad.setAngleRad(this.getBodyAngle(shift));		
+		return impulseAndPosition(space, missile, initialImpulse, rad);
+	}
 
 	public int getMaxHealth() {
-		return m_maxHealth;
+		return maxHealth;
 	}
 	
 	public float getMaxHealthFloat() {
-		return (float) m_maxHealth;
+		return (float) maxHealth;
 	}
 	
 	public int getHealth() {
-		return m_health;
+		return health;
 	}
 	
 	public float getHealthFloat() {
-		return (float) m_health;
+		return (float) health;
 	}
 	
 	public void setMaxHealth(int health) {
-		m_maxHealth = health;
+		maxHealth = health;
 	}
 	
 	public void setHealth(int health) {
-		m_health = health;
+		this.health = health;
 	}
 	
 	public void changeHealth(int difference) {
-		if(m_health + difference < 0) {
-			m_health = 0;
+		if(health + difference < 0) {
+			health = 0;
 		}
-		else if(m_health + difference > m_maxHealth) {
-			m_health = m_maxHealth;
+		else if(health + difference > maxHealth) {
+			health = maxHealth;
 		}
 		else {
-			m_health += difference;
+			health += difference;
 		}
 	}
 	
 	public void giveDamage(int damage) {
-		if(m_health - damage < 0) {
-			m_health = 0;
+		if(health - damage < 0) {
+			health = 0;
 		}
 		else {
-			m_health -= damage;
+			health -= damage;
 		}
 	}
 	
 	public void giveHealing(int heal) {
-		if(m_health + heal > m_maxHealth) {
-			m_health = m_maxHealth;
+		if(health + heal > maxHealth) {
+			health = maxHealth;
 		}
 		else {
-			m_health += heal;
+			health += heal;
 		}
 	}
 
 	public String getGroupName() {
-		return m_groupName;
+		return groupName;
 	}	
 	
 	@Override
+	public void spawnBullet(Vector2 target, Vector2 space, MissileType type) {
+		armory.spawnBullet(target, space, type);
+	}
+	
+	@Override
 	public void spawnBullet(Camera camera, Vector2 space, MissileType type) {
-		m_armory.spawnBullet(camera, space, type);
+		armory.spawnBullet(camera, space, type);
+	}
+	
+	@Override
+	public void spawnBullet(Vector2 space, MissileType type) {
+		armory.spawnBullet(space, type);
 	}
 	
 	@Override
 	public float getInitialImpulseNormalBullet() {
-		return m_armory.initialImpulseNormalBullet;
+		return armory.initialImpulseNormalBullet;
 	}
 	
 	@Override
 	public void setInitialImpulseNormalBullet(float initialImpulseNormalBullet) {
-		m_armory.initialImpulseNormalBullet = initialImpulseNormalBullet;
+		armory.initialImpulseNormalBullet = initialImpulseNormalBullet;
 	}
 
 	@Override
 	public float getInitialImpulseBouncingBullet() {
-		return m_armory.initialImpulseBouncingBullet;
+		return armory.initialImpulseBouncingBullet;
 	}
 
 	@Override
 	public void setInitialImpulseBouncingBullet(float initialImpulseBouncingBullet) {
-		m_armory.initialImpulseBouncingBullet = initialImpulseBouncingBullet;
+		armory.initialImpulseBouncingBullet = initialImpulseBouncingBullet;
 	}
 	
 	@Override
 	public int getMaxAmmoNormalBullet() {
-		return m_armory.maxAmmoNormalBullet;
+		return armory.maxAmmoNormalBullet;
 	}
 
 	@Override
 	public void setMaxAmmoNormalBullet(int maxAmmoNormalBullet) {
-		m_armory.maxAmmoNormalBullet = maxAmmoNormalBullet;
+		armory.maxAmmoNormalBullet = maxAmmoNormalBullet;
 	}
 
 	@Override
 	public int getMaxAmmoBouncingBullet() {
-		return m_armory.maxAmmoBouncingBullet;
+		return armory.maxAmmoBouncingBullet;
 	}
 
 	@Override
 	public void setMaxAmmoBouncingBullet(int maxAmmoBouncingBullet) {
-		m_armory.maxAmmoBouncingBullet = maxAmmoBouncingBullet;
+		armory.maxAmmoBouncingBullet = maxAmmoBouncingBullet;
 	}
 
 	@Override
 	public int getCurrentAmmoNormalBullet() {
-		return m_armory.currentAmmoNormalBullet;
+		return armory.currentAmmoNormalBullet;
 	}
 
 	@Override
 	public void setCurrentAmmoNormalBullet(int currentAmmoNormalBullet) {
-		m_armory.currentAmmoNormalBullet = currentAmmoNormalBullet;
+		armory.currentAmmoNormalBullet = currentAmmoNormalBullet;
 	}
 
 	@Override
 	public int getCurrentAmmoBouncingBullet() {
-		return m_armory.currentAmmoBouncingBullet;
+		return armory.currentAmmoBouncingBullet;
 	}
 
 	@Override
 	public void setCurrentAmmoBouncingBullet(int currentAmmoBouncingBullet) {
-		m_armory.currentAmmoBouncingBullet = currentAmmoBouncingBullet;
+		armory.currentAmmoBouncingBullet = currentAmmoBouncingBullet;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((m_armory == null) ? 0 : m_armory.hashCode());
-		result = prime * result + ((m_groupName == null) ? 0 : m_groupName.hashCode());
-		result = prime * result + m_health;
-		result = prime * result + m_maxHealth;
+		result = prime * result + ((armory == null) ? 0 : armory.hashCode());
+		result = prime * result + ((groupName == null) ? 0 : groupName.hashCode());
+		result = prime * result + health;
+		result = prime * result + maxHealth;
 		return result;
 	}
 
@@ -188,19 +221,19 @@ public abstract class PlainCharacter extends MovingObject implements CharacterMe
 		if (getClass() != obj.getClass())
 			return false;
 		PlainCharacter other = (PlainCharacter) obj;
-		if (m_armory == null) {
-			if (other.m_armory != null)
+		if (armory == null) {
+			if (other.armory != null)
 				return false;
-		} else if (!m_armory.equals(other.m_armory))
+		} else if (!armory.equals(other.armory))
 			return false;
-		if (m_groupName == null) {
-			if (other.m_groupName != null)
+		if (groupName == null) {
+			if (other.groupName != null)
 				return false;
-		} else if (!m_groupName.equals(other.m_groupName))
+		} else if (!groupName.equals(other.groupName))
 			return false;
-		if (m_health != other.m_health)
+		if (health != other.health)
 			return false;
-		if (m_maxHealth != other.m_maxHealth)
+		if (maxHealth != other.maxHealth)
 			return false;
 		return true;
 	}

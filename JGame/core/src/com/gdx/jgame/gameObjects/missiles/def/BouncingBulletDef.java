@@ -13,7 +13,7 @@ public class BouncingBulletDef extends MissileDef implements Serializable{
 	 */
 	private static final long serialVersionUID = 6255251998554385702L;
 	
-	public int numberOfBounces = 1;
+	public int numberOfBounces;
 	
 	public BouncingBulletDef(World world, TextureManager txManager, String texPath,
 			float texScale, Vector2[] vertices) {

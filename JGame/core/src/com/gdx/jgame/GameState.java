@@ -64,6 +64,8 @@ public class GameState implements Serializable{
 		
 		m_game.setHud(new Hud(m_game.getBatch(), m_game.getCharacters().getPlayer(), m_game.isDebugMode(), m_game.isShowLayout()));
 		m_game.getCharacters().setCameraFollower(m_game.getCharacters().getPlayer());
+		
+		jGame.setManagerAI(managerAI);
 	}
 	
 	public String getMapName() {
@@ -78,7 +80,7 @@ public class GameState implements Serializable{
 	
 	private void loadGameObjects() {
 		// the order matters
-		TreeMap<Integer, Object> restoreOwner = new TreeMap<Integer, Object>();
+		TreeMap<Integer, IDAdapter> restoreOwner = new TreeMap<Integer, IDAdapter>();
 		
 		characters.load(m_game, restoreOwner);
 		missiles.load(m_game, restoreOwner);

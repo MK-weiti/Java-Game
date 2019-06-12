@@ -6,8 +6,6 @@ import java.util.TreeMap;
 
 import com.badlogic.gdx.math.Vector2;
 import com.gdx.jgame.hud.Hud;
-import com.gdx.jgame.gameObjects.PalpableObject;
-import com.gdx.jgame.gameObjects.PalpableObjectPolygonDef;
 import com.gdx.jgame.gameObjects.characters.SaveCharacters;
 import com.gdx.jgame.gameObjects.missiles.SaveMisiles;
 import com.gdx.jgame.jBox2D.JBoxObjects;
@@ -38,21 +36,17 @@ public class GameState implements Serializable{
 		mapName = new String (m_game.getMaps().getActualMapName());
 		cameraZoom = m_game.getWorldCamera().zoom;
 		cameraShift = new Vector2(m_game.getWorldCamera().getShift());
-		
+
 		saveGameObjects();
 	}
 	
 	public void load(JGame jGame) 
 			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		m_game = jGame;
-		
-		Field f1 = PalpableObject.class.getDeclaredField("m_numberOfObjects");
-		Field f2 = PalpableObjectPolygonDef.class.getDeclaredField("m_numberOfObjects");
+		Field f1 = IDAdapter.class.getDeclaredField("m_numberOfObjects");
 		
 		f1.setAccessible(true);
-		f2.setAccessible(true);
 		f1.setInt(null, 0);
-		f2.setInt(null, 0);
 
 		m_game.getWorldCamera().zoom = cameraZoom;
 		m_game.getWorldCamera().setShift(cameraShift);

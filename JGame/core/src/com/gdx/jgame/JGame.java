@@ -37,7 +37,7 @@ import com.gdx.jgame.logic.ai.AIManager;
 import com.gdx.jgame.logic.ai.FollowerEntity;
 import com.gdx.jgame.managers.CharactersManager;
 import com.gdx.jgame.managers.MapManager;
-import com.gdx.jgame.managers.SavesManager;
+import com.gdx.jgame.managers.SavesManager;   
 import com.gdx.jgame.managers.ScreenManager;
 import com.gdx.jgame.managers.TextureManager;
 import com.gdx.jgame.managers.ScreenManager.SCREEN_STATE;
@@ -220,7 +220,7 @@ public final class JGame implements Screen {
 		
 		BasicEnemyDef objectDef3 = new BasicEnemyDef(objectDef);
 		
-		objectDef3.armory.normalBulletDef = null;
+		//objectDef3.armory.normalBulletDef = null;
 		DefaultDef.defBasicEnemy(objectDef3);
 		objectDef3.bodyDef.fixedRotation = false;
 		objectDef3.setPosition(400, 250);

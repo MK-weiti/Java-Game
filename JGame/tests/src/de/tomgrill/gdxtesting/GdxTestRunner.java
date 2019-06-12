@@ -26,8 +26,6 @@ import org.junit.runners.model.InitializationError;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.gdx.jgame.JGame;
-import com.gdx.jgame.managers.ScreenManager;
 
 import static org.mockito.Mockito.mock;
 

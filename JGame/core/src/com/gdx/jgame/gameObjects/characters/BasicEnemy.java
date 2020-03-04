@@ -5,6 +5,7 @@ import java.awt.IllegalComponentStateException;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.gdx.jgame.gameObjects.ObjectTypes;
 import com.gdx.jgame.gameObjects.missiles.Missile;
 
 public class BasicEnemy extends PlainCharacter{
@@ -19,6 +20,8 @@ public class BasicEnemy extends PlainCharacter{
 		
 		spawnFrequency = enemyDef.spawnFrequency;
 		space = new Vector2(enemyDef.space);
+		
+		userData.setClassType(ObjectTypes.Enemy);
 	}	
 	
 	// do not copy, only for algorithm
@@ -48,6 +51,11 @@ public class BasicEnemy extends PlainCharacter{
 	public boolean isRemovable() {
 		if(getHealth() > 0) return false;
 		return isDestructible();
+	}
+	
+	@Override
+	public void setRemovable(boolean bool) {
+		setDestructible(bool);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.gdx.jgame.JGame;
+import com.gdx.jgame.gameObjects.UserData;
 import com.gdx.jgame.gameObjects.characters.PlainCharacter;
 import com.gdx.jgame.gameObjects.missiles.Missile;
 import com.gdx.jgame.gameObjects.missiles.MissilesManager;
@@ -28,13 +29,15 @@ public class BodiesToDestroy {
 	
 	public void removeAll() {
 		for(Body body : m_array) {
-			Object data = body.getUserData();
 			
-			if(data instanceof Missile) {
-				m_missleManager.remove((Missile) data);
+			UserData data = (UserData)body.getUserData();
+			Object object = data.getObject();
+			
+			if(object instanceof Missile) {
+				m_missleManager.remove((Missile) object);
 			}
-			else if(data instanceof PlainCharacter) {
-				m_charManager.remove((PlainCharacter) data);
+			else if(object instanceof PlainCharacter) {
+				m_charManager.remove((PlainCharacter) object);
 			}
 		}
 		m_array.clear();

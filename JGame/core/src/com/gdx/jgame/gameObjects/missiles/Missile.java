@@ -23,6 +23,8 @@ public abstract class Missile extends MovingObject implements MisslesMethods{
 		if(owner == null) throw new IllegalArgumentException("NormalBullet have not any owner");
 		m_damage = bullet.damage;
 		bullet.setOwner(owner);
+		
+		userData.setClassType(ObjectTypes.Missile);
 	}
 	
 	public IDAdapter getOwner() {

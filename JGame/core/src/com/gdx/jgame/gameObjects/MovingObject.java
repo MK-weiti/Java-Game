@@ -17,6 +17,8 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 	
 	// the acceleration which object will have when control over him was taken over.
 	private float acceleration;	
+	private Vector2 brakingIntensity;
+	private Vector2 minVelocity; // below that object should have velocity equals 0
 	
 	private float maxLinearSpeed, maxLinearAcceleration;
 	private float maxAngularSpeed, maxAngularAcceleration;
@@ -73,6 +75,9 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 		tagged = objectDef.tagged;
 		boundingRadious = objectDef.boundingRadious;
 		boundingToActivateAI = objectDef.boundingToActivateAI;
+		
+		brakingIntensity = new Vector2(objectDef.brakingIntensity);
+		minVelocity = new Vector2(objectDef.minVelocity);
 	}
 	
 	private void applyImpulseWithin(float deltaX, float deltaY) {
@@ -135,6 +140,14 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 		this.acceleration = acceleration;
 	}
 	
+	public void setBrakingIntensity(Vector2 brakingIntensity) {
+		this.brakingIntensity = brakingIntensity;
+	}
+
+	public void setMinVelocity(Vector2 minVelocity) {
+		this.minVelocity = minVelocity;
+	}
+
 	public int generateAccelerationId() {
 		
 		Random generator = new Random();
@@ -162,6 +175,14 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 	
 	public float getRawAcceleration() {
 		return acceleration;
+	}
+	
+	public Vector2 getBrakingIntensity() {
+		return brakingIntensity;
+	}
+
+	public Vector2 getMinVelocity() {
+		return minVelocity;
 	}
 	
 	HashMap<Integer, Float> getAccelerationRatios(){
@@ -356,10 +377,12 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 		result = prime * result + Float.floatToIntBits(acceleration);
 		result = prime * result + Float.floatToIntBits(boundingRadious);
 		result = prime * result + Float.floatToIntBits(boundingToActivateAI);
+		result = prime * result + ((brakingIntensity == null) ? 0 : brakingIntensity.hashCode());
 		result = prime * result + Float.floatToIntBits(maxAngularAcceleration);
 		result = prime * result + Float.floatToIntBits(maxAngularSpeed);
 		result = prime * result + Float.floatToIntBits(maxLinearAcceleration);
 		result = prime * result + Float.floatToIntBits(maxLinearSpeed);
+		result = prime * result + ((minVelocity == null) ? 0 : minVelocity.hashCode());
 		result = prime * result + ((ratioAcceleration == null) ? 0 : ratioAcceleration.hashCode());
 		result = prime * result + ((ratioMaxLinearSpeed == null) ? 0 : ratioMaxLinearSpeed.hashCode());
 		result = prime * result + (tagged ? 1231 : 1237);
@@ -382,6 +405,11 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 			return false;
 		if (Float.floatToIntBits(boundingToActivateAI) != Float.floatToIntBits(other.boundingToActivateAI))
 			return false;
+		if (brakingIntensity == null) {
+			if (other.brakingIntensity != null)
+				return false;
+		} else if (!brakingIntensity.equals(other.brakingIntensity))
+			return false;
 		if (Float.floatToIntBits(maxAngularAcceleration) != Float.floatToIntBits(other.maxAngularAcceleration))
 			return false;
 		if (Float.floatToIntBits(maxAngularSpeed) != Float.floatToIntBits(other.maxAngularSpeed))
@@ -389,6 +417,11 @@ public abstract class MovingObject extends PalpableObject implements Steerable<V
 		if (Float.floatToIntBits(maxLinearAcceleration) != Float.floatToIntBits(other.maxLinearAcceleration))
 			return false;
 		if (Float.floatToIntBits(maxLinearSpeed) != Float.floatToIntBits(other.maxLinearSpeed))
+			return false;
+		if (minVelocity == null) {
+			if (other.minVelocity != null)
+				return false;
+		} else if (!minVelocity.equals(other.minVelocity))
 			return false;
 		if (ratioAcceleration == null) {
 			if (other.ratioAcceleration != null)

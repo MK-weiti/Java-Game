@@ -33,7 +33,7 @@ public class GameState implements Serializable{
 	}
 	
 	public void save() {
-		mapName = new String (m_game.getMaps().getActualMapName());
+		mapName = new String (m_game.getMaps().getActiveMapName());
 		cameraZoom = m_game.getWorldCamera().zoom;
 		cameraShift = new Vector2(m_game.getWorldCamera().getShift());
 

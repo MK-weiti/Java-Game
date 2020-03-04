@@ -38,7 +38,10 @@ public abstract class PalpableObject extends IDAdapter{
 	private String texturePath;
 	private transient Vector2 lastPosition; // to reconstruct destroyed body
 	private boolean isBodyDestroyed = false;
+	private boolean isDeleted = false;
 	protected boolean isDestructible = true;
+	
+	protected UserData userData;
 
 	public PalpableObject(PalpableObjectPolygonDef objectDef) {
 		if(objectDef.textureScale == 0) throw new IllegalComponentStateException("No scale.");
@@ -57,7 +60,9 @@ public abstract class PalpableObject extends IDAdapter{
 		shape.set(objectDef.fixturePolData.shapeVertices);
 		objectDef.fixtureDef.shape = shape;
 		mainFixture = body.createFixture(objectDef.fixtureDef); 
-		body.setUserData(this);
+		
+		userData = new UserData(this);
+		body.setUserData(userData);
 		
 		setTexture(objectDef.texture);
 		shape.dispose();
@@ -207,6 +212,18 @@ public abstract class PalpableObject extends IDAdapter{
 
 	protected boolean isDestructible() {
 		return isDestructible;
+	}
+	
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+	
+	public void setIsDeleted(boolean bool) {
+		isDeleted = bool;
+	}
+	
+	protected void setDestructible(boolean bool) {
+		isDestructible = bool;
 	}
 
 	@Override

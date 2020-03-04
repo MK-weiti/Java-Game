@@ -3,34 +3,35 @@ package com.gdx.jgame.jBox2D.contactListeners;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.gdx.jgame.gameObjects.characters.PlainCharacter;
+import com.gdx.jgame.gameObjects.missiles.Missile;
 import com.gdx.jgame.jBox2D.BodiesToDestroy;
 
-public class EnemiesListener extends BasicListener{
+public class MissileListener extends BasicListener{
 	private BodiesToDestroy m_destroy;
-
-	public EnemiesListener(BodiesToDestroy destroy){
+	
+	public MissileListener(BodiesToDestroy destroy){
 		m_destroy = destroy;
 	}
-	
+
 	@Override
 	public void beginContact(Contact contact, boolean isFirstFixture) {
 		super.beginContact(contact, isFirstFixture);
 		
 		Object object = null;
-		PlainCharacter enemy = null;	
+		Missile missile = null;	
 		
 		object = dataB.getObject();
-		enemy = (PlainCharacter) dataA.getObject();
+		missile = (Missile) dataA.getObject();
 		
-		if(object == null || enemy == null) return;
+		if(contact.getFixtureB().getBody().getFixtureList().first().isSensor()) return;
 		
-		enemy.updateObject(object);
-		if(enemy.isRemovable() && !enemy.isDeleted()) {
-			m_destroy.add(enemy.getBody());	
-			enemy.setIsDeleted(true);
+		if(missile != null) {
+			missile.updateObject(object);
+			if(missile.isRemovable() && !missile.isDeleted()) {
+				m_destroy.add(missile.getBody());
+				missile.setIsDeleted(true);
+			}
 		}
-		
 	}
 
 	@Override
@@ -50,5 +51,5 @@ public class EnemiesListener extends BasicListener{
 		// TODO Auto-generated method stub
 		
 	}
-	
+
 }

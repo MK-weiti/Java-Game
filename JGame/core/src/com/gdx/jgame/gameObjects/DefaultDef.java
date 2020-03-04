@@ -19,7 +19,7 @@ public class DefaultDef {
 	
 	public static void defMovingObject(MovingObjectDef def) {
 		defPalpableObjectPolygon(def);
-		def.acceleration = 0.5f;
+		def.acceleration = 0.1f;
 		def.maxLinearSpeed = 1.5f;
 		def.maxLinearAcceleration = 10f;
 		def.maxAngularSpeed = 20f;
@@ -27,6 +27,9 @@ public class DefaultDef {
 		def.zeroThreshold = 1f;
 		def.boundingRadious = 1f;
 		def.boundingToActivateAI = 2f;
+		
+		def.brakingIntensity.set(0.1f, 0.1f);
+		def.minVelocity.set(0.03f, 0.03f);
 	}
 	
 	public static void defCharacterPolygon(CharacterPolygonDef def) {

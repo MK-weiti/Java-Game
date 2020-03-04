@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.gdx.jgame.gameObjects.UserData;
 import com.gdx.jgame.jBox2D.mapObjects.FieldGameState;
 import com.gdx.jgame.jBox2D.mapObjects.PolygonObject;
 import com.gdx.jgame.managers.MapManager;
@@ -183,22 +184,22 @@ public class LayerHitboxCreator {
 	}
 
 	public static Body setProperties(World world, MapProperties objectProperties, BodyDef bodyDef, FixtureDef fixtureDef) {		
-		Object userData = null;
+		UserData userData = new UserData();
 		
 		if(objectProperties.containsKey(LayerConstants.ObstaclesProperties.maskBits)) {
 			String maskBits = (String) objectProperties.get(LayerConstants.ObstaclesProperties.maskBits);
 			
-			if(maskBits.contentEquals(LayerConstants.ObstaclesProperties.MaskBits.strongBlocked)) {
+			if(maskBits.contentEquals(LayerConstants.ObstaclesProperties.MaskBits.worldBorder)) {
 				
 				// almost nothing should be able to get through this object
 				// default: fixtureDef.filter.maskBits = -1;
 				
-				fixtureDef.filter.categoryBits = CollisionConstants.strongBlocked;
+				fixtureDef.filter.categoryBits = CollisionConstants.worldBorder;
 				bodyDef.type = BodyType.StaticBody;
 			}
-			else if(maskBits.contentEquals(LayerConstants.ObstaclesProperties.MaskBits.blocked)) {
+			else if(maskBits.contentEquals(LayerConstants.ObstaclesProperties.MaskBits.simpleObstacle)) {
 				
-				fixtureDef.filter.maskBits = CollisionConstants.blocked;
+				fixtureDef.filter.maskBits = CollisionConstants.simpleObstacle;
 				bodyDef.type = BodyType.StaticBody;
 			}
 			else return null;
@@ -207,15 +208,13 @@ public class LayerHitboxCreator {
 		if(objectProperties.containsKey(LayerConstants.Logic.changeGameState)) {
 			String changeGameState = (String) objectProperties.get(LayerConstants.Logic.changeGameState);
 			
-			if(changeGameState.contentEquals(LayerConstants.Logic.ChangeGameState.loseGame)) {
+			if(changeGameState.contentEquals(LayerConstants.Logic.ChangeGameState.lose)) {
 				fixtureDef.isSensor = true;
-				userData = new FieldGameState(false, true);
-				// TODO
+				userData.setFieldGameState(new FieldGameState(false, true));
 			}
-			else if(changeGameState.contentEquals(LayerConstants.Logic.ChangeGameState.winGame)) {
+			else if(changeGameState.contentEquals(LayerConstants.Logic.ChangeGameState.win)) {
 				fixtureDef.isSensor = true;
-				userData = new FieldGameState(true, false);
-				// TODO
+				userData.setFieldGameState(new FieldGameState(true, false));
 			}
 			else return null;
 		}

@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.gdx.jgame.Camera;
 import com.gdx.jgame.gameObjects.missiles.Missile;
+import com.gdx.jgame.movement.BasicMovements;
 
 public class PlayerInputControl implements InputProcessor{
 	
@@ -18,39 +19,9 @@ public class PlayerInputControl implements InputProcessor{
 	}
 	
 	public void keyPressed(PlainCharacter character) {
-		float impulse = character.getImpulse();
-		
-		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {	
-			if(-character.getMaxLinearSpeed() < character.getBody().getLinearVelocity().x) {
-				if(character.getBody().getLinearVelocity().x - impulse < -character.getMaxLinearSpeed())
-					impulse = character.getBody().getLinearVelocity().x + character.getMaxLinearSpeed();
-				character.applyImpulse(-impulse, 0);
-			}
-		}
-		impulse = character.getImpulse();
-		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-			if(character.getMaxLinearSpeed() > character.getBody().getLinearVelocity().x) {
-				if(character.getBody().getLinearVelocity().x + impulse > character.getMaxLinearSpeed())
-					impulse = character.getMaxLinearSpeed() - character.getBody().getLinearVelocity().x;
-				character.applyImpulse(impulse, 0);
-			}
-		}
-		impulse = character.getImpulse();
-		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {			
-			if(-character.getMaxLinearSpeed() < character.getBody().getLinearVelocity().y) {
-				if(character.getBody().getLinearVelocity().y - impulse < -character.getMaxLinearSpeed())
-					impulse = character.getBody().getLinearVelocity().y + character.getMaxLinearSpeed();
-				character.applyImpulse(0, -impulse);
-			}
-		}
-		impulse = character.getImpulse();
-		if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			if(character.getMaxLinearSpeed() > character.getBody().getLinearVelocity().y) {
-				if(character.getBody().getLinearVelocity().y + impulse > character.getMaxLinearSpeed())
-					impulse = character.getMaxLinearSpeed() - character.getBody().getLinearVelocity().y;
-				character.applyImpulse(0, impulse);
-			}
-		}
+		Vector2 impulse = new Vector2();
+		BasicMovements.movementV0(character, impulse);
+		character.applyImpulse(impulse);
 	}
 	
 	public void keyJustPressed(PlainCharacter character) {
@@ -91,20 +62,19 @@ public class PlayerInputControl implements InputProcessor{
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		Vector2 space = new Vector2(0.05f, 0.05f); 
 		
 		if(m_character instanceof Player) {
 			Player player = (Player) m_character;
 			if(button == Input.Buttons.LEFT) {
-				player.spawnBullet(m_camera, new Vector2(0.05f, 0.05f), Missile.MissileType.NormalBullet);
+				player.spawnBullet(m_camera, space, Missile.MissileType.NormalBullet);
 			}
 			else if(button == Input.Buttons.RIGHT) {
-				player.spawnBullet(m_camera, new Vector2(0.05f, 0.05f), Missile.MissileType.BouncingBullet);
+				player.spawnBullet(m_camera, space, Missile.MissileType.BouncingBullet);
 			}
 		}
 		
-		
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override

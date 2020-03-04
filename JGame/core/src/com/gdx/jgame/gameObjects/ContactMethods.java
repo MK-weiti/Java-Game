@@ -6,5 +6,7 @@ public interface ContactMethods {
 	
 	public boolean isRemovable();
 	
+	public void setRemovable(boolean bool);
+	
 	public void deleteObject();
 }

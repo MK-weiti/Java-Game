@@ -31,4 +31,12 @@ public class Utils {
 		outVector.y = (float) Math.cos(angle);
 		return outVector;
 	}
+	
+	public static boolean isZero(float value, float margin) {
+		return value == 0.0f || Math.abs(value) <= margin;
+	}
+	
+	public static boolean isZero(double value, double margin) {
+		return value == 0.0 || Math.abs(value) <= margin;
+	}
 }

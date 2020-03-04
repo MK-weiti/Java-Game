@@ -26,6 +26,11 @@ public class BouncingBullet extends Missile{
 		if(numberOfBounces <= 0) return true;
 		return false;
 	}
+	
+	@Override
+	public void setRemovable(boolean bool) {
+		setDestructible(bool);
+	}
 
 	@Override
 	public void deleteObject() {

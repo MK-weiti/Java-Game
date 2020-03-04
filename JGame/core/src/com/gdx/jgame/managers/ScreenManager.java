@@ -79,7 +79,7 @@ public class ScreenManager extends Game{
 	}
 	
 	public void nextMap() {
-		if(map.getActualMapName() == "nextLevel.tmx") {
+		if(map.getActiveMapName() == "nextLevel.tmx") {
 			System.out.println("You win the game!");
 			setScreen(SCREEN_STATE.PAUSE_MENU);
 			return;

@@ -18,7 +18,12 @@ public class NormalBullet extends Missile{
 	public boolean isRemovable() {
 		return isDestructible();
 	}
-
+	
+	@Override
+	public void setRemovable(boolean bool) {
+		setDestructible(bool);
+	}
+	
 	@Override
 	public void deleteObject() {
 		destoryBody();

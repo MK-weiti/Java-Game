@@ -18,18 +18,16 @@ public final class LayerConstants {
 	public final class ObstaclesProperties{
 		public static final String maskBits = "MaskBits";
 		public final class MaskBits{
-			public static final String strongBlocked = "strongBlocked";
-			public static final String blocked = "blocked";
-		}
-		
-		
+			public static final String worldBorder = "worldBorder";
+			public static final String simpleObstacle = "simpleObstacle";
+		}		
 	}
 	
 	public final class Logic{
 		public static final String changeGameState = "ChangeGameState";
 		public final class ChangeGameState{
-			public static final String winGame = "win";
-			public static final String loseGame = "lose";
+			public static final String win = "win";
+			public static final String lose = "lose";
 		}
 		
 		

@@ -2,8 +2,6 @@
 
 ## By Mateusz Kordowski
 
-## index 293127
-
 **Instalation instruction:**
 
 1. download file from master branch.
@@ -14,7 +12,7 @@
 ### Or
 
 1. go to the JGame (where is gradlew file)
-2. in shell run ./gradlew desktop:dist
+2. in shell run ./gradlew desktop:dist (or just gradlew desktop:dist on windows)
 3. the result is in JGame -> desktop -> build -> libs -> (chose game version)
 4. run file: java -jar (file name)
 
